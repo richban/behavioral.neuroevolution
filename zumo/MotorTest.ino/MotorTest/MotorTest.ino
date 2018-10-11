@@ -17,6 +17,10 @@ LSM303 compass;
 char inputBuffer[BUFFER_SIZE];
 int index = 0;
 
+bool proxLeftActive;
+bool proxFrontActive;
+bool proxRightActive;
+
 // The highest possible magnetic value to read in any direction is 2047
 // The lowest possible magnetic value to read in any direction is -2047
 LSM303::vector<int16_t> running_min = {32767, 32767, 32767}, running_max = {-32767, -32767, -32767};
@@ -43,6 +47,14 @@ void setup()
   
   // Initialize proximity sensors
   proxSensors.initThreeSensors();
+
+  /* After setting up the proximity sensors with one of the
+   * methods above, you can also customize their operation: */
+  proxSensors.setPeriod(420);
+  proxSensors.setPulseOnTimeUs(421);
+  proxSensors.setPulseOffTimeUs(578);
+  uint16_t levels[] = { 4, 15, 32, 55, 85, 120 };
+  proxSensors.setBrightnessLevels(levels, sizeof(levels)/2);
 
   Serial.println("Initialization done.");
 
@@ -95,21 +107,33 @@ void calibrateCompass() {
 void readProxSensors() {
   proxSensors.read();
   compass.read();
+  // Just read the proximity sensors without sending pulses.
+  proxLeftActive = proxSensors.readBasicLeft();
+  proxFrontActive = proxSensors.readBasicFront();
+  proxRightActive = proxSensors.readBasicRight();
 }
 
 void sendData() {
   static char buffer[80];
-  sprintf(buffer, "S %d %d %d %d %d %d",
-    proxSensors.countsLeftWithLeftLeds(),
-    proxSensors.countsLeftWithRightLeds(),
+  sprintf(buffer, "S %d %d %d %d %d %d %d %d %d %d",
+    (int) compass.heading(),
     proxSensors.countsFrontWithLeftLeds(),
     proxSensors.countsFrontWithRightLeds(),
+    proxSensors.countsLeftWithLeftLeds(),
+    proxSensors.countsLeftWithRightLeds(),
     proxSensors.countsRightWithLeftLeds(),
-    proxSensors.countsRightWithRightLeds()
+    proxSensors.countsRightWithRightLeds(),
+    proxLeftActive,
+    proxFrontActive,
+    proxRightActive
   );
-  Serial.print(buffer);
-  Serial.println("Data sent");
+  Serial.println(buffer);
   delay(1000);
+}
+
+void streamData() {
+  readProxSensors();
+  sendData();
 }
 
 bool listenCommand() {
@@ -172,5 +196,6 @@ void listenEvents() {
 
 void loop()
 { 
+  streamData();
   listenEvents();
 }
