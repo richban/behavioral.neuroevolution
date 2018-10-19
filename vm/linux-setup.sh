@@ -24,10 +24,6 @@ fi
 #
 #####################################################
 
-# Cleaning undesired packages,
-# so that they won't be upgraded
-clean
-
 # Updating
 apt-get update
 apt-get upgrade
@@ -67,8 +63,9 @@ sudo apt-get install qttools5-dev-tools \
                      g++ \
                      git \
                      make \
+[[ $? -ne 0 ]] && exit 1
 
-cd mkdir ~/Developer && cd Developer
+cd ~/ && mkdir ~/Developer && cd Developer
 git clone --recursive https://github.com/aseba-community/aseba.git
 cd aseba
 
@@ -80,3 +77,7 @@ make
 # User permissions
 usermod -a -G dialout $USER
 newgrp dialout
+
+# Dependencies
+pip install --upgrade pip
+pip install dbus-python
