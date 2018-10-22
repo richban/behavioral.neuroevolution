@@ -1,14 +1,9 @@
-import dbus
-import glib
-import math
-import time
-
 from aseba import Aseba, AsebaException
 
-__author__ = "Davide Laezza"
+__credits__ = "Davide Laezza"
+
 
 class ThymioII(Aseba):
-    wheel_distance = 9 # cm
     
     def __init__(self, name):
         super(ThymioII, self).__init__()
@@ -25,22 +20,6 @@ class ThymioII(Aseba):
     def __enter__():
         pass
 
-    def _turn(self, direction, deg):
-        radians = math.pi * deg / 180
-        speed = self.network.GetVariable(self.name,
-                'motor.{dir}.speed'.format(dir=direction))
-
-        cms_speed = speed[0] * 20 / 500 * 0.75
-        if cms_speed <= 0:
-            return
-        
-        time_stop = ThymioII.wheel_distance * radians / cms_speed
-        self.network.SetVariable(self.name,
-                'motor.{dir}.target'.format(dir=direction),
-                [0])
-        time.sleep(time_stop)
-        self.move_forward(self.desired_speed)
-
     def get(self, *args, **kwargs):
         return super(ThymioII, self).get(self.name, *args, **kwargs)
 
@@ -51,6 +30,10 @@ class ThymioII(Aseba):
         self.desired_speed = speed
         self.network.SetVariable(self.name, 'motor.left.target', [speed])
         self.network.SetVariable(self.name, 'motor.right.target', [speed])
+
+    def set_motor(self, left, right):
+        self.network.SetVariable(self.name, 'motor.left.target', [left])
+        self.network.SetVariable(self.name, 'motor.right.target', [right])
 
     def stop(self):
         self.move_forward(0)
@@ -63,3 +46,7 @@ class ThymioII(Aseba):
 
     def u_turn(self):
         self._turn('right', 180)
+
+    def check_prox(self):
+        return self.get('prox.horizontal')
+
