@@ -34,7 +34,10 @@ apt-get upgrade
 #
 #####################################################
 
-apt install python python3 python-pip python-gtk2 vim git
+apt install python python3 python-pip python-gtk2 vim git \
+  make build-essential libssl-dev zlib1g-dev libbz2-dev \
+  libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev \
+  xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev curl python-dbus
 [[ $? -ne 0 ]] && exit 1
 
 #####################################################
@@ -78,6 +81,17 @@ make
 usermod -a -G dialout $USER
 newgrp dialout
 
-# Dependencies
+#####################################################
+#
+#                   Setup Python
+#
+#####################################################
+
 pip install --upgrade pip
 pip install dbus-python
+
+# pyenv
+
+cd ~/
+curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash
+
