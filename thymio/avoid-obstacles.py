@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-
-import glib
+from gi.repository import GLib as glib
 import sys
 
 from thymioII import ThymioII

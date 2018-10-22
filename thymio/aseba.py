@@ -31,7 +31,7 @@ import dbus
 import time
 
 from dbus.mainloop.glib import DBusGMainLoop
-import gobject
+from gi.repository import GObject as gobject
 # required to prevent the glib main loop to interfere with Python threads
 gobject.threads_init()
 dbus.mainloop.glib.threads_init()
@@ -236,11 +236,11 @@ if __name__ == '__main__':
         # 'timer0' is the name of the Aseba event you want to subscribe to.
         aseba.on_event("timer0", my_callback)
 
-        print "List of nodes: ", aseba.get_nodes_list()
+        print("List of nodes: ", aseba.get_nodes_list())
 
         aseba.set("thymio-II", "event.source", [1])
         aseba.send_event(0, [])
 
-        print "Get variable temperature: ", aseba.get("thymio-II", "temperature")
-        print "Get array acc: ", aseba.get("thymio-II", "acc")
+        print("Get variable temperature: ", aseba.get("thymio-II", "temperature"))
+        print("Get array acc: ", aseba.get("thymio-II", "acc"))
 
