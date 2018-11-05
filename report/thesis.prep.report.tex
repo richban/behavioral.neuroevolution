@@ -8,12 +8,13 @@
 \usepackage[utf8]{inputenc}
 \usepackage{microtype}
 \usepackage{amsmath}
-\usepackage{listings}
+\usepackage[procnames]{listings}
 \usepackage{amsmath}
 \usepackage{float}
 \usepackage{wrapfig}
 \usepackage{subcaption}
 \usepackage{dirtytalk}
+\usepackage{color}
 
 \lstset{
   basicstyle=\ttfamily,
@@ -24,21 +25,64 @@
   aboveskip=10pt,
   belowskip=5pt,
   tabsize=2
-} 
+}
+
 
 \setlength{\textfloatsep}{15pt}
 \setlength{\abovecaptionskip}{6pt}
 \setlength{\belowcaptionskip}{6pt}
 
-\author{Richard Bányi}
+\author{Richard Banyi}
+\affiliation{%
+  \institution{IT University of Copenhagen}
+  \streetaddress{Rued Langgaards Vej 7}
+  \city{Copenhagen}
+  \postcode{2300}
+  \country{Denmark}
+}
+
+\email{riba@itu.dk}
+
+\author{David Kadish}
+\affiliation{%
+  \institution{Supervisor}
+}
+\affiliation{%
+  \institution{IT University of Copenhagen}
+}
+\affiliation{%
+  \institution{Robotics, Evolution, and Art Lab}
+}
+\email{davk@itu.dk}
+
+\author{Andres Faina}
+\affiliation{%
+  \institution{Supervisor}
+}
+\affiliation{%
+  \institution{IT University of Copenhagen}
+  \streetaddress{Rued Langgaards Vej 7}
+  \city{Copenhagen}
+  \postcode{2300}
+  \country{Denmark}
+}
+\affiliation{%
+  \institution{Robotics, Evolution, and Art Lab}
+}
+\email{anfv@itu.dk}
+
 
 \title{\textsc{Thesis Preparation }}
 \subtitle{\textsc{IT University of Copenhagen, Autumn 2018}}
 \acmDOI{}
 \begin{document}
-\maketitle 
 
 
+\begin{abstract}
+Donec euismod iaculis pretium. Donec non massa elit. Phasellus sagittis magna et maximus dictum. Duis quis ullamcorper orci. Mauris interdum, elit eu tincidunt tempor, lectus mi venenatis purus, quis posuere tellus ex in magna. Phasellus tincidunt nibh eu tortor semper, et varius justo vulputate. Nullam dictum congue lacinia. Maecenas sagittis nulla quis leo fringilla viverra. Proin eget egestas nisl. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum a interdum tellus, a hendrerit ligula. Duis ut risus ut lacus maximus euismod. Integer quis justo sit amet sapien accumsan rutrum nec nec dolor. Aliquam laoreet scelerisque ante, quis hendrerit ipsum viverra tempor.
+\end{abstract}
+
+\maketitle
 
 \section{Introduction}
 
@@ -134,15 +178,15 @@ NEAT encode networks with direct encoding schemes. The genome contains a list of
 Mutation in NEAT can occur in three different ways. Connections weights are mutated just like in any neuroevolution, the value of the connection gene is mutated. Structural mutations are \emph{add connection and add node}. In \emph{add connection} mutation, a new connection gene is added with random weight connecting two previously unconnected nodes. Adding a new node, consists of splitting the existing connection between two nodes. The new node is added between these two previously connected nodes. The new connection leading to the new node receives the weight of 1, and the new connection leading out from the new node receives the old connection weight that was previously connecting the two nodes. The new connection of weight 1 minimize the initial affect of the mutation, this ensures that the network have time to optimize, because of \emph{speciation}. An example of this mutation can bee seen in figure\ref{fig:add_node}.
 
 \begin{figure}[H]
-  \includegraphics[width=0.66\linewidth]{img/add_node.JPEG}
-  \caption{\label{fig:genome}\emph{Add node} mutation operator in NEAT}
+  \includegraphics[width=0.56\linewidth]{img/add_node.JPEG}
+  \caption{\label{fig:add_node}\emph{Add node} mutation operator in NEAT}
 \end{figure}
 
 \emph{Competing convention} is when individuals can express a solution to the same problem with different encoding. An example is depicted in figure \ref{fig:competing_convention}. The two networks compute the same function, even though their genetic encoding is different (hidden units appears in different order). This make crossover difficult, by one-point recombination of parents, both children lost crucial genetic information of their parents.
 
 \begin{figure}[H]
-  \includegraphics[width=0.66\linewidth]{img/competing_convention.JPEG}
-  \caption{\label{fig:genome}Competing Convention Problem}
+  \includegraphics[width=0.56\linewidth]{img/competing_convention.JPEG}
+  \caption{\label{fig:competing_convention}Competing Convention Problem}
 \end{figure}
 
 \emph{NEAT} is addressing this issues by \emph{global innovation number}, which enables genes to match up with genes of any individual in the population. More precisely, two genes with the same innovation number represents the same structure, because they are both derived from the same ancestral gene. Innovation numbers are unique and never change. Whenever two genomes mate, their offspring inherits the same innovation numbers on each gene.
@@ -150,7 +194,7 @@ Mutation in NEAT can occur in three different ways. Connections weights are muta
 When crossover is applied, the genomes are lined up with respect to the innovation number, see figure \ref{fig:crossover}. Genes that matches innovation number of both parents are called \emph{matching} gene. Genes that are not matched are called either \emph{disjoint} or \emph{excess}. During mating, \emph{matching} genes are randomly choose from either matching parent, whereas all \emph{disjoint} and \emph{excess} are included from the more fit parent.
 
 \begin{figure}[H]
-  \includegraphics[width=0.66\linewidth]{img/crossover.PNG}
+  \includegraphics[width=0.5\linewidth]{img/crossover.PNG}
   \caption{\label{fig:crossover}Matching genomes innovation numbers}
 \end{figure}
 
@@ -166,8 +210,51 @@ Donec euismod iaculis pretium. Donec non massa elit. Phasellus sagittis magna et
 
 Donec euismod iaculis pretium. Donec non massa elit. Phasellus sagittis magna et maximus dictum. Duis quis ullamcorper orci. Mauris interdum, elit eu tincidunt tempor, lectus mi venenatis purus, quis posuere tellus ex in magna. Phasellus tincidunt nibh eu tortor semper, et varius justo vulputate. Nullam dictum congue lacinia. Maecenas sagittis nulla quis leo fringilla viverra. Proin eget egestas nisl. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum a interdum tellus, a hendrerit ligula. Duis ut risus ut lacus maximus euismod. Integer quis justo sit amet sapien accumsan rutrum nec nec dolor. Aliquam laoreet scelerisque ante, quis hendrerit ipsum viverra tempor.
 
-\section{Aseba DBus integration}
+\section{Aseba and Thymio}
+
+\emph{Thymio}\footnote{\url{https://www.thymio.org/home-en:home}} is a small robot produced by Mobsya\footnote{\url{http://www.mobsya.org/}} for educational purposes. It has 5 proximity sensors in front, 2 proximity sensors on the back as well as 2 grounds sensors. Thymio is also equipped with temperature sensor, various buttons for interaction, visual sensors etc. Detailed overview of all the components can bee seen in figure\ref{fig:thymio}. For this experiments purposes we use the new \emph{Wireless Thymio}, which enables us to control the robot with wireless dongle.
+
+\begin{figure}[H]
+  \includegraphics[width=0.6\linewidth]{img/thymio.PNG}
+  \caption{\label{fig:thymio}Components of Thymio}
+\end{figure}
+
+Thymio can be programmed with \emph{Aseba}\footnote{\url{https://aseba.readthedocs.io/en/latest/about.html}}, which is set of tools that enables to program the robot within several programming environments, namely \emph{Visual, Blockly, Text, Scratch} programming. Aseba is shipped with a command-line utility tool called \emph{asebamedulla}, that allows to access an Aseba network through \emph{D-BUS}\footnote{\url{https://www.freedesktop.org/wiki/Software/dbus/}}. This enables to program Aseba-enabled devices, the Thymio robot, using third party languages, in our case Python. The \emph{Aseba Community Repository}\footnote{\url{https://github.com/aseba-community/aseba}} contains several examples how to interface with asebamedulla using D-Bus. Since our preferred language is Python, the python CLI\footnote{\url{https://github.com/aseba-community/aseba/blob/master/examples/clients/python-dbus/aseba.py}} was chosen, which is a thin wrapper around asebamedulla dbus interface. 
+
+D-Bus is the main IPC system used in Linux: processes expose objects with a declared interfaces whose methods can be called from other processes. This is implemented by sending messages over D-Bus itself. The Aseba environment provides a D-Bus interface via the asebamedulla utility, which is in charge of transmitting to the robot hardware. The abstraction is in the form of a network of Thymio robots and processes listening on D-Bus, the so-called \emph{AsebaNetwork}. 
+
+The goal of the Aseba D-Bus integration is not to be an alternative to any of the Aseba languages used to program the robots locally. Indeed, it is meant to provide integration with another system, on which not only the D-Bus deamon and asebamedulla are running, but also the programs utilizing the D-Bus interface, which are never transferred in any manner to the Thymio hardware. This in turn means that the robots are supposed to be continuously connected to the machine on which the Python script, in our case, is running.
+
+The API consists ultimately in the interfaces that asebamedulla provides over D-Bus. Through this interface, we can retrieve information about the network, read and write variables, or send events.
+
+\begin{lstlisting}[caption={\ The API that asebamedulla provides over D-Bus},language=Python,captionpos=b,label={Asebamedulla API},basicstyle=\small]
+interface ch.epfl.mobots.EventFilter {
+    method Void ListenEvent(UInt16 eventId)
+    method Void ListenEventName(String eventName)
+    method Void IgnoreEvent(UInt16 eventId)
+    method Void IgnoreEventName(String eventName)
+    signal Event(UInt16 id, String name, Array<SInt16> payloadData)
+}
+
+interface ch.epfl.mobots.AsebaNetwork {
+    method Void LoadScripts(String fileName)
+    method Array<String> GetNodesList()
+    method Array<String> GetVariablesList(String nodeName)
+    method Void SetVariable(String nodeName, String variableName, Array<SInt16> variableData)
+    method Array<SInt16> GetVariable(String nodeName, String variableName)
+    method Void SendEvent(UInt16 eventId, Array<SInt16> payloadData)
+    method Void SendEventName(String eventName, Array<SInt16> payloadData)
+    method ObjectPath CreateEventFilter()
+}
+\end{lstlisting}
+
+
+The \emph{AsebaNetwork} interface allows to work with all of the nodes (robots) in the same network. There are methods to retrieve a list of the connected nodes ( \emph{GetNodesList} ) and to broadcast a global event, like \emph{SendEvent}. Global events are events that aseba nodes exchange within the aseba network. On the other hand, events that are internal to the node are called \emph{local events}. \emph{SetVariable} and \emph{GetVariable}, which write and read respectively native variables of the Aseba scripting language.
+
+Asebamedulla expose the interface \emph{EventFilter} which allows to manage events. An application that wants to listen to events have register events with \emph{ListenEventName} or \emph{ListenEvent} be notified when an event occurs. The application can receive these events through the \emph{Event} signal, these events correspond to the global events of the Aseba language.
 
 \section{Robotic Simulator}
+
+Donec euismod iaculis pretium. Donec non massa elit. Phasellus sagittis magna et maximus dictum. Duis quis ullamcorper orci. Mauris interdum, elit eu tincidunt tempor, lectus mi venenatis purus, quis posuere tellus ex in magna. Phasellus tincidunt nibh eu tortor semper, et varius justo vulputate. Nullam dictum congue lacinia. Maecenas sagittis nulla quis leo fringilla viverra. Proin eget egestas nisl. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum a interdum tellus, a hendrerit ligula. Duis ut risus ut lacus maximus euismod. Integer quis justo sit amet sapien accumsan rutrum nec nec dolor. Aliquam laoreet scelerisque ante, quis hendrerit ipsum viverra tempor.
 
 \end{document}

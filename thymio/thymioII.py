@@ -38,15 +38,7 @@ class ThymioII(Aseba):
     def stop(self):
         self.move_forward(0)
 
-    def turn_left(self, deg):
-        self._turn('left', deg)
-
-    def turn_right(self, deg):
-        self._turn('right', deg)
-
-    def u_turn(self):
-        self._turn('right', 180)
-
     def check_prox(self):
         return self.get('prox.horizontal')
+
 
