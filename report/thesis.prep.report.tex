@@ -166,7 +166,7 @@ The implementation of the NSGA-II algorithm is provided by DEAP\footnote{\url{ht
 
 \subsection{NEAT}
 
-NeuroEvolution of Augmenting Topologies \footnote{\url{http://nn.cs.utexas.edu/downloads/papers/stanley.ec02.pdf}} is a genetic algorithm for evolving both weights and topology of artificial neural networks. NEAT starts with minimal ANN structure and grows incrementally, which ensures low dimensionality of the connection weights and therefore minimizes the search space. The main traits  of NEAT are \emph{genetic encoding, competing convention, speciation}.
+NeuroEvolution of Augmenting Topologies \footnote{\url{http://nn.cs.utexas.edu/downloads/papers/stanley.ec02.pdf}} is a genetic algorithm for evolving both weights and topology of artificial neural networks. NEAT starts with minimal ANN structure and grows incrementally, which ensures low dimensionality of the connection weights and therefore minimizes the search space. The main traits of NEAT are \emph{genetic encoding, competing convention, speciation}.
 
 NEAT encode networks with direct encoding schemes. The genome contains a list of \emph{connection genes} and list of \emph{nodes genes} which appears in the phenotype. Node genes represents inputs, hidden nodes, and outputs that can be connected. Whether a in-node and out-node is connected is expressed in the \emph{connection gene}. Additionally each connection gene contains a \emph{innovation} number. A genetic encoding of an individual can bee seen in figure \ref{fig:genome}.
 
