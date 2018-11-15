@@ -23,9 +23,9 @@ if __name__ == "__main__":
     thread1 = TrackerFai(mid, transform, mid_aux , video_source, capture, show, debug)
     # Start new Threads
     thread1.start()
-    time.sleep(1000)
-    # for i in range(100):
-    #     time.sleep(1)
-    #     marker = get_marker_object(5)
-    #     if marker is not None:
-    #         print(marker.orientation())
+
+    for i in range(100):
+        time.sleep(1)
+        marker = get_marker_object(5)
+        if marker is not None:
+            print(marker.orientation())
