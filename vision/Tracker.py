@@ -67,19 +67,13 @@ cdist = np.array( [[-0.008223905370418273],
                     [0.00044666252383880796],
                     [1.4732231718761766]])
 
-#RMS=0.95
-#cmat = np.array([[  1.33996644e+03,   0.00000000e+00,   7.75274684e+02],
-#[  0.00000000e+00,   1.33754402e+03,   4.32694633e+02],
-#[  0.00000000e+00,   0.00000000e+00,   1.00000000e+00]])
-#cdist = np.array([  2.21364604e-01,  -2.35994747e+00,  -1.76918573e-03,  -3.67498637e-05,  6.98277835e+00])
-
 
 def calibrate():
     global performCalibration
     performCalibration = True
     while(performCalibration == True):
         time.sleep(0.1)
-    print "Calibration finished!"
+    print("Calibration finished!")
     time.sleep(1)
 
 
@@ -101,7 +95,7 @@ def get_marker_object(mid, ur5 = None):
             if(ur5.at_home == False):
                 ur5.home()
         time.sleep(0.1)
-        print "Marker " + str(mid) + " not found. Waiting..."
+        print("Marker " + str(mid) + " not found. Waiting...")
         markers = get_markers()
 
 def get_marker_object_fast(mid, ur5 = None):
@@ -119,7 +113,7 @@ def get_marker_object_fast(mid, ur5 = None):
             if(ur5.at_home == False):
                 ur5.home()
         time.sleep(0.1)
-        print "Marker " + str(mid) + " not found in fast markers. Waiting..."
+        print("Marker " + str(mid) + " not found in fast markers. Waiting...")
         #lock.acquire()
         markers = currentMarkers
         #lock.release()
@@ -146,7 +140,7 @@ def get_vacant_position(markers, radius, pri_moves=None, future_pos=None):
     # and should somehow be made general or configurable
     cnt_order = [markers[0], markers[2], markers[3], markers[1]]
     corners = np.array([[int(m.center()[0]), int(m.center()[1])] for m in cnt_order])
-    print corners
+    print(corners)
     rect = cv2.boundingRect(corners)
     subdiv = cv2.Subdiv2D(rect)
     for m in markers:
@@ -172,7 +166,7 @@ def get_vacant_position(markers, radius, pri_moves=None, future_pos=None):
 
 _counter = 0
 
-class TrackerFai(threading.Thread):
+class Tracker(threading.Thread):
 
 
     def __init__(self, mid, transform, mid_aux = 0, video_source=1, capture=True, show=False, debug=False):
@@ -193,7 +187,7 @@ class TrackerFai(threading.Thread):
         cv2.setUseOptimized(True)
 
 
-        print "starting Tracker, video source: ", self.source
+        print("starting Tracker, video source: ", self.source)
         self.cap = cv2.VideoCapture(self.source)
         self.cap.set(3, 1920)#1920
         self.cap.set(4, 1080)#1080
@@ -228,7 +222,7 @@ class TrackerFai(threading.Thread):
                     #print(file)
                     photos+=1
             name = '../images/images_cal/markers/' + str( _counter%photos) + '.jpg'
-            print "processing image ", name
+            print("processing image ", name)
             _counter += 1
             time.sleep(1)
             cv2.waitKey(0)
@@ -315,7 +309,7 @@ class TrackerFai(threading.Thread):
         for i in range(self.filterLen):
             m = self._getMarkers()
             self.lastMarkers.append(m)
-        print "Last markers len: " + str(len(self.lastMarkers))
+        print("Last markers len: " + str(len(self.lastMarkers)))
 
 
         while(True):
@@ -343,7 +337,7 @@ class TrackerFai(threading.Thread):
                     self.originCalibrationMarkers.append(mTmp)
 
             if(performCalibration == True):
-                print "Trying to calibrate"
+                print("Trying to calibrate")
                 if self.areCornerMarkersWellPlaced(filteredMarkers) == True:
                     calibration.redo_transform(filteredMarkers)
                     self.transform, _, self.height = calibration.restore()
@@ -682,9 +676,9 @@ class TrackerFai(threading.Thread):
         if(m4.realxy()[1] > -0.45 and m4.realxy()[1] < -0.55):
             return False
 
-        print "Corners: "
-        print m1.realxy()
-        print m2.realxy()
-        print m3.realxy()
-        print m4.realxy()
+        print("Corners: ")
+        print(m1.realxy())
+        print(m2.realxy())
+        print(m3.realxy())
+        print(m4.realxy())
         return True

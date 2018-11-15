@@ -1,5 +1,5 @@
 #! /usr/bin/python
-from TrackerFai import get_marker_object, TrackerFai, get_markers
+from Tracker import get_marker_object, TrackerFai, get_markers
 import marker
 
 import time
@@ -20,7 +20,7 @@ if __name__ == "__main__":
     capture=False
     show=True
     debug = False
-    thread1 = TrackerFai(mid, transform, mid_aux , video_source, capture, show, debug)
+    thread1 = Tracker(mid, transform, mid_aux , video_source, capture, show, debug)
     # Start new Threads
     thread1.start()
 
