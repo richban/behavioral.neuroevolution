@@ -24,10 +24,8 @@ if __name__ == "__main__":
     # Start new Threads
     thread1.start()
 
-    while(True):
-        continue
-    # for i in range(100):
-    #     time.sleep(1)
-    #     marker = get_marker_object(5)
-    #     if marker is not None:
-    #         print(marker.orientation())
+    for i in range(100):
+        time.sleep(1)
+        marker = get_marker_object(5)
+        if marker is not None:
+            print(marker.orientation())

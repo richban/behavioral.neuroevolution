@@ -14,7 +14,7 @@ import time
 import os
 from collections import deque
 import math
-
+import functools as f
 
 lock = threading.Lock()
 safeMarkers = []
@@ -211,7 +211,7 @@ class Tracker(threading.Thread):
         return (idx, marker)
 
     def _getMarkers(self):
-        import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         global safeMarkers
         global image
         global currentMarkers
@@ -297,6 +297,7 @@ class Tracker(threading.Thread):
         if self.capture:
             cv2.imwrite('foundMarkers.jpg', thresh)
         return markers
+    
     def run(self):
         global lock
         global safeMarkers
@@ -561,8 +562,8 @@ class Tracker(threading.Thread):
         if len(sub) > 4:
             sub.sort(key=len, reverse=True)
             join = [n for s in sub for n in s]
-            seq = seq + reduce(lambda x, y: x + y, map(str, join))
-            if marker_trees.has_key(seq):
+            seq = seq + f.reduce(lambda x, y: x + y, map(str, join))
+            if seq in marker_trees:
                 m = Marker(marker_trees[seq], contours[start], l1, l2, self.transform, self.height)
 
                 #Check ouside countour
@@ -628,16 +629,16 @@ class Tracker(threading.Thread):
                 #print "Marker ", m.mid, " found"
 
         repeat = False
-        if not md.has_key(1):
+        if 1 not in md:
             #print("ERR: Marker 1 missing.")
             repeat = True
-        if not md.has_key(2):
+        if 2 not in md:
             #print("ERR: Marker 2 missing.")
             repeat = True
-        if not md.has_key(3):
+        if 3 not in md:
             #print("ERR: Marker 3 missing.")
             repeat = True
-        if not md.has_key(4):
+        if 4 not in md:
             #print("ERR: Marker 4 missing.")
             repeat = True
         if len(mu) is not 4:
