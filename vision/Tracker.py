@@ -59,23 +59,23 @@ marker_trees = small_markers
 
 # RMS=0.35
 cmat = np.array([[1069.393562444551, 0.0, 594.979364987246],
-                [0.0, 1069.2071530333799, 427.54396736819604],
-                [0.0, 0.0, 1.0]])
+                 [0.0, 1069.2071530333799, 427.54396736819604],
+                 [0.0, 0.0, 1.0]])
 
-cdist = np.array( [[-0.008223905370418273],
-                    [-0.5684443990011243],
-                    [0.009909930203826769],
-                    [0.00044666252383880796],
-                    [1.4732231718761766]])
+cdist = np.array([[-0.008223905370418273],
+                  [-0.5684443990011243],
+                  [0.009909930203826769],
+                  [0.00044666252383880796],
+                  [1.4732231718761766]])
 
 
 def calibrate():
     global performCalibration
     performCalibration = True
-    
-    while(performCalibration == True):
+
+    while(performCalibration):
         time.sleep(0.1)
-    
+
     print("Calibration finished!")
     time.sleep(1)
 
@@ -84,14 +84,15 @@ def get_markers():
     lock.acquire()
     markers = safeMarkers
     lock.release()
-    
+
     return markers
 
-def get_marker_object(mid, ur5 = None):
+
+def get_marker_object(mid, ur5=None):
     idx = -1
     marker = None
     markers = get_markers()
-    
+
     while marker is None:
         for i, m in enumerate(markers):
             if mid == m.mid:
@@ -103,92 +104,119 @@ def get_marker_object(mid, ur5 = None):
         print("Marker " + str(mid) + " not found. Waiting...")
         markers = get_markers()
 
-def get_marker_object_fast(mid, ur5 = None):
+
+def get_marker_object_fast(mid, ur5=None):
     global currentMarkers
     idx = -1
     marker = None
     # lock.acquire()
     markers = currentMarkers
     # lock.release()
-    
+
     while marker is None:
         for i, m in enumerate(markers):
             if mid == m.mid:
                 return m
-        
+
         if(ur5 is not None):
             if(ur5.at_home == False):
                 ur5.home()
-        
+
         time.sleep(0.1)
         print("Marker " + str(mid) + " not found in fast markers. Waiting...")
-        #lock.acquire()
+        # lock.acquire()
         markers = currentMarkers
-        #lock.release()
-
+        # lock.release()
 
 
 def euclidian_distance(p1, p2):
-    dist = sqrt(pow(fabs(p1[0]-p2[0]),2)+pow(fabs(p1[1]-p2[1]),2))
+    dist = sqrt(pow(fabs(p1[0] - p2[0]), 2) + pow(fabs(p1[1] - p2[1]), 2))
     return dist
+
 
 def inscribed_circle(p1, p2, p3):
     """Draw circle around markers"""
     a = euclidian_distance(p1, p2)
     b = euclidian_distance(p1, p3)
     c = euclidian_distance(p2, p3)
-    
+
     p = a + b + c
     k = 0.5 * p
-    r = (sqrt(k * (k - a) * (k - b) *(k - c))) / k
-    
+    r = (sqrt(k * (k - a) * (k - b) * (k - c))) / k
+
     ox = ((a * p3[0]) + (b * p2[0]) + (c * p1[0])) / p
     oy = ((a * p3[1]) + (b * p2[1]) + (c * p1[1])) / p
-    
+
     return (r, (int(ox), int(oy)))
+
 
 def get_vacant_position(markers, radius, pri_moves=None, future_pos=None):
     """TODO: the ordering is hardwired to the current corner marker layout
     and should somehow be made general or configurable
     """
     cnt_order = [markers[0], markers[2], markers[3], markers[1]]
-    corners = np.array([[int(m.center()[0]), int(m.center()[1])] for m in cnt_order])
-    
+    corners = np.array([[int(m.center()[0]), int(m.center()[1])]
+                        for m in cnt_order])
+
     print(corners)
     rect = cv2.boundingRect(corners)
     subdiv = cv2.Subdiv2D(rect)
-    
+
     for m in markers:
         if pri_moves is not None and future_pos is not None and m.mid in pri_moves:
             real_xy = future_pos[m.mid][0]
-            screen_xy = np.dot( np.linalg.inv(m.transform), [real_xy[0], real_xy[1], 1])
+            screen_xy = np.dot(
+                np.linalg.inv(
+                    m.transform), [
+                    real_xy[0], real_xy[1], 1])
             # TODO: Normalize screen_xy
             subdiv.insert((int(screen_xy[0]), int(screen_xy[1])))
         else:
             subdiv.insert(m.center())
-    
+
     triangleList = subdiv.getTriangleList()
-    
+
     for t in triangleList:
         pt1 = (t[0], t[1])
         pt2 = (t[2], t[3])
         pt3 = (t[4], t[5])
-        
-        if cv2.pointPolygonTest(corners, pt1, False) >= 0 and cv2.pointPolygonTest(
-                corners, pt2, False) >= 0 and cv2.pointPolygonTest(corners, pt3, False) >= 0:
-            r, incenter = inscribed_circle((t[0], t[1]), (t[2], t[3]), (t[4], t[5]))
-            
+
+        if cv2.pointPolygonTest(
+                corners,
+                pt1,
+                False) >= 0 and cv2.pointPolygonTest(
+                corners,
+                pt2,
+                False) >= 0 and cv2.pointPolygonTest(
+                corners,
+                pt3,
+                False) >= 0:
+            r, incenter = inscribed_circle(
+                (t[0], t[1]), (t[2], t[3]), (t[4], t[5]))
+
             if r >= radius:
                 # return pixel and robot coordinates of vacant position
-                return (incenter, np.dot(markers[0].transform, [incenter[0], incenter[1], 1.0]))
+                return (
+                    incenter, np.dot(
+                        markers[0].transform, [
+                            incenter[0], incenter[1], 1.0]))
     return None
+
 
 _counter = 0
 
+
 class Tracker(threading.Thread):
 
-
-    def __init__(self, mid, transform, mid_aux = 0, video_source=1, capture=True, show=False, debug=False):
+    def __init__(
+            self,
+            mid,
+            transform,
+            mid_aux=0,
+            video_source=1,
+            capture=True,
+            show=False,
+            debug=False):
         threading.Thread.__init__(self)
         self.mid = mid
         self.mid_aux = mid_aux
@@ -197,20 +225,19 @@ class Tracker(threading.Thread):
         self.capture = capture
         self.show = show
         self.fps = 0
-        self.lastMarkers=deque([])
-        self.filterLen=8
-        self.debug=debug
+        self.lastMarkers = deque([])
+        self.filterLen = 8
+        self.debug = debug
         self.height = -10
         self.originCalibrationMarkers = []
 
         cv2.setUseOptimized(True)
 
-
         print("starting Tracker, video source: ", self.source)
         self.cap = cv2.VideoCapture(self.source)
-        self.cap.set(3, 1920) # Width
-        self.cap.set(4, 1080) # Height
-        self.cap.set(37, 1) # turn the autofocus off, save and comment
+        self.cap.set(3, 1920)  # Width
+        self.cap.set(4, 1080)  # Height
+        self.cap.set(37, 1)  # turn the autofocus off, save and comment
         self.cap.set(cv2.CAP_PROP_FPS, 15)
         self.cap.read()
 
@@ -218,8 +245,8 @@ class Tracker(threading.Thread):
         self.cap.release()
 
     def _get_marker_object(self, mid, markers):
-        """ 
-        returns the given Marker object by id 
+        """
+        returns the given Marker object by id
         """
         idx = -1
         marker = None
@@ -234,34 +261,34 @@ class Tracker(threading.Thread):
         global safeMarkers
         global image
         global currentMarkers
-        
-        ret, frame = self.cap.read() 
-       
+
+        ret, frame = self.cap.read()
+
         # process markers from images
-        if self.debug == True:
+        if self.debug:
             global _counter
             photosi = 0
 
             for file in os.listdir("../images/images_cal/markers/"):
                 if file.endswith(".jpg"):
-                    photos+=1
+                    photos += 1
 
-            name = '../images/images_cal/markers/' + str(_counter%photos) + '.jpg'
+            name = '../images/images_cal/markers/' + \
+                str(_counter % photos) + '.jpg'
             print("processing image ", name)
             _counter += 1
             time.sleep(1)
             cv2.waitKey(0)
-            frame = cv2.imread(name,cv2.IMREAD_COLOR)
-
+            frame = cv2.imread(name, cv2.IMREAD_COLOR)
 
         # undist = cv2.remap(frame, self.mapx, self.mapy, cv2.INTER_LINEAR)
-        # undistort the image 
+        # undistort the image
         undist = cv2.undistort(frame, self.cmat2, cdist)
         # undist = cv2.pyrDown(undist)
-        
+
         thresh = self.preprocess_image(undist)
-        image =  undist # cv2.cvtColor(thresh, cv2.COLOR_RGB2GRAY)
-        
+        image = undist  # cv2.cvtColor(thresh, cv2.COLOR_RGB2GRAY)
+
         if self.capture:
             cv2.imwrite('raw.jpg', frame)
             cv2.imwrite('undist.jpg', undist)
@@ -284,23 +311,28 @@ class Tracker(threading.Thread):
             for m in markers:
                 cv2.circle(image, m.center(), 50, (255, 255, 255), 3)
                 cx, cy = m.center()
-                cv2.putText(image, str(m.mid), (cx + 25, cy + 25), font, 1, (255, 255, 255), 2, cv2.LINE_AA)
-            cv2.putText(image, str(round(self.fps,2)), (10, 25), font, 1, (255, 255, 255), 2, cv2.LINE_AA)
+                cv2.putText(image, str(m.mid), (cx + 25, cy + 25),
+                            font, 1, (255, 255, 255), 2, cv2.LINE_AA)
+            cv2.putText(image, str(round(self.fps, 2)), (10, 25),
+                        font, 1, (255, 255, 255), 2, cv2.LINE_AA)
 
             for m in safeMarkers:
                 cx, cy = m.center()
                 center = (int(round(cx)), int(round(cy)))
-                
-                if m.isMoving == False:
+
+                if not m.isMoving:
                     cv2.circle(image, center, 60, (255, 0, 0), 3)
                 else:
                     cv2.circle(image, center, 60, (255, 0, 0), 7)
-                
+
                 angle = m.orientation()
                 l = 40
-                pt2 = (int(round(cx + l*math.cos(angle))), int(round(cy + l*math.sin(angle))))
+                pt2 = (int(round(cx + l * math.cos(angle))),
+                       int(round(cy + l * math.sin(angle))))
                 cv2.line(image, center, pt2, (255, 0, 0), 2, cv2.LINE_AA)
-                cv2.putText(image, str(m.mid), (int(round(cx)) + 45, int(round(cy)) + 45), font, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                cv2.putText(image, str(m.mid), (int(round(cx)) +
+                                                45, int(round(cy)) +
+                                                45), font, 1, (255, 0, 0), 2, cv2.LINE_AA)
 
             idx, m = self._get_marker_object(5, currentMarkersTmp)
 
@@ -310,9 +342,12 @@ class Tracker(threading.Thread):
                 cv2.circle(image, center, 60, (0, 0, 255), 3)
                 angle = m.orientation()
                 l = 40
-                pt2 = (int(round(cx+l*math.cos(angle))), int(round(cy + l*math.sin(angle))))
+                pt2 = (int(round(cx + l * math.cos(angle))),
+                       int(round(cy + l * math.sin(angle))))
                 cv2.line(image, center, pt2, (0, 0, 255), 2, cv2.LINE_AA)
-                cv2.putText(image, str(m.mid), (int(round(cx)) + 45, int(round(cy)) + 45), font, 1, (0, 0, 255), 2, cv2.LINE_AA)
+                cv2.putText(image, str(m.mid), (int(round(cx)) +
+                                                45, int(round(cy)) +
+                                                45), font, 1, (0, 0, 255), 2, cv2.LINE_AA)
 
             for m in self.originCalibrationMarkers:
                 x, y = m.center()
@@ -326,24 +361,24 @@ class Tracker(threading.Thread):
             cv2.imwrite('foundMarkers.jpg', thresh)
 
         return markers
-    
+
     def run(self):
         global lock
         global safeMarkers
         global performCalibration
 
-
         # Find the undistorsion parameters
-        self.cmat2, self.roi = cv2.getOptimalNewCameraMatrix(cmat, cdist, (1920,1080), 0, (1920,1080))
-        self.mapx, self.mapy = cv2.initUndistortRectifyMap(self.cmat2, cdist, None, self.cmat2, (1920,1080), 5)
+        self.cmat2, self.roi = cv2.getOptimalNewCameraMatrix(
+            cmat, cdist, (1920, 1080), 0, (1920, 1080))
+        self.mapx, self.mapy = cv2.initUndistortRectifyMap(
+            self.cmat2, cdist, None, self.cmat2, (1920, 1080), 5)
 
         # Fill the markers array
         for i in range(self.filterLen):
             m = self._getMarkers()
             self.lastMarkers.append(m)
-        
-        print("Last markers len: " + str(len(self.lastMarkers)))
 
+        print("Last markers len: " + str(len(self.lastMarkers)))
 
         while(True):
             start = time.time()
@@ -359,40 +394,40 @@ class Tracker(threading.Thread):
             safeMarkers = filteredMarkers
             lock.release()
             end = time.time()
-            self.fps = self.fps * 9/10 + 1/(10*(end-start))
+            self.fps = self.fps * 9 / 10 + 1 / (10 * (end - start))
 
-            if (self.transform is None and self.areCornersDetected(filteredMarkers) == True):
+            if (self.transform is None and self.areCornersDetected(filteredMarkers)):
                 calibration.redo_transform(filteredMarkers)
                 self.transform, _, self.height = calibration.restore()
 
-                for i in range (4):
-                    _, mTmp = self._get_marker_object(i+1, filteredMarkers)
+                for i in range(4):
+                    _, mTmp = self._get_marker_object(i + 1, filteredMarkers)
                     self.originCalibrationMarkers.append(mTmp)
 
-            if(performCalibration == True):
+            if(performCalibration):
                 print("Trying to calibrate")
 
-                if self.areCornerMarkersWellPlaced(filteredMarkers) == True:
+                if self.areCornerMarkersWellPlaced(filteredMarkers):
                     calibration.redo_transform(filteredMarkers)
                     self.transform, _, self.height = calibration.restore()
-                    self.originCalibrationMarkers=[]
+                    self.originCalibrationMarkers = []
 
-                    for i in range (4):
-                        _, mTmp = self._get_marker_object(i+1, filteredMarkers)
+                    for i in range(4):
+                        _, mTmp = self._get_marker_object(
+                            i + 1, filteredMarkers)
                         self.originCalibrationMarkers.append(mTmp)
                     performCalibration = False
 
-
     def filterMarkers(self):
 
-        tempM=[None]*13
-        filteredMarkers=[]
+        tempM = [None] * 13
+        filteredMarkers = []
 
         for i in range(len(self.lastMarkers)):
             for m in self.lastMarkers[i]:
                 if m.mid < 13:
-                    if tempM[m.mid] == None:
-                        tempM[m.mid]=[]
+                    if tempM[m.mid] is None:
+                        tempM[m.mid] = []
                     tempM[m.mid].append(m)
 
         for i in range(13):
@@ -404,7 +439,7 @@ class Tracker(threading.Thread):
                 angleA3 = np.zeros(len(tempM[i]))
                 angleA4 = np.zeros(len(tempM[i]))
 
-                #Get the coordinates and the angle and store them in np arrays
+                # Get the coordinates and the angle and store them in np arrays
                 for j in range(len(tempM[i])):
                     cx, cy = tempM[i][j].center()
                     cxA[j] = cx
@@ -416,11 +451,11 @@ class Tracker(threading.Thread):
                     angleA3[j] = a3
                     angleA4[j] = a4
 
-                #Detect outliers
+                # Detect outliers
                 data = [cxA, cyA, angleA1, angleA2, angleA3, angleA4]
                 outliers = self.calculateOutliers(data)
 
-                #Remove outliers
+                # Remove outliers
                 cxA = np.delete(cxA, outliers)
                 cyA = np.delete(cyA, outliers)
                 angleA1 = np.delete(angleA1, outliers)
@@ -428,9 +463,15 @@ class Tracker(threading.Thread):
                 angleA3 = np.delete(angleA3, outliers)
                 angleA4 = np.delete(angleA4, outliers)
 
-                #Create the new Markers
+                # Create the new Markers
                 if(len(cxA) > 0):
-                    m = Marker(i, None, None, None, self.transform, self.height)
+                    m = Marker(
+                        i,
+                        None,
+                        None,
+                        None,
+                        self.transform,
+                        self.height)
                     a1M = np.mean(angleA1)
                     a2M = np.mean(angleA2)
                     a3M = np.mean(angleA3)
@@ -438,9 +479,9 @@ class Tracker(threading.Thread):
                     newAngle = Marker.angle_between_points(a1M, a2M, a3M, a4M)
                     m.updateMarker(np.mean(cxA), np.mean(cyA), newAngle)
 
-                    #detect movement
-                    z = len(angleA1)-1
-                    if((abs(angleA1[z] - angleA1[0]) > 3)  or (abs(angleA2[z] - angleA2[0]) > 3) or (abs(angleA3[z] - angleA3[0]) > 3)  or (abs(angleA4[z] - angleA4[0]) > 3)):
+                    # detect movement
+                    z = len(angleA1) - 1
+                    if((abs(angleA1[z] - angleA1[0]) > 3) or (abs(angleA2[z] - angleA2[0]) > 3) or (abs(angleA3[z] - angleA3[0]) > 3) or (abs(angleA4[z] - angleA4[0]) > 3)):
                         m.isMoving = True
 
                     filteredMarkers.append(m)
@@ -453,16 +494,17 @@ class Tracker(threading.Thread):
         index5, m5 = self._get_marker_object(5, markers)
         if(m5 is not None):
             index6, m6 = self._get_marker_object(6, markers)
-            
+
             if(m6 is not None):
                 cx5, cy5 = m5.center()
                 cx6, cy6 = m6.center()
                 angle5 = m5.orientation()
                 angle6 = m6.orientation()
                 newAngle = Marker.angle_between_points(cx5, cy5, cx6, cy6)
-                m5.updateMarker((cx5+cx6)/2, (cy5+cy6)/2, newAngle)
+                m5.updateMarker((cx5 + cx6) / 2, (cy5 + cy6) / 2, newAngle)
             else:
-                # If we find only the marker 5 we cannot calcualte the position of the robot
+                # If we find only the marker 5 we cannot calcualte the position
+                # of the robot
                 markers.pop(index5)
 
     def calculateOutliers(self, data):
@@ -470,24 +512,22 @@ class Tracker(threading.Thread):
         iL = np.percentile(data, 25, axis=1)
         iH = np.percentile(data, 75, axis=1)
 
-        outlierA=[]
+        outlierA = []
         for i in range(len(data[0])):
-            outlier=False
+            outlier = False
             for j in range(3):
-                err = abs(data[j][i]-median[j])
-                if(err > 1.5*(iH[j]-iL[j])):
-                    outlier=True
+                err = abs(data[j][i] - median[j])
+                if(err > 1.5 * (iH[j] - iL[j])):
+                    outlier = True
             if(outlier):
                 outlierA.append(i)
         return outlierA
-
-
 
     def preprocess_image(self, img, blur=False):
         """
         Preprocess the image frame
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        
+
         if blur:
             blur = cv2.GaussianBlur(gray, (5, 5), 0)
             ret, th = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
@@ -496,28 +536,26 @@ class Tracker(threading.Thread):
 
         img = cv2.medianBlur(img,3)
         """
-        
+
         img = cv2.bilateralFilter(img, 5, 100, 100)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        
+
         # ret,th1 = cv2.threshold(img,127, 255,cv2.THRESH_BINARY)
         # th = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY,13,3)
-        
-        th = cv2.adaptiveThreshold(img,255,
-                cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-                cv2.THRESH_BINARY ,23,3)
+
+        th = cv2.adaptiveThreshold(img, 255,
+                                   cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                                   cv2.THRESH_BINARY, 23, 3)
 
         kernel = np.ones((3, 3), np.uint8)
-        th = cv2.erode(th, kernel, iterations = 1)
+        th = cv2.erode(th, kernel, iterations=1)
         kernel = np.ones((2, 2), np.uint8)
-        th = cv2.dilate(th, kernel, iterations = 1)
- 
-        return th
+        th = cv2.dilate(th, kernel, iterations=1)
 
+        return th
 
     def segmentation(self, img):
         return cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
 
     def find_markers(self, contours, hierarchy, size, transform=None):
         """Find and id markers in image contours
@@ -566,7 +604,8 @@ class Tracker(threading.Thread):
             t.append(depth)
             if depth == 2:
                 l2.append(contours[n])
-            # Parent since child is next node - increment depth and put parent on stack
+            # Parent since child is next node - increment depth and put parent
+            # on stack
             if chd == n + 1:
                 depth = depth + 1
                 if depth > 2:
@@ -595,11 +634,17 @@ class Tracker(threading.Thread):
             join = [n for s in sub for n in s]
             seq = seq + f.reduce(lambda x, y: x + y, map(str, join))
             if seq in marker_trees:
-                m = Marker(marker_trees[seq], contours[start], l1, l2, self.transform, self.height)
+                m = Marker(
+                    marker_trees[seq],
+                    contours[start],
+                    l1,
+                    l2,
+                    self.transform,
+                    self.height)
 
                 # Check ouside countour
                 font = cv2.FONT_HERSHEY_SIMPLEX
-                (xC, yC),radiusC = cv2.minEnclosingCircle(contours[start])
+                (xC, yC), radiusC = cv2.minEnclosingCircle(contours[start])
                 outRadius = radiusC
                 outX = xC
                 outY = yC
@@ -613,8 +658,9 @@ class Tracker(threading.Thread):
 
                 # Check leaves l1 and l2
                 for leaf in range(len(l1)):
-                    (xC, yC),radiusC = cv2.minEnclosingCircle(l1[leaf])
-                    dist = math.sqrt((outX - xC)*(outX - xC) + (outY - yC)*(outY - yC))
+                    (xC, yC), radiusC = cv2.minEnclosingCircle(l1[leaf])
+                    dist = math.sqrt((outX - xC) * (outX - xC) +
+                                     (outY - yC) * (outY - yC))
                     if((radiusC > leafMaxRadius) or dist > outRadius):
                         return (False, None)
                     center = (int(xC), int(yC))
@@ -623,8 +669,9 @@ class Tracker(threading.Thread):
                     # cv2.putText(image, str(radiusC), center, font, 1, (0,0,255), 2, cv2.LINE_AA)
 
                 for leaf in range(len(l2)):
-                    (xC, yC),radiusC = cv2.minEnclosingCircle(l2[leaf])
-                    dist = math.sqrt((outX - xC)*(outX - xC) + (outY - yC)*(outY - yC))
+                    (xC, yC), radiusC = cv2.minEnclosingCircle(l2[leaf])
+                    dist = math.sqrt((outX - xC) * (outX - xC) +
+                                     (outY - yC) * (outY - yC))
                     if((radiusC > leafMaxRadius) or dist > outRadius):
                         return (False, None)
                     center = (int(xC), int(yC))
@@ -632,28 +679,29 @@ class Tracker(threading.Thread):
                     cv2.circle(image, center, radiusC, (0, 255, 255), -1)
                     # cv2.putText(image, str(radiusC), center, font, 1, (0,255,255), 2, cv2.LINE_AA)
 
-                #Draw the outer contour
-                    cv2.circle(image, (int(outX), int(outY)), int(outRadius), (0, 255, 0), 1)
-                    cv2.putText(image, str(int(outRadius)), (int(outX), int(outY)), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
+                # Draw the outer contour
+                    cv2.circle(image, (int(outX), int(outY)),
+                               int(outRadius), (0, 255, 0), 1)
+                    cv2.putText(image, str(int(outRadius)), (int(outX), int(
+                        outY)), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
                 return (True, m)
             else:
                 return (False, None)
         else:
             return (False, None)
 
-
-    def areCornersDetected(self, ms):
+    def areCornersDetected(self, markers):
         repeat = True
         print(len(ms))
 
         md = {}
         mu = {}
-        index=0
-        for m in ms:
+        index = 0
+        for m in markers:
             if (m.mid <= 4 and m.mid > 0):
                 mu[index] = m
                 md[m.mid] = m
-                index +=1
+                index += 1
 
         repeat = False
         if 1 not in md:
@@ -684,25 +732,25 @@ class Tracker(threading.Thread):
 
         if(m1.realxy()[0] > 0.3 and m1.realxy()[0] < 0.2):
             return False
-        
+
         if(m1.realxy()[1] > -0.45 and m1.realxy()[1] < -0.55):
             return False
-        
+
         if(m2.realxy()[0] > 0.3 and m2.realxy()[0] < 0.2):
             return False
-        
+
         if(m2.realxy()[1] < 0.45 and m2.realxy()[1] > 0.55):
             return False
-        
+
         if(m3.realxy()[0] > 0.8 and m3.realxy()[0] < 0.7):
             return False
-        
+
         if(m3.realxy()[1] < 0.45 and m3.realxy()[1] > 0.55):
             return False
 
         if(m4.realxy()[0] > 0.8 and m4.realxy()[0] < 0.7):
             return False
-        
+
         if(m4.realxy()[1] > -0.45 and m4.realxy()[1] < -0.55):
             return False
 
@@ -711,5 +759,5 @@ class Tracker(threading.Thread):
         print(m2.realxy())
         print(m3.realxy())
         print(m4.realxy())
-        
+
         return True

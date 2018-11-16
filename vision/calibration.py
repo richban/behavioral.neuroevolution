@@ -43,6 +43,17 @@ def save(transform, poses, height, cfile='cdata.json'):
             json.dump(obj, f)
 
 
+def restore(cfile='cdata.json'):
+    if(os.path.isfile(cfile)):
+        with open(cfile, 'r') as f:
+            data = json.load(f)
+    else:
+        cfile = "./" + cfile
+        with open(cfile, 'r') as f:
+            data = json.load(f)
+    return (np.array(data['transform']), data['poses'], data['height'])
+
+
 def redo_transform(markers):
     poses = [[0.0, 0.0, 0.0],
              [0.0, 0.77, 0.0],
