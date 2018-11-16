@@ -12,11 +12,10 @@ __author__ = "anfv"
 __date__ = "$16-Nov-2016 19:16:33$"
 
 if __name__ == "__main__":
-    print("Hello World")
     mid= 5
     transform=None
     mid_aux = 0
-    video_source = 0
+    video_source = 1
     capture=False
     show=True
     debug = False
@@ -26,6 +25,6 @@ if __name__ == "__main__":
 
     for i in range(100):
         time.sleep(1)
-        marker = get_marker_object(5)
+        marker = get_marker_object(9)
         if marker is not None:
             print(marker.orientation())
