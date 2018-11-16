@@ -1,4 +1,5 @@
-#
+#! /usr/bin/python
+
 # TrackerFai module using multi threading
 import threading
 from copy import deepcopy
@@ -210,6 +211,7 @@ class Tracker(threading.Thread):
         return (idx, marker)
 
     def _getMarkers(self):
+        import pdb; pdb.set_trace()
         global safeMarkers
         global image
         global currentMarkers

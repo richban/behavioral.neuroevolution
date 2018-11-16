@@ -82,9 +82,9 @@ celerybeat-schedule
 *.sage.py
 
 # images
-*/**/*.jpg
-*/**/*.jpeg
-*/**/*.png
+# */**/*.jpg
+# */**/*.jpeg
+# */**/*.png
 
 # Environments
 .env

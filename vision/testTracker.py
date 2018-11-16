@@ -1,5 +1,5 @@
 #! /usr/bin/python
-from Tracker import get_marker_object, TrackerFai, get_markers
+from Tracker import get_marker_object, Tracker, get_markers
 import marker
 
 import time
@@ -19,13 +19,15 @@ if __name__ == "__main__":
     video_source = 0
     capture=False
     show=True
-    debug = False
+    debug = True
     thread1 = Tracker(mid, transform, mid_aux , video_source, capture, show, debug)
     # Start new Threads
     thread1.start()
 
-    for i in range(100):
-        time.sleep(1)
-        marker = get_marker_object(5)
-        if marker is not None:
-            print(marker.orientation())
+    while(True):
+        continue
+    # for i in range(100):
+    #     time.sleep(1)
+    #     marker = get_marker_object(5)
+    #     if marker is not None:
+    #         print(marker.orientation())
