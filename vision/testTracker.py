@@ -19,7 +19,7 @@ if __name__ == "__main__":
     video_source = 0
     capture=False
     show=True
-    debug = True
+    debug = False
     thread1 = Tracker(mid, transform, mid_aux , video_source, capture, show, debug)
     # Start new Threads
     thread1.start()

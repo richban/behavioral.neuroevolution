@@ -36,7 +36,7 @@ def save(transform, poses, height, cfile='cdata.json'):
                    'poses': poses, 'height': height}
             json.dump(obj, f)
     else:
-        cfile = "../" + cfile
+        cfile = "./" + cfile
         with open(cfile, 'w') as f:
             obj = {'transform': transform.tolist(),
                    'poses': poses, 'height': height}
@@ -44,7 +44,11 @@ def save(transform, poses, height, cfile='cdata.json'):
 
 
 def redo_transform(markers):
-    poses = [[0, 0, 0], [0, 77, 0], [116, 77, 0], [116, 0, 0]]
+    poses = [[0.0, 0.0, 0.0],
+             [0.0, 0.77, 0.0],
+             [1.16, 0.77, 0.0],
+             [1.16, 0.0, 0.0]]
+
     transform = get_transform(markers, poses)
     height = np.average(poses, 0)[2]
     save(transform, poses, height)
