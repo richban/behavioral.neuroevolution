@@ -125,6 +125,8 @@ The six tasks \emph{Forward, Backward, Turn-left, Turn-right, Jump, Crouch} need
   \end{subfigure}
 \end{figure}
 
+In contrast to previous form of neuroevolution techniques with multi-objective optimization algorithms encouraging multimodal behaviors Stanley, Bryant and Miikkulaine presented an experiment named \emph{The Dangerous Foraging Domain}\footnote{\url{http://nn.cs.utexas.edu/downloads/papers/stanley.cec03.pdf}} which does not explicitly focus on developing multimodal behavior, however they produced agents that could potentially exhibit multimodal behavior. The experiment models a natural foraging environment. Where an agent enters a new region, some food may be edible or poisonous, or edible food could turn into poisonous one. The agent can't tell whether the food is edible without trying it first. Thus after the robot consume a piece of food has to decide whether it should continue foraging or a should avoid all food. The challenge in constructing such a networks is by the fact that in has to evolve policies for foraging of both safe and poisonous food, including the ability of abandoning policy when it encounter poison. The neural networks only received a pain and pleasure signal. The experiments where designed to test whether adaptive synapses are necessary for adaption. According to their results, the networks using recurrent connections performed well, since the recurrent connection on the out output activated by the pain sensor made the robot to spin away from the robot. This example demonstrates how multimodal behavior may be evolved without the aid of special algorithms aimed at doing so.
+
 \section{Algorithms}
 
 \subsection{Evolutionary Algorithms}
