@@ -366,3 +366,4 @@ TSWLatexianTemp*
 
 # custom
 calibration.yaml
+/report/**/*
