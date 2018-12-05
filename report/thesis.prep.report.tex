@@ -150,6 +150,21 @@ In \emph{Battle Domain} \cite{schrum2010evolving}, Schrum designed a multi-objec
 
 To scale up these methods developed so far, Schrum and Miikkulainen \cite{schrummiikk2014evolving} used a popular arcade game Ms. Pac-Man which consisted of blending tasks to evaluate several approaches of multiobjective neuroevolution and modular networks including TUG. These methods not only succeeded evolving multimodal behaviors, but the results were far superior to the previously mentioned approaches. This indicates that modular networks enable to discover multimodal behaviors, and that TUG helps to guide the evolutionary process to achieve high performance.
 
+
+\section{Approach}
+
+This thesis aims to develop method precisely to discover multimodal behaviors on physical robot agent in a mixed reality environment. In order to produce multimodal behavior reliably, the thesis builds on pre-existing multimodal methods mentioned in the previous chapter.
+
+First, \emph{Multinetwork} technique from \cite{schrum2014evolving} will be applied to evolve neural networks combined with evolutionary multi-objective optimization algorithms, particularly \emph{NSGA-II}, so that behavioral modes and its corresponding objectives receive individual focus during the evolutionary search. This technique is powerful enough to achieved good results, particularly when the task can be completely isolated.
+
+Second, \emph{Module Mutation} will be explored further to evolve modular architectures that associate particular modules with distinct behavior modes. This technique is an attractive approach for our domain because we can introduce domains with interleaving tasks, thus the task division is not explicit and therefore not well known.
+
+Third, in order to achieve better performance and guide the evolutionary process to the right direction, we will enhance similar approach as TUG, to dynamically manage which objectives needs to receive the most focus.
+
+The simulation environment is an extension of a work by Jacobsen and Faiña, which consist of a physical arena, in which the optimization of a controller for the \emph{Thymio} robot is performed and a computer vision system. The computer vision system will be used to track objects and calculate the scalar fitness function. The entire test arena will be reproduced using a simulation software called \emph{V-REP}. This merging of real and virtual worlds will enable us to produce rich environments and visualizations, moreover enables the physical and virtual objects co-exist and interact in real time. This simulation environment will be used to create several domains for the experiments. One of the domains will consist of isolated tasks, which involve tasks where the agent will have to exhibit distinct type of behavior but the tasks are independent from each other. The second type of domain will consists of interleaving tasks. A high-level example for a domain might be where the agent behavior involve foraging, transporting resources and obstacle avoidance. This kind of domain is well-suited for demonstrating multimodal behavior.
+
+The experiments will be conducted on these domains incrementally, starting from simple behaviors to more complex ones. The aforementioned multimodal approaches will be evaluated and consistently improved until succeeding controllers emerge that exhibit multimodal behavior. The key point of the thesis is to evolve multimodal behavior on a reality-based agent, which is less explored in the research area and not to make a comparison of different approaches aimed at discovering multimodal behavior.
+
 \section{Algorithms}
 
 \subsection{Evolutionary Algorithms}
