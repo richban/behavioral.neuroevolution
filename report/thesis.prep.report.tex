@@ -80,7 +80,7 @@
 
 \begin{abstract}
 
-In machine learning field, particularly neuroevolution, evolved behaviors, that consists of distinctly different behaviors  are generally referred to as multimodal behavior. Recent work focused on developing various multi-objective evolutionary algorithms to solve multi-objective problems that are not explicitly defined as multi-objective problems. Because multimodal problems, are often too difficult to solve directly, some works exploits the combination of all possible subtask that can be optimized simultaneously on multiple subtask in order to solve the overall problem. These works often present different approaches on the same problem. Common for the projects is that they evolve the controllers using various evolutionary and neuroevolution techniques Additionally, the neural networks are combined with multi-objective optimization algorithms in order to focus on the desired objective of a given behavior. How to learn multimodal behaviors remains an interesting and difficult challenge. Taking on these challenges, this thesis aims to develop methods precisely to discover multimodal behaviors. While much of the recent projects involved optimizations in simulations, the thesis takes a further step and focus on evolving controllers using physical robot in real world test environment. Although there are many challenges to overcome in this domain, the primary motivation is to transfer from simulation to real world and show how evolution can act on real robot that has been less explored in the research area. Another novel element of the thesis, is that the reality-based optimization will involve mixed reality system. This will potentially enrich the environment and visualization moreover yield more modalities. This could prove to be useful to create various behaviors. The thesis builds on pre-existing neuroevolution algorithms and hardware components, which have been modified accordingly to the experiments. The system consists of several components, such as computer vision, to keep track about the environment and to provide fitness measurements used in fitness calculation. Furthermore, the system includes a robot on which the entire evolutionary process is performed. The system will be evaluated through series of tests that addresses the ability to evolve multimodal behavior for a single robot.
+In machine learning field, particularly neuroevolution, evolved behaviors, that consists of distinctly different behaviors  are generally referred to as multimodal behavior. Recent work focused on developing various multi-objective evolutionary algorithms to solve multi-objective problems that are not explicitly defined as multi-objective problems. Because multimodal problems, are often too difficult to solve directly, some works exploits the combination of all possible subtask that can be optimized simultaneously on multiple subtask in order to solve the overall problem. These works often present different approaches on the same problem. Common for the projects is that they evolve the controllers using various evolutionary and neuroevolution techniques Additionally, the neural networks are combined with multi-objective optimization algorithms in order to focus on the desired objective of a given behavior. How to learn multimodal behaviors remains an interesting and difficult challenge. Taking on these challenges, this thesis aims to develop method precisely to discover multimodal behaviors. While much of the recent projects involved optimizations in simulations, the thesis takes a further step and focus on evolving controllers using physical robot in real world test environment. Although there are many challenges to overcome in this domain, the primary motivation is to transfer from simulation to real world and show how evolution can act on real robot that has been less explored in the research area. Another novel element of the thesis, is that the reality-based optimization will involve mixed reality system. This will potentially enrich the environment and visualization moreover yield more modalities. This could prove to be useful to create various behaviors. The thesis builds on pre-existing neuroevolution algorithms and hardware components, which have been modified accordingly to the experiments. The system consists of several components, such as computer vision, to keep track about the environment and to provide fitness measurements used in fitness calculation. Furthermore, the system includes a robot on which the entire evolutionary process is performed. The system will be evaluated through series of tests that addresses the ability to evolve multimodal behavior for a single robot.
 
 \end{abstract}
 
@@ -315,14 +315,33 @@ The \emph{AsebaNetwork} interface allows to work with all of the nodes (robots) 
 Asebamedulla expose the interface \emph{EventFilter} which allows to manage events. An application that wants to listen to events have register events with \emph{ListenEventName} or \emph	{ListenEvent} be notified when an event occurs. The application can receive these events through the \emph{Event} signal, these events correspond to the global events of the Aseba language.
 
 
-\section{Experiments}
-
-Donec euismod iaculis pretium. Donec non massa elit. Phasellus sagittis magna et maximus dictum. Duis quis ullamcorper orci. Mauris interdum, elit eu tincidunt tempor, lectus mi venenatis purus, quis posuere tellus ex in magna. Phasellus tincidunt nibh eu tortor semper, et varius justo vulputate. Nullam dictum congue lacinia. Maecenas sagittis nulla quis leo fringilla viverra. Proin eget egestas nisl. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum a interdum tellus, a hendrerit ligula. Duis ut risus ut lacus maximus euismod. Integer quis justo sit amet sapien accumsan rutrum nec nec dolor. Aliquam laoreet scelerisque ante, quis hendrerit ipsum viverra tempor.
-
-
 \section{Summary}
 
-Donec euismod iaculis pretium. Donec non massa elit. Phasellus sagittis magna et maximus dictum. Duis quis ullamcorper orci. Mauris interdum, elit eu tincidunt tempor, lectus mi venenatis purus, quis posuere tellus ex in magna. Phasellus tincidunt nibh eu tortor semper, et varius justo vulputate. Nullam dictum congue lacinia. Maecenas sagittis nulla quis leo fringilla viverra. Proin eget egestas nisl. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum a interdum tellus, a hendrerit ligula. Duis ut risus ut lacus maximus euismod. Integer quis justo sit amet sapien accumsan rutrum nec nec dolor. Aliquam laoreet scelerisque ante, quis hendrerit ipsum viverra tempor.
+The main goal of the thesis preparation was to conduct research and to get a broad overview of the field. Despite literature review and the various approaches used to evolve multimodal behaviors, we've already managed to build and implement various components of the system. The following list summarizes all the individual parts of the thesis project that have been tackled:
+
+\begin{itemize}
+  \item V-REP simulation tool.
+  \item Physical environment, including the arena, camera and markers.
+  \item Client application which communicates with the V-REP remote API.
+  \item Client application which sends commands to Thymio robot over the Asebamedulla interface.
+  \item Camera calibration.
+  \item Vision system using OpenCV.
+  \item Simple neuroevolution run using NEAT in V-REP.
+  \item Neuroevolution on Thymio in the arena.
+\end{itemize}
+
+The further work will involve, the following tasks to face in chronological order:
+
+\begin{itemize}
+  \item Run a single obstacle avoidance behavior, including the vision system and the robotic simulator.
+  \item Create the mixed reality, so that the physical robot can interact with the physical and virtual objects.
+  \item Evolve the same obstacle avoidance behavior using HyperNEAT.
+  \item Define several domains, starting with easy tasks.
+  \item Implement the various structural approaches - \emph{Multinetwork, Mode Mutation}.
+  \item Test and validate.
+  \item Conduct experiments.
+\end{itemize}
+
 
 \medskip
 
