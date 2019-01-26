@@ -367,3 +367,4 @@ TSWLatexianTemp*
 # custom
 calibration.yaml
 /report/**/*
+.vscode/
