@@ -11,7 +11,8 @@ import numpy as np
 def plot_stats(statistics, ylog=False, view=False, filename='avg_fitness.svg'):
     """ Plots the population's average and best fitness. """
     if plt is None:
-        warnings.warn("This display is not available due to a missing optional dependency (matplotlib)")
+        warnings.warn(
+            "This display is not available due to a missing optional dependency (matplotlib)")
         return
 
     generation = range(len(statistics.most_fit_genomes))
@@ -91,7 +92,8 @@ def plot_spikes(spikes, view=False, filename=None, title=None):
 def plot_species(statistics, view=False, filename='speciation.svg'):
     """ Visualizes speciation throughout evolution. """
     if plt is None:
-        warnings.warn("This display is not available due to a missing optional dependency (matplotlib)")
+        warnings.warn(
+            "This display is not available due to a missing optional dependency (matplotlib)")
         return
 
     species_sizes = statistics.get_species_sizes()
@@ -118,7 +120,8 @@ def draw_net(config, genome, view=False, filename=None, node_names=None, show_di
     """ Receives a genome and draws a neural network with arbitrary topology. """
     # Attributes for network nodes.
     if graphviz is None:
-        warnings.warn("This display is not available due to a missing optional dependency (graphviz)")
+        warnings.warn(
+            "This display is not available due to a missing optional dependency (graphviz)")
         return
 
     if node_names is None:
@@ -185,7 +188,7 @@ def draw_net(config, genome, view=False, filename=None, node_names=None, show_di
 
     for cg in genome.connections.values():
         if cg.enabled or show_disabled:
-            #if cg.input not in used_nodes or cg.output not in used_nodes:
+            # if cg.input not in used_nodes or cg.output not in used_nodes:
             #    continue
             input, output = cg.key
             a = node_names.get(input, str(input))
@@ -193,7 +196,8 @@ def draw_net(config, genome, view=False, filename=None, node_names=None, show_di
             style = 'solid' if cg.enabled else 'dotted'
             color = 'green' if cg.weight > 0 else 'red'
             width = str(0.1 + abs(cg.weight / 5.0))
-            dot.edge(a, b, _attributes={'style': style, 'color': color, 'penwidth': width})
+            dot.edge(a, b, _attributes={
+                     'style': style, 'color': color, 'penwidth': width})
 
     dot.render(filename, view=view)
 

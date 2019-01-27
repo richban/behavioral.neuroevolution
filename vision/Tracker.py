@@ -336,7 +336,7 @@ class Tracker(threading.Thread):
                 cv2.line(image, center, pt2, (255, 0, 0), 2, cv2.LINE_AA)
                 cv2.putText(image, str(m.mid),
                             (int(round(cx)) + 45,
-                            int(round(cy)) + 45),
+                             int(round(cy)) + 45),
                             font, 1, (255, 0, 0),
                             2, cv2.LINE_AA)
 
@@ -353,7 +353,7 @@ class Tracker(threading.Thread):
                 cv2.line(image, center, pt2, (0, 0, 255), 2, cv2.LINE_AA)
                 cv2.putText(image, str(m.mid),
                             (int(round(cx)) + 45,
-                            int(round(cy)) + 45),
+                             int(round(cy)) + 45),
                             font, 1, (0, 0, 255), 2, cv2.LINE_AA)
 
             for m in self.originCalibrationMarkers:

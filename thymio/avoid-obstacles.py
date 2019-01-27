@@ -13,7 +13,7 @@ turn_decider = [
 
     # Far left
     lambda robot: robot.turn_right(small_angle),
-        
+
     # Middle left
     lambda robot: robot.turn_right(big_angle),
 
@@ -27,6 +27,7 @@ turn_decider = [
     lambda robot: robot.turn_left(small_angle)
 ]
 
+
 def check_prox(robot):
     prox_sensors = robot.get('prox.horizontal')
     print(prox_sensors)
@@ -37,14 +38,16 @@ def check_prox(robot):
 
     glib.timeout_add(check_freq, lambda: check_prox(robot))
 
+
 def main(name='thymio-II'):
-    
+
     robot = ThymioII(name)
 
     check_prox(robot)
     robot.move_forward(speed)
     robot.run()
-        
+
+
 if __name__ == '__main__':
     try:
         main(sys.argv[1])

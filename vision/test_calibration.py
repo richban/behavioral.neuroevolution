@@ -13,6 +13,7 @@ class TestCalibration(unittest.TestCase):
     def test_save_and_restore(self):
         pass
 
+
 if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(TestCalibration)
     unittest.TextTestRunner(verbosity=2).run(suite)

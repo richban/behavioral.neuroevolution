@@ -15,7 +15,7 @@ class ThymioII(Aseba):
         if name not in nodes:
             nodes = map(str, list(nodes))
             raise AsebaException("Cannot find node {nodeName}! "
-                                 "These are the available nodes: {nodes}" \
+                                 "These are the available nodes: {nodes}"
                                  .format(nodeName=name, nodes=list(nodes)))
         self.name = name
         self.desired_speed = 0
@@ -24,19 +24,19 @@ class ThymioII(Aseba):
         pass
 
     def _turn(self, direction, deg):
-            radians = math.pi * deg / 180
-            speed = self.network.GetVariable(self.name,
-                    'motor.{dir}.speed'.format(dir=direction))
+        radians = math.pi * deg / 180
+        speed = self.network.GetVariable(self.name,
+                                         'motor.{dir}.speed'.format(dir=direction))
 
-            cms_speed = speed[0] * 20 / 500 * 0.75
-            if cms_speed <= 0:
-                return
-            
-            time_stop = ThymioII.wheel_distance * radians / cms_speed
-            self.network.SetVariable(self.name,
-                    'motor.{dir}.target'.format(dir=direction), [0])
-            time.sleep(time_stop)
-            self.move_forward(self.desired_speed)
+        cms_speed = speed[0] * 20 / 500 * 0.75
+        if cms_speed <= 0:
+            return
+
+        time_stop = ThymioII.wheel_distance * radians / cms_speed
+        self.network.SetVariable(self.name,
+                                 'motor.{dir}.target'.format(dir=direction), [0])
+        time.sleep(time_stop)
+        self.move_forward(self.desired_speed)
 
     def get(self, *args, **kwargs):
         return super(ThymioII, self).get(self.name, *args, **kwargs)
@@ -68,4 +68,3 @@ class ThymioII(Aseba):
 
     def u_turn(self):
         self._turn('right', 180)
-

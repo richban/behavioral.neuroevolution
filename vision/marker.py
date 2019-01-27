@@ -7,7 +7,7 @@ import inspect
 
 class Marker:
 
-    def __init__(self, mid, root, l1, l2, transform=None, height = -10):
+    def __init__(self, mid, root, l1, l2, transform=None, height=-10):
         self.mid = mid
         self.root = root
         self.black_leaves = l1
@@ -45,10 +45,10 @@ class Marker:
                 sum_all = (sum_all[0] + cx, sum_all[1] + cy)
 
             avg_all = (int(sum_all[0] / self.no_al),
-                        int(sum_all[1] / self.no_al))
+                       int(sum_all[1] / self.no_al))
 
             avg_black = (int(sum_black[0] / self.no_bl),
-                            int(sum_black[1] / self.no_bl))
+                         int(sum_black[1] / self.no_bl))
 
             self.angle = Marker.angle_between_points(
                 avg_all[0], avg_all[1], avg_black[0], avg_black[1])

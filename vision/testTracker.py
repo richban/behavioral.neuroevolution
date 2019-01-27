@@ -12,14 +12,15 @@ __author__ = "anfv"
 __date__ = "$16-Nov-2016 19:16:33$"
 
 if __name__ == "__main__":
-    mid= 5
-    transform=None
+    mid = 5
+    transform = None
     mid_aux = 0
     video_source = 1
-    capture=False
-    show=True
+    capture = False
+    show = True
     debug = False
-    thread1 = Tracker(mid, transform, mid_aux , video_source, capture, show, debug)
+    thread1 = Tracker(mid, transform, mid_aux,
+                      video_source, capture, show, debug)
     # Start new Threads
     thread1.start()
 
