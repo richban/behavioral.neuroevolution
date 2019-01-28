@@ -1,4 +1,4 @@
-#!/usr/bin/env bashi
+#!/usr/bin/env bash
 
 # This script performs initiall setup for the
 # project and install various dependencies.
@@ -66,6 +66,15 @@ sudo apt-get install qttools5-dev-tools \
                      g++ \
                      git \
                      make \
+                     autoconf \
+                     libreadline-dev \
+                     libncurses-dev \
+                     libssl-dev \
+                     libyaml-dev \
+                     libxslt-dev \
+                     libffi-dev \
+                     libtool \
+                     unixodbc-dev
 [[ $? -ne 0 ]] && exit 1
 
 cd ~/ && mkdir ~/Developer && cd Developer
@@ -81,17 +90,44 @@ make
 usermod -a -G dialout $USER
 newgrp dialout
 
+#################################
+# install asdf
+#################################
+
+if [[ ! -d $HOME/.asdf ]]; then
+  git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.6.3
+  echo -e '\n. $HOME/.asdf/asdf.sh' >> ~/.bashrc
+  echo -e '\n. $HOME/.asdf/completions/asdf.bash' >> ~/.basrc
+fi
+
+if [[ $? != 0 ]]; then
+exit 2
+fi
+
 #####################################################
 #
 #                   Setup Python
 #
 #####################################################
 
-pip install --upgrade pip
-pip install dbus-python
+if [[ ! -d $HOME/.asdf/plugins/python ]]; then
+  $HOME/.asdf/bin/asdf plugin-add python https://github.com/danhper/asdf-python.git
+fi
 
-# pyenv
+if [[ $? != 0 ]]; then
+  exit 2
+fi
 
-cd ~/
-curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash
+if [[ ! -d $HOME/.asdf/installs/python ]]; then
+  $HOME/.asdf/bin/asdf install python 3.7.2
+fi
+
+if [[ $? != 0 ]]; then
+  exit 2
+fi
+
+$HOME/.asdf/bin/asdf global python 3.7.2
+if [[ $? != 0 ]]; then
+  exit 2
+fi
 
