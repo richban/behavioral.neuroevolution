@@ -40,12 +40,6 @@ apt install python python3 python-pip python-gtk2 vim git \
   xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev curl python-dbus
 [[ $? -ne 0 ]] && exit 1
 
-#####################################################
-#
-#                   Install  Aseba
-#
-#####################################################
-
 sudo apt-get install qttools5-dev-tools \
                      qttools5-dev \
                      qtbase5-dev \
@@ -55,6 +49,7 @@ sudo apt-get install qttools5-dev-tools \
                      libqt5svg5-dev \
                      libqt5x11extras5-dev \
                      libqwt-qt5-dev \
+                     libcairo2-dev \
                      libudev-dev \
                      libxml2-dev \
                      libsdl2-dev \
@@ -77,14 +72,21 @@ sudo apt-get install qttools5-dev-tools \
                      unixodbc-dev
 [[ $? -ne 0 ]] && exit 1
 
-cd ~/ && mkdir ~/Developer && cd Developer
-git clone --recursive https://github.com/aseba-community/aseba.git
-cd aseba
+#####################################################
+#
+#                   Install  Aseba
+#
+#####################################################
 
-# Building Aseba
-mkdir build && cd build
-cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="<path of qt>;<path of bonjour>" ..
-make
+if [[ ! -d $HOME/developer ]]; then
+    cd ~/ && mkdir ~/developer && cd developer
+    git clone --recursive https://github.com/aseba-community/aseba.git
+    cd aseba
+    # Building Aseba
+    mkdir build && cd build
+    cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="<path of qt>;<path of bonjour>" ..
+    make
+fi
 
 # User permissions
 usermod -a -G dialout $USER
@@ -130,4 +132,17 @@ $HOME/.asdf/bin/asdf global python 3.7.2
 if [[ $? != 0 ]]; then
   exit 2
 fi
+
+#####################################################
+#
+#                   Linux Brew
+#
+#####################################################
+
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)" > /dev/null 2>&1
+
+test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
+test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+test -r ~/.bash_profile && echo "eval \$($(brew --prefix)/bin/brew shellenv)" >> ~/.bash_profile
+echo "eval \$($(brew --prefix)/bin/brew shellenv)" >> ~/.profile
 
