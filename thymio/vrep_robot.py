@@ -18,18 +18,19 @@ X_MAX = 48
 DEBUG = False
 
 
-class VrepRobot:
+class VrepRobot(object):
 
-    def __init__(self, client_id, id, op_mode, no_detection=1.0, min_detection=0.05, init_speed=2, **kw):
-        super(VrepRobot, self).__init__(**kw)
+    def __init__(self, client_id, id, op_mode, **kw):
+        # super(VrepRobot, self).__init__(**kw)
+        
         self.id = id
         self.client_id = client_id
         self.op_mode = op_mode
 
         # Robot Specific Attributes
-        self.v_no_detection = no_detection
-        self.v_minDetection = min_detection
-        self.v_initSpeed = init_speed
+        self.v_no_detection = 1.0
+        self.v_minDetection = 0.05
+        self.v_initSpeed = 2.0
         self.v_wheel_speeds = np.array([])
         self.v_sensor_activation = np.array([])
         self.v_norm_wheel_speeds = np.array([])

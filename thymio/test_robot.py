@@ -28,15 +28,30 @@ def main(name='thymio-II'):
         return
 
 
+    if (vrep.simxStartSimulation(CLIENT_ID, vrep.simx_opmode_oneshot) == -1):
+        print('Failed to start the simulation\n')
+        print('Program ended\n')
+        return
+
+
     robot = EvolvedRobot(name, CLIENT_ID, None, OP_MODE, None)
     now = datetime.now()
 
-    while datetime.now() - now < timedelta(seconds=10):
-        print(robot.check_prox())
+    robot.v_set_motors(1.0, 1.0)
 
-    robot.set_motor(500, 500)
+    while datetime.now() - now < timedelta(seconds=10):
+        print(robot.t_read_prox())
+        print(robot.v_loop())
+    
+    robot.t_set_motors(500, 500)
     time.sleep(10)
-    robot.stop()
+    robot.t_stop()
+
+    if (vrep.simxStopSimulation(CLIENT_ID, OP_MODE) == -1):
+        print('Failed to stop the simulation\n')
+        print('Program ended\n')
+        return
+
 
 
 if __name__ == '__main__':

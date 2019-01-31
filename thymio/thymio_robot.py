@@ -23,10 +23,10 @@ class ThymioII(Aseba):
     def __enter__():
         pass
 
-    def t_get(self, *args, **kwargs):
+    def get(self, *args, **kwargs):
         return super(ThymioII, self).get(self.t_name, *args, **kwargs)
 
-    def t_set(self, *args, **kwargs):
+    def set(self, *args, **kwargs):
         return super(ThymioII, self).set(self.t_name, *args, **kwargs)
 
     def t_move_forward(self, speed):
@@ -43,4 +43,4 @@ class ThymioII(Aseba):
         self.network.SetVariable(self.t_name, 'motor.right.target', [0])
 
     def t_read_prox(self):
-        return self.t_get('prox.horizontal')
+        return self.get('prox.horizontal')

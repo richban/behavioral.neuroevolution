@@ -5,8 +5,10 @@ from aseba import Aseba
 import numpy as np
 
 
-class EvolvedRobot(ThymioII, VrepRobot):
+class EvolvedRobot(VrepRobot, ThymioII):
 
-    def __init__(self, t_name, client_id, id, op_mode, chromosome):
-        super(EvolvedRobot, self).__init__(t_name, client_id, id, op_mode)
+    def __init__(self, name, client_id, id, op_mode, chromosome):
+        VrepRobot.__init__(self, client_id, id, op_mode)
+        ThymioII.__init__(self, name)
+
         self.chromosome = chromosome
