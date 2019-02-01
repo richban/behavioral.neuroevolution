@@ -1,4 +1,4 @@
-from aseba import Aseba, AsebaException
+from robot.aseba import Aseba, AsebaException
 import math
 import time
 

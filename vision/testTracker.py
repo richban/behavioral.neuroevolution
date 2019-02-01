@@ -1,6 +1,6 @@
 #! /usr/bin/python
-from Tracker import get_marker_object, Tracker, get_markers
-import marker
+from vision.Tracker import get_marker_object, Tracker, get_markers
+import vision.marker
 
 import time
 

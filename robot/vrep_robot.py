@@ -5,24 +5,18 @@ from datetime import datetime, timedelta
 import numpy as np
 import pickle
 import logging
-from helpers import sensors_offset, normalize
+from utility.helpers import sensors_offset, normalize
 import uuid
 
-PI = math.pi
-NUM_SENSORS = 16
 PORT_NUM = 19997
-RUNTIME = 20
 OP_MODE = vrep.simx_opmode_oneshot_wait
-X_MIN = 0
-X_MAX = 48
-DEBUG = False
 
 
 class VrepRobot(object):
 
     def __init__(self, client_id, id, op_mode, **kw):
         # super(VrepRobot, self).__init__(**kw)
-        
+
         self.id = id
         self.client_id = client_id
         self.op_mode = op_mode
@@ -64,6 +58,13 @@ class VrepRobot(object):
                 (i, self.suffix), self.op_mode)
             self.v_prox_sensors.append(sensor)
 
+        # Custom Logger
+        self.logger = logging.getLogger(self.__class__.__name__)
+        c_handler = logging.StreamHandler()
+        self.logger.setLevel(logging.INFO)
+        c_format = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
+        c_handler.setFormatter(c_format)
+        self.logger.addHandler(c_handler)
 
     @property
     def suffix(self):
@@ -125,22 +126,26 @@ class VrepRobot(object):
                 if self.v_get_sensor_state(s):
                     # offset
                     activation = sensors_offset(self.v_get_sensor_distance(s),
-                        self.v_min_detection, self.v_no_detection)
+                                                self.v_min_detection, self.v_no_detection)
                     self.v_sensor_activation = np.append(
                         self.v_sensor_activation, activation)
                 else:
-                    self.v_sensor_activation = np.append(self.v_sensor_activation, 0)
+                    self.v_sensor_activation = np.append(
+                        self.v_sensor_activation, 0)
 
-            self.logger.info('Sensors Activation {}'.format(self.v_sensor_activation))
+            self.logger.info('Sensors Activation {}'.format(
+                self.v_sensor_activation))
 
     def v_loop(self):
         self.v_sensor_activation = np.array([])
         for i, sensor in enumerate(self.v_prox_sensors):
             if self.v_get_sensor_state(sensor):
                 activation = self.v_get_sensor_distance(sensor)
-                self.v_sensor_activation = np.append(self.v_sensor_activation, activation)
+                self.v_sensor_activation = np.append(
+                    self.v_sensor_activation, activation)
             else:
-                self.v_sensor_activation = np.append(self.v_sensor_activation, 0)
+                self.v_sensor_activation = np.append(
+                    self.v_sensor_activation, 0)
         return self.v_sensor_activation
 
 
