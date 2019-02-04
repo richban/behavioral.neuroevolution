@@ -1,9 +1,11 @@
 from thymio_robot import ThymioII
 from vrep_robot import VrepRobot
 from aseba import Aseba
-
+from helpers import normalize
 import numpy as np
 
+T_SEN_MIN = 0
+T_SEN_MAX = 5000
 
 class EvolvedRobot(VrepRobot, ThymioII):
 
@@ -12,3 +14,11 @@ class EvolvedRobot(VrepRobot, ThymioII):
         ThymioII.__init__(self, name)
 
         self.chromosome = chromosome
+        self.n_t_sensor_activation = np.array([])
+
+
+    def t_read_prox(self):
+        sensor_activation = super(EvolvedRobot, self).t_read_prox()
+        self.n_t_sensor_activation = np.array([normalize(xi, T_SEN_MIN, T_SEN_MAX, 0.0, 1.0) for xi in sensor_activation])
+        return self.n_t_sensor_activation
+    

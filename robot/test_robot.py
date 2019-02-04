@@ -39,9 +39,9 @@ def main(name='thymio-II'):
 
     while datetime.now() - now < timedelta(seconds=10):
         print(robot.t_read_prox())
-        print(robot.v_loop())
+        print(robot.v_read_prox())
 
-    robot.t_set_motors(500, 500)
+    # robot.t_set_motors(500, 500)
     time.sleep(10)
     robot.t_stop()
 

@@ -57,6 +57,10 @@ class VrepRobot(object):
                 self.client_id, 'Pioneer_p3dx_ultrasonicSensor%d%s' %
                 (i, self.suffix), self.op_mode)
             self.v_prox_sensors.append(sensor)
+            errorCode, detectionState, detectedPoint, detectedObjectHandle, detectedSurfaceNormalVector = vrep.simxReadProximitySensor(
+                self.client_id, sensor, vrep.simx_opmode_streaming)
+            np.append(self.v_prox_sensors_val, np.linalg.norm(detectedPoint))
+
 
         # Custom Logger
         self.logger = logging.getLogger(self.__class__.__name__)
@@ -136,7 +140,7 @@ class VrepRobot(object):
             self.logger.info('Sensors Activation {}'.format(
                 self.v_sensor_activation))
 
-    def v_loop(self):
+    def v_read_prox(self):
         self.v_sensor_activation = np.array([])
         for i, sensor in enumerate(self.v_prox_sensors):
             if self.v_get_sensor_state(sensor):
