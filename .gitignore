@@ -332,7 +332,7 @@ pythontex-files-*/
 *.xyc
 
 # endfloat
-*.ttt
+!scenes/*.ttt
 *.fff
 
 # Latexian
