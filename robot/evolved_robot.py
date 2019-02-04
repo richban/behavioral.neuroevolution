@@ -1,6 +1,6 @@
-from robot.thymio_robot import ThymioII
-from robot.vrep_robot import VrepRobot
-from robot.aseba import Aseba
+from thymio_robot import ThymioII
+from vrep_robot import VrepRobot
+from aseba import Aseba
 
 import numpy as np
 
