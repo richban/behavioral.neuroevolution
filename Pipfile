@@ -20,6 +20,8 @@ Cycler = "*"
 Pillow = "*"
 pygobject = "*"
 dbus-python = "*"
+jupyter = "*"
+yaml = "*"
 
 [requires]
 python_version = "3.7"
