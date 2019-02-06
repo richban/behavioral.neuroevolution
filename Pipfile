@@ -21,7 +21,7 @@ Pillow = "*"
 pygobject = "*"
 dbus-python = "*"
 jupyter = "*"
-yaml = "*"
+pyyaml = "*"
 
 [requires]
 python_version = "3.7"

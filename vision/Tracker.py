@@ -3,7 +3,7 @@
 # TrackerFai module using multi threading
 import threading
 from copy import deepcopy
-from vision.marker import Marker
+from marker import Marker
 import calibration
 import cv2
 import numpy as np

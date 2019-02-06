@@ -1,5 +1,5 @@
 import unittest
-import vision.calibration
+import calibration
 
 
 class TestCalibration(unittest.TestCase):
