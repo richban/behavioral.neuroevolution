@@ -15,7 +15,7 @@ if __name__ == "__main__":
     mid = 5
     transform = None
     mid_aux = 0
-    video_source = 1
+    video_source = -1
     capture = False
     show = True
     debug = False

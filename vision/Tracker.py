@@ -73,11 +73,14 @@ c_1080_mtx = np.array([[1502.181572345701, 0.0, 446.74251314424254],
                        [0.0, 1481.4806325161464, 298.98237501204625],
                        [0.0, 0.0, 1.0]])
 
-c_1080_dist = np.array([[-0.6497354207742148],
-                        [1.1908487484072574],
-                        [0.020848568922629356],
-                        [0.06842770962532546],
-                        [-0.6606431134116602]])
+c_1080_dist = np.array([-0.6497354207742148,
+                        1.1908487484072574,
+                        0.020848568922629356,
+                        0.06842770962532546,
+                        -0.6606431134116602])
+
+CAM_MAT = c_1080_mtx
+CAM_DIST = c_1080_dist
 
 def calibrate():
     global performCalibration
@@ -251,7 +254,8 @@ class Tracker(threading.Thread):
         self.cap = cv2.VideoCapture(self.source)
         self.cap.set(3, 1920)  # Width
         self.cap.set(4, 1080)  # Height
-        self.cap.set(37, 1)  # turn the autofocus off, save and comment
+        # turn the autofocus off; not supported by all cameras
+        self.cap.set(37, 1)
         self.cap.set(cv2.CAP_PROP_FPS, 15)
         self.cap.read()
 
@@ -297,7 +301,7 @@ class Tracker(threading.Thread):
 
         # undist = cv2.remap(frame, self.mapx, self.mapy, cv2.INTER_LINEAR)
         # undistort the image
-        undist = cv2.undistort(frame, self.cmat2, cdist)
+        undist = cv2.undistort(frame, CAM_MAT, CAM_DIST, None, self.cmat2)
         # undist = cv2.pyrDown(undist)
 
         thresh = self.preprocess_image(undist)
@@ -309,7 +313,7 @@ class Tracker(threading.Thread):
             cv2.imwrite('thresh.jpg', thresh)
 
         cv2.imshow('blackandwhite', thresh)
-        img2, contours, hierarchy = self.segmentation(thresh)
+        contours, hierarchy = self.segmentation(thresh)
 
         markers = self.find_markers(contours, hierarchy, 13, self.transform)
         markers.sort(key=lambda m: m.mid)
@@ -386,9 +390,9 @@ class Tracker(threading.Thread):
 
         # Find the undistorsion parameters
         self.cmat2, self.roi = cv2.getOptimalNewCameraMatrix(
-            cmat, cdist, (1920, 1080), 0, (1920, 1080))
+            CAM_MAT, CAM_DIST, (1920, 1080), 0, (1920, 1080))
         self.mapx, self.mapy = cv2.initUndistortRectifyMap(
-            self.cmat2, cdist, None, self.cmat2, (1920, 1080), 5)
+            self.cmat2, CAM_DIST, None, self.cmat2, (1920, 1080), 5)
 
         # Fill the markers array
         for i in range(self.filterLen):
