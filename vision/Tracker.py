@@ -19,7 +19,7 @@ import functools as f
 lock = threading.Lock()
 safeMarkers = []
 currentMarkers = []
-performCalibration = False
+performCalibration = True
 
 # Default marker trees
 def_markers = {
@@ -39,13 +39,13 @@ def_markers = {
 
 # Small marker trees
 small_markers = {
-    '0122222211111': 1,
+    '0122221211111': 1,
     '0122222221111': 2,
     '0122222121111': 3,
-    '0122212211111': 4,
+    '0122122121111': 4,
     '0122212121111': 5,
-    '0122221211111': 6,
-    '0122122121111': 7,
+    '0122222211111': 6,
+    '0122212211111': 7,
     '0122122111111': 8,
     '0122121211111': 9,
     '0122221221111': 10,
@@ -276,28 +276,12 @@ class Tracker(threading.Thread):
         return (idx, marker)
 
     def _getMarkers(self):
+        """Returns currentMarkers and draw circles"""
         global safeMarkers
         global image
         global currentMarkers
 
         ret, frame = self.cap.read()
-
-        # process markers from images
-        if self.debug:
-            global _counter
-            photosi = 0
-
-            for file in os.listdir("../images/images_cal/markers/"):
-                if file.endswith(".jpg"):
-                    photos += 1
-
-            name = '../images/images_cal/markers/' + \
-                str(_counter % photos) + '.jpg'
-            print("processing image ", name)
-            _counter += 1
-            time.sleep(1)
-            cv2.waitKey(0)
-            frame = cv2.imread(name, cv2.IMREAD_COLOR)
 
         # undist = cv2.remap(frame, self.mapx, self.mapy, cv2.INTER_LINEAR)
         # undistort the image

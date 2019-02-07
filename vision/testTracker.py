@@ -24,8 +24,9 @@ if __name__ == "__main__":
     # Start new Threads
     thread1.start()
 
-    for i in range(100):
+    for i in range(1000):
         time.sleep(1)
+        # mid 9 marker on Thymio
         marker = get_marker_object(9)
         if marker is not None:
-            print(marker.orientation())
+            print(marker.realxy())
