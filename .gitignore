@@ -331,8 +331,8 @@ pythontex-files-*/
 # xypic precompiled matrices
 *.xyc
 
-**/corners/*
-**/videos/*
+*/corners/*.png
+*/videos/*
 
 # endfloat
 !scenes/*.ttt
@@ -369,6 +369,5 @@ TSWLatexianTemp*
 *.sta
 
 # custom
-calibration.yaml
 /report/**/*
 .vscode/
