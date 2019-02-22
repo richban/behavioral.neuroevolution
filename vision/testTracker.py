@@ -8,6 +8,12 @@ import time
 # To change this template file, choose Tools | Templates
 # and open the template in the editor.
 
+
+# 1 (0.06, 0.08)
+# 2 (1.08, 0.009)
+# 3 ()
+# 4 ()
+
 __author__ = "anfv"
 __date__ = "$16-Nov-2016 19:16:33$"
 
@@ -25,7 +31,7 @@ if __name__ == "__main__":
     thread1.start()
 
     for i in range(1000):
-        time.sleep(1)
+        # time.sleep(1)
         # mid 9 marker on Thymio
         marker = get_marker_object(9)
         if marker is not None:
