@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import numpy as np
 import pickle
 import logging
-from helpers import sensors_offset, normalize
+from utility.helpers import sensors_offset, normalize
 import uuid
 
 PORT_NUM = 19997
@@ -61,7 +61,6 @@ class VrepRobot(object):
                 self.client_id, sensor, vrep.simx_opmode_streaming)
             np.append(self.v_prox_sensors_val, np.linalg.norm(detectedPoint))
 
-
         # Custom Logger
         self.logger = logging.getLogger(self.__class__.__name__)
         c_handler = logging.StreamHandler()
@@ -76,10 +75,19 @@ class VrepRobot(object):
             return '#%d' % self.id
         return ''
 
-    def position(self):
+    def get_position(self):
         returnCode, self.v_position = vrep.simxGetObjectPosition(
             self.client_id, self.v_body, -1, self.op_mode)
         return self.v_position
+
+    def set_position(self, position):
+        returnCode = vrep.simxSetObjectPosition(
+            self.client_id, self.v_body, -1, self.op_mode)
+        if returnCode == vrep.simx_return_ok:
+            print('Robot:', self.v_body, ' position: ', position)
+        else:
+            print('setPose remote function call failed.')
+            return -1
 
     def v_move_forward(self, speed=2.0):
         self.v_set_motors(speed, speed)
