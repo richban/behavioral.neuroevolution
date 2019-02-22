@@ -1,9 +1,9 @@
-import vrep
+import robot.vrep
 import time
 import array
 import traceback
 import numpy as np
-
+from robot.vrep_robot import VrepRobot
 
 OP_MODE = vrep.simx_opmode_oneshot_wait
 PORT_NUM = 19997
@@ -140,6 +140,8 @@ def run():
         print('Program ended')
         return
 
+    robot = VrepRobot(client_id, None, OP_MODE)
+
     if (vrep.simxStartSimulation(client_id, OP_MODE) == -1):
         print('Failed to start the simulation\n')
         print('Program ended\n')
@@ -152,12 +154,12 @@ def run():
     get_pose(client_id, cuboid)
 
     # set new position
-    set_pose(client_id, cuboid, [0.2, 0.4, 0.0])
+    set_pose(client_id, cuboid, [0.1, 0.1, 0.0])
 
     # create dummy object
-    dummy = create_object(client_id, 'Apple', [0.1, 0.2, 0.3])
+    # dummy = create_object(client_id, 'Apple', [0.1, 0.2, 0.3])
 
-    time.sleep(10)
+    time.sleep(5)
 
     if (vrep.simxStopSimulation(client_id, OP_MODE) == -1):
         print('Failed to stop the simulation\n')
