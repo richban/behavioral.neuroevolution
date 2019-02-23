@@ -3,12 +3,12 @@
 # TrackerFai module using multi threading
 import threading
 from copy import deepcopy
-from marker import Marker
-import calibration
+from vision.marker import Marker
+import vision.calibration
 import cv2
 import numpy as np
 from math import pi, cos, sin, atan2, degrees, fabs, sqrt, radians
-import calibration as cal
+import vision.calibration as cal
 import inspect
 import time
 import os
@@ -81,6 +81,7 @@ c_1080_dist = np.array([-0.6497354207742148,
 
 CAM_MAT = c_1080_mtx
 CAM_DIST = c_1080_dist
+
 
 def calibrate():
     global performCalibration
@@ -230,7 +231,7 @@ class Tracker(threading.Thread):
             mid,
             transform,
             mid_aux=0,
-            video_source=1,
+            video_source=0,
             capture=True,
             show=False,
             debug=False):

@@ -1,37 +1,26 @@
 #! /usr/bin/python
-from Tracker import get_marker_object, Tracker, get_markers
-import marker
-
+from tracker import Tracker, get_marker_object, get_markers
 import time
-
-# To change this license header, choose License Headers in Project Properties.
-# To change this template file, choose Tools | Templates
-# and open the template in the editor.
-
 
 # 1 (0.06, 0.08)
 # 2 (1.08, 0.009)
 # 3 ()
 # 4 ()
 
-__author__ = "anfv"
-__date__ = "$16-Nov-2016 19:16:33$"
-
 if __name__ == "__main__":
     mid = 5
     transform = None
     mid_aux = 0
-    video_source = -1
+    video_source = 1
     capture = False
     show = True
     debug = False
     thread1 = Tracker(mid, transform, mid_aux,
                       video_source, capture, show, debug)
-    # Start new Threads
+    # Start Vision Thread
     thread1.start()
 
     for i in range(1000):
-        # time.sleep(1)
         # mid 9 marker on Thymio
         marker = get_marker_object(9)
         if marker is not None:
