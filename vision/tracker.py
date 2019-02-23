@@ -18,7 +18,7 @@ import functools as f
 lock = threading.Lock()
 safeMarkers = []
 currentMarkers = []
-performCalibration = True
+performCalibration = False
 
 # Default marker trees
 def_markers = {
@@ -247,7 +247,7 @@ class Tracker(threading.Thread):
         self.debug = debug
         self.height = -10
         self.originCalibrationMarkers = []
-
+        self.cornersDetected = False
         cv2.setUseOptimized(True)
 
         print("starting Tracker, video source: ", self.source)
@@ -412,6 +412,7 @@ class Tracker(threading.Thread):
                 for i in range(4):
                     _, mTmp = self._get_marker_object(i + 1, filteredMarkers)
                     self.originCalibrationMarkers.append(mTmp)
+                self.cornersDetected = True
 
             if(performCalibration):
                 print("Trying to calibrate")
@@ -426,6 +427,7 @@ class Tracker(threading.Thread):
                             i + 1, filteredMarkers)
                         self.originCalibrationMarkers.append(mTmp)
                     performCalibration = False
+                    self.cornersDetected = True
 
     def filterMarkers(self):
 
