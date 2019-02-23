@@ -4,11 +4,10 @@
 import threading
 from copy import deepcopy
 from vision.marker import Marker
-import vision.calibration
+import vision.calibration as calibration
 import cv2
 import numpy as np
 from math import pi, cos, sin, atan2, degrees, fabs, sqrt, radians
-import vision.calibration as cal
 import inspect
 import time
 import os

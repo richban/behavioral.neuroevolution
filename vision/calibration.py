@@ -28,7 +28,7 @@ def get_transform_lstsqr(markers, poses):
     return t
 
 
-def save(transform, poses, height, cfile='cdata.json'):
+def save(transform, poses, height, cfile='./vision/cdata.json'):
 
     if(os.path.isfile(cfile)):
         with open(cfile, 'w') as f:
@@ -36,19 +36,19 @@ def save(transform, poses, height, cfile='cdata.json'):
                    'poses': poses, 'height': height}
             json.dump(obj, f)
     else:
-        cfile = "./" + cfile
+        cfile = "./vision" + cfile
         with open(cfile, 'w') as f:
             obj = {'transform': transform.tolist(),
                    'poses': poses, 'height': height}
             json.dump(obj, f)
 
 
-def restore(cfile='cdata.json'):
+def restore(cfile='./vision/cdata.json'):
     if(os.path.isfile(cfile)):
         with open(cfile, 'r') as f:
             data = json.load(f)
     else:
-        cfile = "./" + cfile
+        cfile = "./vision" + cfile
         with open(cfile, 'r') as f:
             data = json.load(f)
     return (np.array(data['transform']), data['poses'], data['height'])
