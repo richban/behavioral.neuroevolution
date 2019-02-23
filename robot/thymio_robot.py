@@ -1,4 +1,4 @@
-from aseba import Aseba, AsebaException
+from robot.aseba import Aseba, AsebaException
 import math
 import time
 
@@ -19,9 +19,6 @@ class ThymioII(Aseba):
         self.t_name = name
         self.t_speed = 0
         self.t_num_sensors = 7
-
-    def __enter__():
-        pass
 
     def get(self, *args, **kwargs):
         return super(ThymioII, self).get(self.t_name, *args, **kwargs)

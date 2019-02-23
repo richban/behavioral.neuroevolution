@@ -1,4 +1,4 @@
-import vrep
+import robot.vrep as vrep
 import time
 import math
 from datetime import datetime, timedelta

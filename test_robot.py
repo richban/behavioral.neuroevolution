@@ -1,10 +1,10 @@
-from thymio_robot import ThymioII
-from evolved_robot import EvolvedRobot
+from robot.thymio_robot import ThymioII
+from robot.evolved_robot import EvolvedRobot
 from datetime import datetime, timedelta
 
 import time
 import sys
-import vrep
+import robot.vrep as vrep
 
 OP_MODE = vrep.simx_opmode_oneshot_wait
 
