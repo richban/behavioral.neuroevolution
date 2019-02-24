@@ -3,6 +3,7 @@ from robot.thymio_robot import ThymioII
 from datetime import datetime, timedelta
 from vision.calibration import restore
 from math import fabs
+import numpy as np
 import time
 
 
@@ -47,8 +48,9 @@ def braitenberg(robot):
     print(total_left)
 
     robot.t_set_motors(total_left, total_right)
-    
+
     return True
+
 
 if __name__ == "__main__":
 
@@ -59,6 +61,7 @@ if __name__ == "__main__":
     robot_home = False
     relax_dist = 0.01
     relax_angle = 0.15
+    robot_data = np.array([])
     vision_thread = Tracker(mid=5,
                             transform=None,
                             mid_aux=0,
@@ -73,16 +76,22 @@ if __name__ == "__main__":
     while vision_thread.cornersDetected is not True:
         pass
 
-    while robot_home is not True:
+    now = datetime.now()
+
+    while datetime.now() - now < timedelta(seconds=10):
         braitenberg(robot)
 
         robot_m = get_marker_object(8)
 
         if robot_m is not None:
-            print(robot_m.realxy()[:2])
-            dist = euclidian_distance(robot_m.realxy()[:2], goal_position[:2])
-            rot = fabs(robot_m.orientation() - goal_orientation)
-            print(dist)
-            if dist > relax_dist or rot > relax_angle:
-                robot_home = True
-                robot.t_stop()
+            robot_data = np.append(
+                robot_data, {'position': robot_m.realxy(), 'orientation': robot_m.orientation()})
+        #     print(robot_m.realxy()[:2])
+        #     dist = euclidian_distance(robot_m.realxy()[:2], goal_position[:2])
+        #     rot = fabs(robot_m.orientation() - goal_orientation)
+        #     print(dist)
+        #     if dist > relax_dist or rot > relax_angle:
+        #         robot_home = True
+        #         robot.t_stop()
+
+    robot_data.dump('thymio_data.dat')
