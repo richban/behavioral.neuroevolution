@@ -63,10 +63,13 @@ def run():
         return
 
     # get vision sensor objects
-    res, v0 = vrep.simxGetObjectHandle(client_id, 'v0', vrep.simx_opmode_oneshot_wait)
-    res, v1 = vrep.simxGetObjectHandle(client_id, 'v1', vrep.simx_opmode_oneshot_wait)
+    res, v0 = vrep.simxGetObjectHandle(
+        client_id, 'v0', vrep.simx_opmode_oneshot_wait)
+    res, v1 = vrep.simxGetObjectHandle(
+        client_id, 'v1', vrep.simx_opmode_oneshot_wait)
 
-    err, resolution, image = vrep.simxGetVisionSensorImage(client_id, v0, 0, vrep.simx_opmode_streaming)
+    err, resolution, image = vrep.simxGetVisionSensorImage(
+        client_id, v0, 0, vrep.simx_opmode_streaming)
     time.sleep(1)
 
     if (vrep.simxStartSimulation(client_id, OP_MODE) == -1):
@@ -76,10 +79,12 @@ def run():
 
     while (vrep.simxGetConnectionId(client_id) != -1):
         # get image from vision sensor 'v0'
-        err, resolution, image = vrep.simxGetVisionSensorImage(client_id, v0, 0, vrep.simx_opmode_buffer)
+        err, resolution, image = vrep.simxGetVisionSensorImage(
+            client_id, v0, 0, vrep.simx_opmode_buffer)
         if err == vrep.simx_return_ok:
             image_byte_array = bytes(array.array('b', image))
-            image_buffer = Image.frombuffer("RGB", (resolution[0], resolution[1]), image_byte_array, "raw", "RGB", 0, 1)
+            image_buffer = Image.frombuffer(
+                "RGB", (resolution[0], resolution[1]), image_byte_array, "raw", "RGB", 0, 1)
             img2 = np.asarray(image_buffer)
 
             # try to find something green
@@ -87,11 +92,13 @@ def run():
 
             # overlay rectangle marker if something is found by OpenCV
             if ret:
-                cv2.rectangle(img2, (ret[0] - 15, ret[1] - 15), (ret[0] + 15, ret[1] + 15), (0xff, 0xf4, 0x0d), 1)
+                cv2.rectangle(img2, (ret[0] - 15, ret[1] - 15),
+                              (ret[0] + 15, ret[1] + 15), (0xff, 0xf4, 0x0d), 1)
 
             # return image to sensor 'v1'
             img2 = img2.ravel()
-            vrep.simxSetVisionSensorImage(client_id, v1, img2, 0, vrep.simx_opmode_oneshot)
+            vrep.simxSetVisionSensorImage(
+                client_id, v1, img2, 0, vrep.simx_opmode_oneshot)
 
         elif err == vrep.simx_return_novalue_flag:
             print("Object not received")
