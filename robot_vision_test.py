@@ -74,14 +74,14 @@ if __name__ == "__main__":
     vision_thread.start()
 
     while vision_thread.cornersDetected is not True:
-        pass
+        print('Setting up corners...')
 
     now = datetime.now()
 
     while datetime.now() - now < timedelta(seconds=10):
         braitenberg(robot)
 
-        robot_m = get_marker_object(8)
+        robot_m = get_marker_object(7)
 
         if robot_m is not None:
             robot_data = np.append(
@@ -95,3 +95,4 @@ if __name__ == "__main__":
         #         robot.t_stop()
 
     robot_data.dump('thymio_data.dat')
+    robot.t_stop()
