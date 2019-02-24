@@ -26,6 +26,7 @@ def braitenberg(robot):
     # Read Proximity sensors
     prox_sensors_val = robot.t_read_prox()[:5]
 
+    print(prox_sensors_val)
     # Parameters of the Braitenberg, to give weight to each wheels
     left_wheel = [-0.01, -0.005, -0.0001, 0.006, 0.015]
     right_wheel = [0.012, +0.007, -0.0002, -0.0055, -0.011]
@@ -39,18 +40,22 @@ def braitenberg(robot):
         total_right = total_right + (prox_sensors_val[i] * right_wheel[i])
 
     # add a constant speed to each wheels so the robot moves always forward
-    total_right = total_right + 50
-    total_left = total_left + 50
+    total_right = total_right + 100
+    total_left = total_left + 100
+
+    print(total_right)
+    print(total_left)
 
     robot.t_set_motors(total_left, total_right)
-
+    
+    return True
 
 if __name__ == "__main__":
 
     goal_position = [0.59646187, 0.38297419, 0.0]
     goal_orientation = 1.7359450042095235
     transform, _, _ = restore()
-    robot = ThymioII('Thymio-II')
+    robot = ThymioII('thymio-II')
     robot_home = False
     relax_dist = 0.01
     relax_angle = 0.15
@@ -65,15 +70,19 @@ if __name__ == "__main__":
 
     vision_thread.start()
 
+    while vision_thread.cornersDetected is not True:
+        pass
+
     while robot_home is not True:
         braitenberg(robot)
 
-        robot_m = get_marker_object(9)
+        robot_m = get_marker_object(8)
 
         if robot_m is not None:
-            dist = euclidian_distance(robot_m.realxy()[:2], goal_position)
+            print(robot_m.realxy()[:2])
+            dist = euclidian_distance(robot_m.realxy()[:2], goal_position[:2])
             rot = fabs(robot_m.orientation() - goal_orientation)
-
+            print(dist)
             if dist > relax_dist or rot > relax_angle:
                 robot_home = True
                 robot.t_stop()
