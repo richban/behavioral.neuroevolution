@@ -62,6 +62,27 @@ def set_pose(client_id, object_handle, transform=None, operation_mode=vrep.simx_
     return transform
 
 
+def set_orientation(client_id, object_handle, orientation, operation_mode=vrep.simx_opmode_oneshot_wait):
+    """Set the orientation of an object in the simulation
+        Euler angles (alpha, beta and gamma)
+        parent_handle: -1 is the world frame, any other int should be a vrep object handle
+    """
+    res = vrep.simxSetObjectOrientation(
+        client_id,
+        object_handle,
+        -1,
+        orientation,
+        operation_mode)
+    if res == vrep.simx_return_ok:
+        print('SetOrientation object:', object_handle,
+              ' orientation: ', orientation)
+    else:
+        print('setOrientatinon remote function call failed.')
+        print(''.join(traceback.format_stack()))
+        return -1
+    return orientation
+
+
 def get_pose(client_id, object_handle, operation_mode=vrep.simx_opmode_oneshot_wait):
     """Get the pose of an object in the simulation"""
     res, position = vrep.simxGetObjectPosition(
