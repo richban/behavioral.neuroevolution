@@ -57,9 +57,9 @@ def restore(cfile='./vision/cdata.json'):
 def redo_transform(markers):
     # position of markers in arena
     poses = [[0.0, 0.0, 0.0],
-             [0.0, 0.8, 0.0],
+             [1.19, 0.0, 0.0],
              [1.19, 0.8, 0.0],
-             [1.19, 0.0, 0.0]]
+             [0.0, 0.8, 0.0]]
 
     transform = get_transform(markers, poses)
     height = np.average(poses, 0)[2]
