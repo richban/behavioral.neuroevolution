@@ -199,6 +199,7 @@ def transform2robot_frame(pos, point, theta):
             [np.sin(theta), np.cos(theta)],
             [np.cos(theta), -1*np.sin(theta)],
             ])
+    T_matrix = np.array([[1, 1], [1, 1]])
     trans = point-pos
     if trans.ndim >= 2:
         trans = trans.T
@@ -225,11 +226,11 @@ def send_path_4_drawing(path, sleep_time = 0.07, clientID=0):
 def get_distance(points1, points2):
     return np.sqrt(np.sum(np.square(points1 - points2), axis=1))
 
-def pioneer_robot_model(v_des, omega_des):
-    v_r = (v_des+d*omega_des)
-    v_l = (v_des-d*omega_des)
-    omega_right = v_r/r_w
-    omega_left = v_l/r_w
+def pioneer_robot_model(v_des, omega_des, w_axis, w_radius):
+    v_r = (v_des+w_axis*omega_des)
+    v_l = (v_des-w_axis*omega_des)
+    omega_right = v_r/w_radius
+    omega_left = v_l/w_radius
     return omega_right, omega_left
 
 def homing():
@@ -242,6 +243,10 @@ def homing():
                         debug=False,
                        )
     vision_thread.start()
+
+    corners_detected = vision_thread.cornersDetected
+    while corners_detected is False:
+        corners_detected = vision_thread.cornersDetected
     
     vrep.simxFinish(-1)
     clientID = vrep.simxStart(
@@ -257,16 +262,16 @@ def homing():
         print('Program ended')
         return
 
-    if (vrep.simxStartSimulation(clientID, vrep.simx_opmode_blockings) == -1):
+    if (vrep.simxStartSimulation(clientID, vrep.simx_opmode_blocking) == -1):
         print('Failed to start the simulation\n')
         print('Program ended\n')
         return
     
     try:
         grid = np.full((880, 1190), 255)
-        lad = 0.5 # look ahead distance
-        d = 0.331 # wheel axis distance
-        r_w = 0.09751 # wheel radius
+        lad = 0.05 # look ahead distance m
+        wheel_axis = 0.331 # wheel axis distance
+        wheel_radius = 0.09751 # wheel radius
         res_las,look_ahead_sphere = vrep.simxGetObjectHandle(clientID,'look_ahead',vrep.simx_opmode_oneshot_wait)
         indx = 0
         theta = 0.0
@@ -275,10 +280,10 @@ def homing():
         om_sp = 0
         d_controller   = pid(kp=0.5, ki=0, kd=0)
         omega_controller = pid(0.5, 0., 0.)
+        center_goal = np.array([200, 200])
+        
         OP_MODE = vrep.simx_opmode_oneshot_wait
         robot = EvolvedRobot('thymio-II', clientID, None, OP_MODE, None)
-        # GRID goal
-        center_goal = np.array([200, 200])
         
         robot_m = get_marker_object(7)
         while robot_m.realxy() is None:
@@ -310,7 +315,7 @@ def homing():
             # robot orientation
             theta = robot_m.orientation()
             theta = np.arctan2(np.sin(theta), np.cos(theta))
-
+            
             # path transformation
             path_transformed = transform2robot_frame(center_robot, path_to_track, theta)
             # get distance of each carrot point
@@ -320,13 +325,12 @@ def homing():
             for i in range(dist.argmin(), dist.shape[0]):
                 if dist[i] < lad and indx <= i:
                     indx = i
-
             #mark the carrot with the sphere
             returnCode = vrep.simxSetObjectPosition(clientID,
                                                     look_ahead_sphere,
                                                     -1,
-                                                    (path_to_track[indx,0]*4, \ 
-                                                    path_to_track[indx,1]*4, \ 
+                                                    (path_to_track[indx,0]*4,
+                                                    path_to_track[indx,1]*4, 
                                                     0.005),
                                                     vrep.simx_opmode_oneshot)
             
@@ -335,11 +339,9 @@ def homing():
             # the PID controllers
             v_sp = d_controller.control(dist[indx])                     
             om_sp =omega_controller.control(orient_error)
-            vr, vl = pioneer_robot_model(v_sp, om_sp)
-            print(vr, vl)
-
+            vr, vl = pioneer_robot_model(v_sp, om_sp, wheel_axis, wheel_radius)
             # set thymio wheelspeeds
-            robot.t_set_motors(vr*10, vl*10)
+            robot.t_set_motors(vr*50, vl*50)
             count += 1
         else:
             print("GOAAAAAAALL !!")
