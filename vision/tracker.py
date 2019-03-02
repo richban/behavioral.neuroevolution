@@ -701,7 +701,7 @@ class Tracker(threading.Thread):
 
     def areCornersDetected(self, markers):
         repeat = True
-        print(len(markers))
+        print(len(markers), sep=' ', end='', flush=True)
 
         md = {}
         mu = {}

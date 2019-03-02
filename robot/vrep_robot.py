@@ -89,7 +89,7 @@ class VrepRobot(object):
             print('setPose remote function call failed.')
             return -1
 
-    def set_orientation(self, orientation):
+    def v_set_orientation(self, orientation):
         """Set the orientation of an object in the simulation
         Euler angles (alpha, beta and gamma)
         parent_handle: -1 is the world frame, any other int should be a vrep object handle
@@ -107,6 +107,25 @@ class VrepRobot(object):
             print('setOrientatinon remote function call failed.')
             return -1
         return orientation
+
+    def v_get_orientation(self):
+        """Set the orientation of an object in the simulation
+        Euler angles (alpha, beta and gamma)
+        parent_handle: -1 is the world frame, any other int should be a vrep object handle
+        """
+        res, angles  = vrep.simxSetObjectOrientation(
+            self.client_id,
+            self.v_body,
+            -1,
+            orientation,
+            OP_MODE)
+        if res == vrep.simx_return_ok:
+            print('SetOrientation object:', self.v_body,
+                  ' orientation: ', angles)
+        else:
+            print('setOrientatinon remote function call failed.')
+            return -1
+        return angles
 
     def v_move_forward(self, speed=2.0):
         self.v_set_motors(speed, speed)
