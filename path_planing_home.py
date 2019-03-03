@@ -192,15 +192,20 @@ def transform_points_from_image2real (points, scale=1/1000):
     points2send = (flipped*scale) # + np.array([2.0555+0.75280899, -2.0500+4.96629213])
     return points2send
 
-def transform2robot_frame(pos, point, theta):
-    pos = np.asarray(pos)
-    point = np.asarray(point)
+def transform2robot_frame(r_current_pos, goal_points, theta):
+    """all coordinates must first be transformed to vehicle
+    coordinates in order for the algorithm to work properlys
+    xgv = (xg – xr)cos(Φ) + (yg-yr)sin(Φ)
+    ygv = -(xg – xr)sin(Φ) + (yg-yr)cos(Φ)
+    (xgv,ygv) is the goal point in vehicle coordinates and Φ is the current vehicle heading
+    """
+    r_current_pos = np.asarray(r_current_pos)
+    goal_points = np.asarray(goal_points)
     T_matrix = np.array([
             [np.sin(theta), np.cos(theta)],
             [np.cos(theta), -1*np.sin(theta)],
             ])
-    T_matrix = np.array([[1, 1], [1, 1]])
-    trans = point-pos
+    trans = goal_points - r_current_pos
     if trans.ndim >= 2:
         trans = trans.T
         point_t = np.dot(T_matrix, trans).T
@@ -218,9 +223,9 @@ def send_path_4_drawing(path, sleep_time = 0.07, clientID=0):
     """
     for i in path:
         point2send = transform_points_from_image2real (i, 4/1000)
-        packedData=vrep.simxPackFloats(point2send.flatten())
+        packedData = vrep.simxPackFloats(point2send.flatten())
         raw_bytes = (ctypes.c_ubyte * len(packedData)).from_buffer_copy(packedData)	
-        returnCode=vrep.simxWriteStringStream(clientID, "path_coord", raw_bytes, vrep.simx_opmode_oneshot)
+        _ = vrep.simxWriteStringStream(clientID, "path_coord", raw_bytes, vrep.simx_opmode_oneshot)
         time.sleep(sleep_time)
 
 def get_distance(points1, points2):
@@ -233,20 +238,7 @@ def pioneer_robot_model(v_des, omega_des, w_axis, w_radius):
     omega_left = v_l/w_radius
     return omega_right, omega_left
 
-def homing():
-    vision_thread = Tracker(mid=5,
-                        transform=None,
-                        mid_aux=0,
-                        video_source=-1,
-                        capture=False,
-                        show=True,
-                        debug=False,
-                       )
-    vision_thread.start()
-
-    corners_detected = vision_thread.cornersDetected
-    while corners_detected is False:
-        corners_detected = vision_thread.cornersDetected
+def follow_path():
     
     vrep.simxFinish(-1)
     clientID = vrep.simxStart(
@@ -270,30 +262,31 @@ def homing():
     try:
         grid = np.full((880, 1190), 255)
         lad = 0.05 # look ahead distance m
-        wheel_axis = 0.331 # wheel axis distance
-        wheel_radius = 0.09751 # wheel radius
-        res_las,look_ahead_sphere = vrep.simxGetObjectHandle(clientID,'look_ahead',vrep.simx_opmode_oneshot_wait)
+        wheel_axis = 0.1 # wheel axis distance
+        wheel_radius = 0.02 # wheel radius
+        _,look_ahead_sphere = vrep.simxGetObjectHandle(clientID,'look_ahead',vrep.simx_opmode_oneshot_wait)
         indx = 0
         theta = 0.0
-        dt = 0.0
         count = 0
         om_sp = 0
         d_controller   = pid(kp=0.5, ki=0, kd=0)
         omega_controller = pid(0.5, 0., 0.)
-        center_goal = np.array([200, 200])
+        # Goal position transformed to GRID position
+        goal_position = np.array([100, 100])
         
         OP_MODE = vrep.simx_opmode_oneshot_wait
         robot = EvolvedRobot('thymio-II', clientID, None, OP_MODE, None)
         
         robot_m = get_marker_object(7)
         while robot_m.realxy() is None:
+            # obtain current position of the robot
             robot_m = get_marker_object(7)
         
-        # get robot position in  GRID
-        center_robot = (robot_m.realxy()[:2]*1000).astype(int)
+        # transform robot position to grid system
+        robot_current_position = (robot_m.realxy()[:2]*1000).astype(int)
         
-        # Search for the Path in GRID
-        _ , path = search(grid, (center_robot[1], center_robot[0]), (center_goal[1], center_goal[0]), cost = 1, D = 0.5, fnc='Manhattan')
+        # Search for the path in grid system
+        _ , path = search(grid, (robot_current_position[1], robot_current_position[0]), (goal_position[1], goal_position[0]), cost = 1, D = 0.5, fnc='Manhattan')
         
         # Path smoothing
         newpath = smooth(path,grid, weight_data = 0.1, weight_smooth = 0.6, number_of_iter = 1000)               
@@ -304,47 +297,56 @@ def homing():
         # Send data to VREP
         send_path_4_drawing(newpath, 0.05, clientID)
         # transform GRID goal to real (x, y) coordinates
-        center_goal = transform_points_from_image2real(np.array(center_goal))
+        goal_position = transform_points_from_image2real(np.array(goal_position))
         
-        while not is_near(center_robot, center_goal, dist_thresh = 0.25):
-            # ge robot marker
-            while robot_m.realxy() is None:
-                robot_m = get_marker_object(7)
-            center_robot = robot_m.realxy()[:2]
+        # get marker
+        robot_m = get_marker_object(7)
+        while robot_m.realxy() is None:
+            robot_m = get_marker_object(7)
+        robot_current_position = robot_m.realxy()[:2]
+        
+        while not is_near(robot_current_position, goal_position, dist_thresh = 0.05):
+            # get robot marker
+            robot_m = get_marker_object(7)
+            if robot_m.realxy() is not None:
+                # update current position of the robot
+                robot_current_position = robot_m.realxy()[:2]
             
-            # robot orientation
+            # calculate robot orientation
             theta = robot_m.orientation()
             theta = np.arctan2(np.sin(theta), np.cos(theta))
-            
-            # path transformation
-            path_transformed = transform2robot_frame(center_robot, path_to_track, theta)
+                        
+            # path transformation to vehicle coordinates
+            path_transformed = transform2robot_frame(robot_current_position, path_to_track, theta)
             # get distance of each carrot point
             dist = get_distance(path_transformed, np.array([0,0]))           
             
-            #loop to determine which point will be the carrot
+            # loop to determine which point will be the carrot/goal point
             for i in range(dist.argmin(), dist.shape[0]):
                 if dist[i] < lad and indx <= i:
                     indx = i
-            #mark the carrot with the sphere
-            returnCode = vrep.simxSetObjectPosition(clientID,
+            
+            # mark the carrot with the sphere
+            _ = vrep.simxSetObjectPosition(clientID,
                                                     look_ahead_sphere,
                                                     -1,
                                                     (path_to_track[indx,0]*4,
                                                     path_to_track[indx,1]*4, 
                                                     0.005),
                                                     vrep.simx_opmode_oneshot)
-            
-            orient_error = np.arctan2(path_transformed[indx,1], path_transformed[indx,0])
-            
             # the PID controllers
+            orient_error = np.arctan2(path_transformed[indx,1], path_transformed[indx,0])
             v_sp = d_controller.control(dist[indx])                     
-            om_sp =omega_controller.control(orient_error)
+            om_sp = omega_controller.control(orient_error)
             vr, vl = pioneer_robot_model(v_sp, om_sp, wheel_axis, wheel_radius)
+            
             # set thymio wheelspeeds
-            robot.t_set_motors(vr*50, vl*50)
+            robot.t_set_motors(vl*20, vr*20)
             count += 1
         else:
-            print("GOAAAAAAALL !!")
+            print('GOAAAAAAALL !!')
+            print('robot_position: ', robot_current_position)
+            print('robot_goal: ', goal_position)
             robot.t_stop()   
     finally:
         time.sleep(0.1)
@@ -352,4 +354,14 @@ def homing():
         vrep.simxFinish(-1)
 
 if __name__ == '__main__':
-    homing()
+    vision_thread = Tracker(mid=5,
+                    transform=None,
+                    mid_aux=0,
+                    video_source=-1,
+                    capture=False,
+                    show=True,
+                    debug=False,
+                    )
+    vision_thread.start()
+    time.sleep(10)
+    follow_path()
