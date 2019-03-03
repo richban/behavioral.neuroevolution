@@ -24,9 +24,9 @@ class pid():
         self.error = error
         self.error_sum += error
         self.d_error = self.error - self.error_old
-        P = self.kp*self.error
-        I = self.ki*self.error_sum
-        D = self.kd*self.d_error
+        P = self.kp * self.error
+        I = self.ki * self.error_sum
+        D = self.kd * self.d_error
         self.error_old = self.error
         return P+I+D  
 
@@ -213,7 +213,7 @@ def transform2robot_frame(r_current_pos, goal_points, theta):
         point_t = np.dot(T_matrix, trans)
     return point_t
 
-def is_near(robot_center, point, dist_thresh = 0.25):
+def is_near(robot_center, point, dist_thresh = 0.025):
     dist = np.sqrt((robot_center[0]-point[0])**2 + (robot_center[1]-point[1])**2)
     return dist<=dist_thresh
 
@@ -232,10 +232,15 @@ def get_distance(points1, points2):
     return np.sqrt(np.sum(np.square(points1 - points2), axis=1))
 
 def pioneer_robot_model(v_des, omega_des, w_axis, w_radius):
-    v_r = (v_des+w_axis*omega_des)
-    v_l = (v_des-w_axis*omega_des)
-    omega_right = v_r/w_radius
-    omega_left = v_l/w_radius
+    """ v_des - desired velocity
+        omega_des - desired rotation
+    """
+    v_r = (v_des + w_axis * omega_des)
+    v_l = (v_des - w_axis * omega_des)
+    
+    omega_right = v_r / w_radius
+    omega_left = v_l / w_radius
+
     return omega_right, omega_left
 
 def follow_path():
@@ -261,16 +266,16 @@ def follow_path():
     
     try:
         grid = np.full((880, 1190), 255)
-        lad = 0.05 # look ahead distance m
-        wheel_axis = 0.1 # wheel axis distance
-        wheel_radius = 0.02 # wheel radius
+        lad = 0.05 # look ahead distance in meters (m)
+        wheel_axis = 0.1 # wheel axis distance in meters (m)
+        wheel_radius = 0.03 # wheel radius in meters (m)
         _,look_ahead_sphere = vrep.simxGetObjectHandle(clientID,'look_ahead',vrep.simx_opmode_oneshot_wait)
         indx = 0
         theta = 0.0
         count = 0
         om_sp = 0
         d_controller   = pid(kp=0.5, ki=0, kd=0)
-        omega_controller = pid(0.5, 0., 0.)
+        omega_controller = pid(kp=0.5, ki=0, kd=0)
         # Goal position transformed to GRID position
         goal_position = np.array([100, 100])
         
@@ -316,9 +321,9 @@ def follow_path():
             theta = robot_m.orientation()
             theta = np.arctan2(np.sin(theta), np.cos(theta))
                         
-            # path transformation to vehicle coordinates
+            # path transformation to vehicle coordinates; relative to the robot
             path_transformed = transform2robot_frame(robot_current_position, path_to_track, theta)
-            # get distance of each carrot point
+            # get distance of each carrot point; relative to the robots
             dist = get_distance(path_transformed, np.array([0,0]))           
             
             # loop to determine which point will be the carrot/goal point
@@ -327,19 +332,22 @@ def follow_path():
                     indx = i
             
             # mark the carrot with the sphere
-            _ = vrep.simxSetObjectPosition(clientID,
-                                                    look_ahead_sphere,
-                                                    -1,
-                                                    (path_to_track[indx,0]*4,
-                                                    path_to_track[indx,1]*4, 
-                                                    0.005),
-                                                    vrep.simx_opmode_oneshot)
-            # the PID controllers
+            _ = vrep.simxSetObjectPosition(
+                                            clientID,
+                                            look_ahead_sphere,
+                                            -1,
+                                            (path_to_track[indx,0]*4,
+                                            path_to_track[indx,1]*4, 
+                                            0.005),
+                                            vrep.simx_opmode_oneshot
+                                            )
+            # orientation error relative to the robot
             orient_error = np.arctan2(path_transformed[indx,1], path_transformed[indx,0])
+            
+            # PID controller; desired velocity and rotation
             v_sp = d_controller.control(dist[indx])                     
             om_sp = omega_controller.control(orient_error)
             vr, vl = pioneer_robot_model(v_sp, om_sp, wheel_axis, wheel_radius)
-            
             # set thymio wheelspeeds
             robot.t_set_motors(vl*20, vr*20)
             count += 1
