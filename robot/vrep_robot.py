@@ -76,12 +76,12 @@ class VrepRobot(object):
             return '#%d' % self.id
         return ''
 
-    def get_position(self):
+    def v_get_position(self):
         _, self.v_position = vrep.simxGetObjectPosition(
             self.client_id, self.v_body, -1, self.op_mode)
         return self.v_position
 
-    def set_position(self, position):
+    def v_set_position(self, position):
         returnCode = vrep.simxSetObjectPosition(
             self.client_id, self.v_body, -1, position, self.op_mode)
         if returnCode == vrep.simx_return_ok:
@@ -108,6 +108,11 @@ class VrepRobot(object):
             print('setOrientatinon remote function call failed.')
             return -1
         return orientation
+
+    def v_set_pos_angle(self, position, orientation):
+        """Set the orientation and position of the robot in the simulation"""
+        self.v_set_position(position)
+        self.v_set_orientation(orientation)
 
     def v_get_orientation(self, op_mode):
         """get the orientation of an object in the simulation
