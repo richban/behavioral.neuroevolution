@@ -332,7 +332,7 @@ class Tracker(threading.Thread):
                 pt2 = (int(round(cx + l_ * math.cos(angle))),
                        int(round(cy + l_ * math.sin(angle))))
                 cv2.line(image, center, pt2, (255, 0, 0), 2, cv2.LINE_AA)
-                cv2.putText(image, str(m.mid),
+                cv2.putText(image, str(angle),
                             (int(round(cx)) + 45,
                              int(round(cy)) + 45),
                             font, 1, (255, 0, 0),
