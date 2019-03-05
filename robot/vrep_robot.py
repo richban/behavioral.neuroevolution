@@ -24,25 +24,26 @@ class VrepRobot(object):
         # Robot Specific Attributes
         self.v_no_detection = 1.0
         self.v_minDetection = 0.05
-        self.v_initSpeed = 2.0
+        self.v_initSpeed = 0.0
         self.v_wheel_speeds = np.array([])
         self.v_sensor_activation = np.array([])
         self.v_norm_wheel_speeds = np.array([])
         self.v_position = (0, 0, 0)
         self.v_num_sensors = 16
+        self.v_min_detection = 0.05
 
         # Initialize Robot Body
-        res, self.v_body = vrep.simxGetObjectHandle(
+        _, self.v_body = vrep.simxGetObjectHandle(
             self.client_id, "Pioneer_p3dx%s" %
             self.suffix, self.op_mode)
 
         # Initialize Left Motor
-        res, self.v_left_motor = vrep.simxGetObjectHandle(
+        _, self.v_left_motor = vrep.simxGetObjectHandle(
             self.client_id, "Pioneer_p3dx_leftMotor%s" %
             self.suffix, self.op_mode)
 
         # Initialize Right Motor
-        res, self.v_right_motor = vrep.simxGetObjectHandle(
+        _, self.v_right_motor = vrep.simxGetObjectHandle(
             self.client_id, "Pioneer_p3dx_rightMotor%s" %
             self.suffix, self.op_mode)
 
@@ -53,11 +54,11 @@ class VrepRobot(object):
         self.v_prox_sensors = []
         self.v_prox_sensors_val = np.array([])
         for i in range(1, self.v_num_sensors + 1):
-            res, sensor = vrep.simxGetObjectHandle(
+            _, sensor = vrep.simxGetObjectHandle(
                 self.client_id, 'Pioneer_p3dx_ultrasonicSensor%d%s' %
                 (i, self.suffix), self.op_mode)
             self.v_prox_sensors.append(sensor)
-            errorCode, detectionState, detectedPoint, detectedObjectHandle, detectedSurfaceNormalVector = vrep.simxReadProximitySensor(
+            _, _, detectedPoint, _, _ = vrep.simxReadProximitySensor(
                 self.client_id, sensor, vrep.simx_opmode_streaming)
             np.append(self.v_prox_sensors_val, np.linalg.norm(detectedPoint))
 
@@ -76,7 +77,7 @@ class VrepRobot(object):
         return ''
 
     def get_position(self):
-        returnCode, self.v_position = vrep.simxGetObjectPosition(
+        _, self.v_position = vrep.simxGetObjectPosition(
             self.client_id, self.v_body, -1, self.op_mode)
         return self.v_position
 
@@ -108,22 +109,20 @@ class VrepRobot(object):
             return -1
         return orientation
 
-    def v_get_orientation(self):
-        """Set the orientation of an object in the simulation
+    def v_get_orientation(self, op_mode):
+        """get the orientation of an object in the simulation
         Euler angles (alpha, beta and gamma)
         parent_handle: -1 is the world frame, any other int should be a vrep object handle
         """
-        res, angles  = vrep.simxSetObjectOrientation(
+        res, angles = vrep.simxGetObjectOrientation(
             self.client_id,
             self.v_body,
             -1,
-            orientation,
-            OP_MODE)
+            op_mode)
         if res == vrep.simx_return_ok:
-            print('SetOrientation object:', self.v_body,
-                  ' orientation: ', angles)
+            print('SetOrientation object:', self.v_body)
         else:
-            print('setOrientatinon remote function call failed.')
+            print('get object orientation function call failed.')
             return -1
         return angles
 
@@ -143,7 +142,7 @@ class VrepRobot(object):
             self.client_id,
             self.v_right_motor,
             right,
-            vrep.simx_opmode_streaming)
+            vrep.simx_opmode_oneshot)
 
     def v_set_left_motor(self, left):
         vrep.simxSetJointTargetVelocity(
@@ -160,12 +159,12 @@ class VrepRobot(object):
             vrep.simx_opmode_oneshot)
 
     def v_get_sensor_state(self, sensor):
-        errorCode, detectionState, detectedPoint, detectedObjectHandle, detectedSurfaceNormalVector = vrep.simxReadProximitySensor(
+        _, detectionState, _, _, _ = vrep.simxReadProximitySensor(
             self.client_id, sensor, vrep.simx_opmode_buffer)
         return detectionState
 
     def v_get_sensor_distance(self, sensor):
-        errorCode, detectionState, detectedPoint, detectedObjectHandle, detectedSurfaceNormalVector = vrep.simxReadProximitySensor(
+        _, _, detectedPoint, _, _ = vrep.simxReadProximitySensor(
             self.client_id, sensor, vrep.simx_opmode_buffer)
         return np.linalg.norm(detectedPoint)
 
@@ -188,7 +187,7 @@ class VrepRobot(object):
 
     def v_read_prox(self):
         self.v_sensor_activation = np.array([])
-        for i, sensor in enumerate(self.v_prox_sensors):
+        for _, sensor in enumerate(self.v_prox_sensors):
             if self.v_get_sensor_state(sensor):
                 activation = self.v_get_sensor_distance(sensor)
                 self.v_sensor_activation = np.append(
