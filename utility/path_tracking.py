@@ -2,7 +2,7 @@ from queue import PriorityQueue
 import numpy as np
 import ctypes
 from math import degrees
-
+import robot.vrep as vrep
 
 class pid():
     """PID Controller"""
