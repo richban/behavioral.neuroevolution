@@ -244,7 +244,6 @@ def pioneer_robot_model(v_des, omega_des, w_axis, w_radius):
     return omega_right, omega_left
 
 def follow_path():
-    
     vrep.simxFinish(-1)
     clientID = vrep.simxStart(
         '127.0.0.1',
@@ -253,7 +252,7 @@ def follow_path():
         True,
         5000,
         5)
-    
+
     if clientID == -1:
         print('Failed connecting to remote API server')
         print('Program ended')
@@ -263,103 +262,129 @@ def follow_path():
         print('Failed to start the simulation\n')
         print('Program ended\n')
         return
-    
+
     try:
         grid = np.full((880, 1190), 255)
-        lad = 0.05 # look ahead distance in meters (m)
-        wheel_axis = 0.1 # wheel axis distance in meters (m)
-        wheel_radius = 0.03 # wheel radius in meters (m)
-        _,look_ahead_sphere = vrep.simxGetObjectHandle(clientID,'look_ahead',vrep.simx_opmode_oneshot_wait)
+        lad = 0.09  # look ahead distance in meters (m)
+        wheel_axis = 0.11  # wheel axis distance in meters (m)
+        wheel_radius = 0.02  # wheel radius in meters (m)
+        _, look_ahead_sphere = vrep.simxGetObjectHandle(
+            clientID, 'look_ahead', vrep.simx_opmode_oneshot_wait)
         indx = 0
         theta = 0.0
         count = 0
         om_sp = 0
-        d_controller   = pid(kp=0.5, ki=0, kd=0)
+        d_controller = pid(kp=0.5, ki=0, kd=0)
         omega_controller = pid(kp=0.5, ki=0, kd=0)
-        # Goal position transformed to GRID position
-        goal_position = np.array([100, 100])
-        
+
         OP_MODE = vrep.simx_opmode_oneshot_wait
         robot = EvolvedRobot('thymio-II', clientID, None, OP_MODE, None)
-        
+
         robot_m = get_marker_object(7)
         while robot_m.realxy() is None:
             # obtain current position of the robot
             robot_m = get_marker_object(7)
-        
+
+        goal_m = get_marker_object(8)
+        while goal_m.realxy() is None:
+            # obtain goal marker postion
+            goal_m = get_marker_object(8)
+
         # transform robot position to grid system
         robot_current_position = (robot_m.realxy()[:2]*1000).astype(int)
-        
+
+        # transform goal position to grid system
+        goal_position = (goal_m.realxy()[:2]*1000).astype(int)
+
+        # set position of the robot in simulator
+        position, orientation = transform_pos_angle(robot_m.realxy()[:2],
+                                                    (2*np.pi - robot_m.orientation()))
+        robot.v_set_pos_angle(position, orientation)
+
         # Search for the path in grid system
-        _ , path = search(grid, (robot_current_position[1], robot_current_position[0]), (goal_position[1], goal_position[0]), cost = 1, D = 0.5, fnc='Manhattan')
-        
+        _, path = search(grid,
+                         (robot_current_position[1],
+                          robot_current_position[0]),
+                         (goal_position[1],
+                          goal_position[0]),
+                         cost=1,
+                         D=0.5,
+                         fnc='Manhattan')
+
         # Path smoothing
-        newpath = smooth(path,grid, weight_data = 0.1, weight_smooth = 0.6, number_of_iter = 1000)               
-        
+        newpath = smooth(path,
+                         grid,
+                         weight_data=0.1,
+                         weight_smooth=0.6,
+                         number_of_iter=1000)
+
         # transform GRID points to  real (x, y) coordinates
         path_to_track = transform_points_from_image2real(newpath)
 
         # Send data to VREP
         send_path_4_drawing(newpath, 0.05, clientID)
+
         # transform GRID goal to real (x, y) coordinates
-        goal_position = transform_points_from_image2real(np.array(goal_position))
-        
-        # get marker
-        robot_m = get_marker_object(7)
-        while robot_m.realxy() is None:
-            robot_m = get_marker_object(7)
-        robot_current_position = robot_m.realxy()[:2]
-        
-        while not is_near(robot_current_position, goal_position, dist_thresh = 0.05):
+        goal_position = goal_m.realxy()[:2]
+
+        while not is_near(robot_current_position, goal_position, dist_thresh=0.05):
             # get robot marker
             robot_m = get_marker_object(7)
             if robot_m.realxy() is not None:
                 # update current position of the robot
                 robot_current_position = robot_m.realxy()[:2]
-            
+
             # calculate robot orientation
-            theta = robot_m.orientation()
+            theta = 2*np.pi - robot_m.orientation()
             theta = np.arctan2(np.sin(theta), np.cos(theta))
-                        
+
+            # update position and orientation of the robot in vrep
+            position, orientation = transform_pos_angle(
+                robot_current_position, theta)
+            robot.v_set_pos_angle(position, orientation)
+
             # path transformation to vehicle coordinates; relative to the robot
-            path_transformed = transform2robot_frame(robot_current_position, path_to_track, theta)
+            path_transformed = transform2robot_frame(
+                robot_current_position, path_to_track, theta)
+
             # get distance of each carrot point; relative to the robots
-            dist = get_distance(path_transformed, np.array([0,0]))           
-            
+            dist = get_distance(path_transformed, np.array([0, 0]))
+
             # loop to determine which point will be the carrot/goal point
             for i in range(dist.argmin(), dist.shape[0]):
                 if dist[i] < lad and indx <= i:
                     indx = i
-            
+
             # mark the carrot with the sphere
             _ = vrep.simxSetObjectPosition(
-                                            clientID,
-                                            look_ahead_sphere,
-                                            -1,
-                                            (path_to_track[indx,0]*4,
-                                            path_to_track[indx,1]*4, 
-                                            0.005),
-                                            vrep.simx_opmode_oneshot
-                                            )
+                clientID,
+                look_ahead_sphere,
+                -1,
+                (path_to_track[indx, 0]*4,
+                 path_to_track[indx, 1]*4,
+                 0.005),
+                vrep.simx_opmode_oneshot
+            )
             # orientation error relative to the robot
-            orient_error = np.arctan2(path_transformed[indx,1], path_transformed[indx,0])
-            
+            orient_error = np.arctan2(path_transformed[indx, 1], path_transformed[indx, 0])
+            print(orient_error)
             # PID controller; desired velocity and rotation
-            v_sp = d_controller.control(dist[indx])                     
+            v_sp = d_controller.control(dist[indx])
             om_sp = omega_controller.control(orient_error)
             vr, vl = pioneer_robot_model(v_sp, om_sp, wheel_axis, wheel_radius)
-            # set thymio wheelspeeds
-            robot.t_set_motors(vl*20, vr*20)
+
+            robot.t_set_motors(vl*30, vr*30)
             count += 1
         else:
             print('GOAAAAAAALL !!')
             print('robot_position: ', robot_current_position)
             print('robot_goal: ', goal_position)
-            robot.t_stop()   
+            robot.t_stop()
     finally:
         time.sleep(0.1)
-        vrep.simxStopSimulation(clientID,vrep.simx_opmode_blocking)
+        vrep.simxStopSimulation(clientID, vrep.simx_opmode_blocking)
         vrep.simxFinish(-1)
+
 
 if __name__ == '__main__':
     vision_thread = Tracker(mid=5,
