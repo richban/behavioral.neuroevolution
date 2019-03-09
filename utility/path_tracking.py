@@ -3,7 +3,7 @@ import numpy as np
 import ctypes
 from math import degrees
 import time
-
+import robot.vrep as vrep
 
 class pid():
     """PID Controller"""
@@ -265,8 +265,10 @@ def transform_pos_angle(position, orientation):
     return pos, angle
 
 
-def follow_path(robot, get_marker_object, vrep, clientID):
+def follow_path(robot, init_position, get_marker_object, vrep, clientID):
     try:
+        print('Back to initial position!')
+        robot.t_stop()
         grid = np.full((880, 1190), 255)
         lad = 0.09  # look ahead distance in meters (m)
         wheel_axis = 0.11  # wheel axis distance in meters (m)
@@ -285,16 +287,11 @@ def follow_path(robot, get_marker_object, vrep, clientID):
             # obtain current position of the robot
             robot_m = get_marker_object(7)
 
-        goal_m = get_marker_object(8)
-        while goal_m.realxy() is None:
-            # obtain goal marker postion
-            goal_m = get_marker_object(8)
-
         # transform robot position to grid system
         robot_current_position = (robot_m.realxy()[:2]*1000).astype(int)
 
         # transform goal position to grid system
-        goal_position = (goal_m.realxy()[:2]*1000).astype(int)
+        goal_position = (init_position*1000).astype(int)
 
         # set position of the robot in simulator
         position, orientation = transform_pos_angle(robot_m.realxy()[:2],
@@ -325,7 +322,7 @@ def follow_path(robot, get_marker_object, vrep, clientID):
         send_path_4_drawing(newpath, 0.05, clientID)
 
         # transform GRID goal to real (x, y) coordinates
-        goal_position = goal_m.realxy()[:2]
+        goal_position = init_position
 
         while not is_near(robot_current_position, goal_position, dist_thresh=0.05):
             # get robot marker
@@ -373,7 +370,7 @@ def follow_path(robot, get_marker_object, vrep, clientID):
             om_sp = omega_controller.control(orient_error)
             vr, vl = pioneer_robot_model(v_sp, om_sp, wheel_axis, wheel_radius)
 
-            robot.t_set_motors(vl*30, vr*30)
+            robot.t_set_motors(vl*40, vr*40)
             count += 1
         else:
             print('GOAAAAAAALL !!')

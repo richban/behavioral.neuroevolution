@@ -38,4 +38,7 @@ def f_pain(sensor_activation):
 
 
 def euclidean_distance(points1, points2):
-    return np.sqrt(np.sum(np.square(points1 - points2), axis=1))
+    a = np.array(points1)
+    b = np.array(points2)
+    c = a - b
+    return np.sqrt(np.sum(np.square([c]), axis=1))
