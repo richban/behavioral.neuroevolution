@@ -5,7 +5,7 @@ from utility.helpers import normalize
 import numpy as np
 
 T_SEN_MIN = 0
-T_SEN_MAX = 5000
+T_SEN_MAX = 4000
 
 
 class EvolvedRobot(VrepRobot, ThymioII):
