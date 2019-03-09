@@ -2,7 +2,8 @@ from queue import PriorityQueue
 import numpy as np
 import ctypes
 from math import degrees
-import robot.vrep as vrep
+import time
+
 
 class pid():
     """PID Controller"""
@@ -264,29 +265,10 @@ def transform_pos_angle(position, orientation):
     return pos, angle
 
 
-def follow_path():
-    vrep.simxFinish(-1)
-    clientID = vrep.simxStart(
-        '127.0.0.1',
-        19997,
-        True,
-        True,
-        5000,
-        5)
-
-    if clientID == -1:
-        print('Failed connecting to remote API server')
-        print('Program ended')
-        return
-
-    if (vrep.simxStartSimulation(clientID, vrep.simx_opmode_blocking) == -1):
-        print('Failed to start the simulation\n')
-        print('Program ended\n')
-        return
-
+def follow_path(robot, get_marker_object, vrep, clientID):
     try:
         grid = np.full((880, 1190), 255)
-        lad = 0.05  # look ahead distance in meters (m)
+        lad = 0.09  # look ahead distance in meters (m)
         wheel_axis = 0.11  # wheel axis distance in meters (m)
         wheel_radius = 0.02  # wheel radius in meters (m)
         _, look_ahead_sphere = vrep.simxGetObjectHandle(
@@ -297,9 +279,6 @@ def follow_path():
         om_sp = 0
         d_controller = pid(kp=0.5, ki=0, kd=0)
         omega_controller = pid(kp=0.5, ki=0, kd=0)
-
-        OP_MODE = vrep.simx_opmode_oneshot_wait
-        robot = EvolvedRobot('thymio-II', clientID, None, OP_MODE, None)
 
         robot_m = get_marker_object(7)
         while robot_m.realxy() is None:
@@ -319,7 +298,7 @@ def follow_path():
 
         # set position of the robot in simulator
         position, orientation = transform_pos_angle(robot_m.realxy()[:2],
-                                                    robot_m.orientation())
+                                                    (2*np.pi - robot_m.orientation()))
         robot.v_set_pos_angle(position, orientation)
 
         # Search for the path in grid system
@@ -346,11 +325,9 @@ def follow_path():
         send_path_4_drawing(newpath, 0.05, clientID)
 
         # transform GRID goal to real (x, y) coordinates
-        goal_position = transform_points_from_image2real(
-            np.array(goal_position))
+        goal_position = goal_m.realxy()[:2]
 
         while not is_near(robot_current_position, goal_position, dist_thresh=0.05):
-            # import pdb; pdb.set_trace();
             # get robot marker
             robot_m = get_marker_object(7)
             if robot_m.realxy() is not None:
@@ -358,8 +335,8 @@ def follow_path():
                 robot_current_position = robot_m.realxy()[:2]
 
             # calculate robot orientation
-            theta = robot_m.orientation()
-            # theta = np.arctan2(np.sin(theta), np.cos(theta))
+            theta = 2*np.pi - robot_m.orientation()
+            theta = np.arctan2(np.sin(theta), np.cos(theta))
 
             # update position and orientation of the robot in vrep
             position, orientation = transform_pos_angle(
@@ -377,7 +354,7 @@ def follow_path():
             for i in range(dist.argmin(), dist.shape[0]):
                 if dist[i] < lad and indx <= i:
                     indx = i
-            # pdb.set_trace();
+
             # mark the carrot with the sphere
             _ = vrep.simxSetObjectPosition(
                 clientID,
@@ -389,15 +366,14 @@ def follow_path():
                 vrep.simx_opmode_oneshot
             )
             # orientation error relative to the robot
-            orient_error = (
-                np.pi + (np.arctan2(path_transformed[indx, 1], path_transformed[indx, 0]))) - theta
-            print(orient_error)
+            orient_error = np.arctan2(
+                path_transformed[indx, 1], path_transformed[indx, 0])
             # PID controller; desired velocity and rotation
             v_sp = d_controller.control(dist[indx])
             om_sp = omega_controller.control(orient_error)
             vr, vl = pioneer_robot_model(v_sp, om_sp, wheel_axis, wheel_radius)
 
-            robot.t_set_motors(vl*40, vr*40)
+            robot.t_set_motors(vl*30, vr*30)
             count += 1
         else:
             print('GOAAAAAAALL !!')
@@ -405,6 +381,9 @@ def follow_path():
             print('robot_goal: ', goal_position)
             robot.t_stop()
     finally:
-        time.sleep(0.1)
-        vrep.simxStopSimulation(clientID, vrep.simx_opmode_blocking)
-        vrep.simxFinish(-1)
+        if (vrep.simxStopSimulation(clientID, vrep.simx_opmode_oneshot) == -1):
+            print('Failed to stop the simulation\n')
+            print('Program ended\n')
+            return
+
+        time.sleep(1)

@@ -35,3 +35,7 @@ def f_straight_movements(left, right):
 
 def f_pain(sensor_activation):
     return (1 - np.amax(sensor_activation))
+
+
+def euclidean_distance(points1, points2):
+    return np.sqrt(np.sum(np.square(points1 - points2), axis=1))
