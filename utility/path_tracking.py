@@ -383,5 +383,4 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID):
             print('Failed to stop the simulation\n')
             print('Program ended\n')
             return
-
         time.sleep(1)
