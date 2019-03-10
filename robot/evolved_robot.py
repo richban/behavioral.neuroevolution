@@ -1,6 +1,6 @@
 from robot.thymio_robot import ThymioII
 from robot.vrep_robot import VrepRobot
-from aseba import Aseba
+from aseba.aseba import Aseba
 from utility.helpers import normalize
 import numpy as np
 

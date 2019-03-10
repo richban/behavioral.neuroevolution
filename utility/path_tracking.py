@@ -227,6 +227,8 @@ def is_near(robot_center, point, dist_thresh=0.025):
                    2 + (robot_center[1]-point[1])**2)
     return dist <= dist_thresh
 
+def is_angle_right(robot_angle, angle_thresh=0.45):
+    return abs(robot_angle) <= angle_thresh
 
 def pioneer_robot_model(v_des, omega_des, w_axis, w_radius):
     """ v_des - desired velocity
