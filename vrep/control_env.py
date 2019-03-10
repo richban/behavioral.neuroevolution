@@ -1,4 +1,4 @@
-import robot.vrep
+import vrep.vrep as vrep
 import time
 import array
 import traceback
@@ -19,7 +19,7 @@ def create_object(client_id, display_name, transform=None, parent_handle=-1, deb
     if transform is None:
         transform = np.array([0., 0., 0., 0., 0., 0., 1.])
     empty_buffer = bytearray()
-    res, ret_ints, ret_floats, ret_strings, ret_buffer = vrep.simxCallScriptFunction(
+    res, ret_ints, _, _, _ = vrep.simxCallScriptFunction(
         client_id,
         'remoteApiCommandServer',
         vrep.sim_scripttype_childscript,
@@ -104,7 +104,7 @@ def vrep_print(client_id, message):
 def exec_function(client_id, code):
     """send code string to vrep to execute some function"""
     empty_buffer = bytearray()
-    res, ret_ints, ret_floats, ret_strings, ret_buffer = vrep.simxCallScriptFunction(
+    res, ret_ints, _, _, _ = vrep.simxCallScriptFunction(
         client_id,
         'remoteApiCommandServer',
         vrep.sim_scripttype_childscript,

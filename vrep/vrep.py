@@ -3,9 +3,9 @@ import struct
 import sys
 import os
 import ctypes as ct
-from vrepConst import *
+from vrep.vrepConst import *
 
-#load library
+#load librarys
 libsimx = None
 try:
     file_extension = '.so'

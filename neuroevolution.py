@@ -13,20 +13,21 @@ from utility.path_tracking import search, \
     follow_path
 from vision.tracker import Tracker, get_marker_object, get_markers, CAM_MAT, CAM_DIST
 from robot.evolved_robot import EvolvedRobot
-import robot.vrep as vrep
-from functools import partial 
+import vrep.vrep as vrep
+from functools import partial
 
 OP_MODE = vrep.simx_opmode_oneshot_wait
 PORT_NUM = 19997
 CLIENT_ID = -1
 RUNTIME = 10
 
+
 def eval_genomes(robot, genomes, config):
-    
+
     robot_m = get_marker_object(7)
     while robot_m.realxy() is None:
         # obtain goal marker postion
-         robot_m = get_marker_object(7)
+        robot_m = get_marker_object(7)
     init_position = robot_m.realxy()[:2]
 
     for _, genome in genomes:
@@ -51,7 +52,8 @@ def eval_genomes(robot, genomes, config):
             # read proximity sensors data
             individual.t_read_prox()
             # input data to the neural network
-            net_output = net.activate(list(map(lambda x: x if x != 0.0 else 1.0, individual.n_t_sensor_activation)))
+            net_output = net.activate(
+                list(map(lambda x: x if x != 0.0 else 1.0, individual.n_t_sensor_activation)))
             # normalize motor wheel wheel_speeds [0.0, 2.0] - robot
             scaled_output = np.array([scale(xi, 0.0, 300.0)
                                       for xi in net_output])
@@ -67,7 +69,8 @@ def eval_genomes(robot, genomes, config):
         fitness = euclidean_distance(end_position, start_position)
         genome.fitness = fitness[0]
 
-        follow_path(individual, init_position, get_marker_object, vrep, CLIENT_ID)
+        follow_path(individual, init_position,
+                    get_marker_object, vrep, CLIENT_ID)
 
 
 def run(config_file):
@@ -93,7 +96,7 @@ def run(config_file):
                          neat.DefaultSpeciesSet, neat.DefaultStagnation,
                          config_file)
 
-        # Create the population, which is the top-level object for a NEAT run.
+    # Create the population, which is the top-level object for a NEAT run.
     p = neat.Population(config)
 
     # Add a stdout reporter to show progress in the terminal.
@@ -102,12 +105,12 @@ def run(config_file):
     p.add_reporter(stats)
 
     robot = EvolvedRobot(
-                        'thymio-II',
-                        client_id=CLIENT_ID,
-                        id=None,
-                        op_mode=OP_MODE,
-                        chromosome=None
-                        )
+        'thymio-II',
+        client_id=CLIENT_ID,
+        id=None,
+        op_mode=OP_MODE,
+        chromosome=None
+    )
 
     # Run for up to N_GENERATIONS generations.
     winner = p.run(partial(eval_genomes, robot), 2)
@@ -119,13 +122,13 @@ if __name__ == '__main__':
     config_path = os.path.join(local_dir, 'config.ini')
 
     vision_thread = Tracker(mid=5,
-                    transform=None,
-                    mid_aux=0,
-                    video_source=-1,
-                    capture=False,
-                    show=True,
-                    debug=False,
-                   )
+                            transform=None,
+                            mid_aux=0,
+                            video_source=-1,
+                            capture=False,
+                            show=True,
+                            debug=False,
+                            )
     vision_thread.start()
 
     while vision_thread.cornersDetected is not True:

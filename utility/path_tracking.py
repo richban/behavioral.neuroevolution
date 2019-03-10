@@ -3,7 +3,8 @@ import numpy as np
 import ctypes
 from math import degrees
 import time
-import robot.vrep as vrep
+import vrep.vrep as vrep
+
 
 class pid():
     """PID Controller"""
@@ -249,7 +250,7 @@ def send_path_4_drawing(path, sleep_time=0.07, clientID=0):
         packedData = vrep.simxPackFloats(point2send.flatten())
         raw_bytes = (ctypes.c_ubyte * len(packedData)
                      ).from_buffer_copy(packedData)
-        returnCode = vrep.simxWriteStringStream(
+        _ = vrep.simxWriteStringStream(
             clientID, "path_coord", raw_bytes, vrep.simx_opmode_oneshot)
         time.sleep(sleep_time)
 

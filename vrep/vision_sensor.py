@@ -1,9 +1,10 @@
-import vrep
+import vrep.vrep as vrep
+from PIL import Image
+import numpy as np
 import time
 import array
 import cv2
-import numpy as np
-from PIL import Image
+
 
 __credits__ = 'nemilya'
 
