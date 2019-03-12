@@ -333,7 +333,7 @@ pythontex-files-*/
 
 vision/corners/*.png
 vision/videos/*
-*/**/cdata.json
+vision/cdata.json
 
 # endfloat
 !scenes/*.ttt
