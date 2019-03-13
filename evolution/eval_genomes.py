@@ -1,12 +1,13 @@
-import neat
-import vrep.vrep as vrep
-from datetime import datetime, timedelta
 from utility.helpers import scale, euclidean_distance
-import numpy as np
 from utility.path_tracking import follow_path
+from vision.tracker import get_marker_object
+from datetime import datetime, timedelta
+import vrep.vrep as vrep
+import numpy as np
+import neat
 
 
-def eval_genomes_hardware(robot, genomes, config, get_marker_object, settings):
+def eval_genomes_hardware(individual, settings, genomes, config):
 
     robot_m = get_marker_object(7)
     while robot_m.realxy() is None:
@@ -20,8 +21,7 @@ def eval_genomes_hardware(robot, genomes, config, get_marker_object, settings):
             print('Program ended\n')
             return
 
-        robot.chromosome = genome
-        individual = robot
+        individual.chromosome = genome
 
         now = datetime.now()
         scaled_output = np.array([])
@@ -79,21 +79,21 @@ def eval_genomes_simulation(individual, settings, genomes, config):
         _, collision = vrep.simxReadCollision(
             settings.client_id, collision_handle, vrep.simx_opmode_streaming)
 
-        while not collision and datetime.now() - now < timedelta(seconds=settings.RUNTIME):
+        while not collision and datetime.now() - now < timedelta(seconds=settings.run_time):
 
             # The first simulation step waits for a trigger before being executed
             vrep.simxSynchronousTrigger(settings.client_id)
             _, collision = vrep.simxReadCollision(
                 settings.client_id, collision_handle, vrep.simx_opmode_buffer)
 
-            individual.neuro_loop()
+            individual.v_neuro_loop()
 
-            output = network.activate(individual.sensor_activation)
+            output = network.activate(individual.v_sensor_activation)
             # scale motor wheel wheel_speeds [0.0, 2.0] - robot
             scaled_output = np.array(
                 [scale(xi, 0.0, 2.0) for xi in output])
 
-            individual.set_motors(*list(scaled_output))
+            individual.v_set_motors(*list(scaled_output))
 
             # After this call, the first simulation step is finished
             vrep.simxGetPingTime(settings.client_id)
@@ -108,7 +108,7 @@ def eval_genomes_simulation(individual, settings, genomes, config):
         # Before closing the connection to V-REP, make sure that the last command sent out had time to arrive. You can guarantee this with (for example):
         vrep.simxGetPingTime(settings.client_id)
 
-        if (vrep.simxStopSimulation(settings.client_id, settings.client_id) == -1):
+        if (vrep.simxStopSimulation(settings.client_id, settings.op_mode) == -1):
             return
 
         genome.fitness = fitness

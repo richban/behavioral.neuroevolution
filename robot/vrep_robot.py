@@ -24,7 +24,7 @@ class VrepRobot(object):
         # Robot Specific Attributes
         self.v_chromosome = None
         self.v_no_detection = 1.0
-        self.v_minDetection = 0.05
+        self.v_min_detection = 0.05
         self.v_initSpeed = 0.0
         self.v_wheel_speeds = np.array([])
         self.v_sensor_activation = np.array([])
@@ -210,6 +210,18 @@ class VrepRobot(object):
                 self.v_sensor_activation = np.append(
                     self.v_sensor_activation, 0)
         return self.v_sensor_activation
+
+    def v_neuro_loop(self):
+        self.v_sensor_activation = np.array([])
+        for _, sensor in enumerate(self.v_prox_sensors):
+            if self.v_get_sensor_state(sensor):
+                activation = sensors_offset(self.v_get_sensor_distance(
+                    sensor), self.v_min_detection, self.v_no_detection)
+                self.v_sensor_activation = np.append(
+                    self.v_sensor_activation, activation)
+            else:
+                self.v_sensor_activation = np.append(
+                    self.v_sensor_activation, 0)
 
 
 if __name__ == '__main__':

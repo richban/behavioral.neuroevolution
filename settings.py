@@ -8,7 +8,7 @@ class Settings:
         self.client_id = -1
         self.op_mode = vrep.simx_opmode_oneshot_wait
         self.path = './data/neat/' + datetime.now().strftime('%Y-%m-%d') + '/'
-        self.run_time = 60
+        self.run_time = 5
         self.port_num = 19997
         self.address = '127.0.0.1'
 
