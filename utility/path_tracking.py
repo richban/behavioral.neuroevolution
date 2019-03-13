@@ -227,8 +227,10 @@ def is_near(robot_center, point, dist_thresh=0.025):
                    2 + (robot_center[1]-point[1])**2)
     return dist <= dist_thresh
 
+
 def is_angle_right(robot_angle, angle_thresh=0.45):
     return abs(robot_angle) <= angle_thresh
+
 
 def pioneer_robot_model(v_des, omega_des, w_axis, w_radius):
     """ v_des - desired velocity
@@ -375,6 +377,22 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID):
 
             robot.t_set_motors(vl*40, vr*40)
             count += 1
+
+        robot.t_stop()
+        angle_error = 1.0
+
+        while not is_angle_right(angle_error, angle_thresh=0.07):
+            # calculate robot orientation
+            robot_m = get_marker_object(7)
+
+            if robot_m.orientation() > np.pi:
+                angle_error = 2*np.pi - robot_m.orientation()
+            else:
+                angle_error = robot_m.orientation()
+
+            om_sp = omega_controller.control(angle_error)
+            vr, vl = pioneer_robot_model(v_sp, om_sp, wheel_axis, wheel_radius)
+            robot.t_set_motors(vl*10, vr*10)
         else:
             print('GOAAAAAAALL !!')
             print('robot_position: ', robot_current_position)

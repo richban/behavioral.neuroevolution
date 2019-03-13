@@ -22,6 +22,7 @@ class VrepRobot(object):
         self.op_mode = op_mode
 
         # Robot Specific Attributes
+        self.v_chromosome = None
         self.v_no_detection = 1.0
         self.v_minDetection = 0.05
         self.v_initSpeed = 0.0
@@ -75,6 +76,12 @@ class VrepRobot(object):
         if self.id is not None:
             return '#%d' % self.id
         return ''
+
+    def v_reset_init(self):
+        self.v_chromosome = None
+        self.v_wheel_speeds = np.array([])
+        self.v_sensor_activation = np.array([])
+        self.v_norm_wheel_speeds = np.array([])
 
     def v_get_position(self):
         _, self.v_position = vrep.simxGetObjectPosition(
