@@ -109,9 +109,9 @@ def search(grid, init, goal, cost, D=1, fnc='Euclidean', D2=1):
         indx = front_element[2]
         if ((indx[0] >= goal[0]-20) and (indx[0] < goal[0]+20)) and ((indx[1] >= goal[1]-20) and (indx[1] < goal[1]+20)):
             policy_draw(indx)
-            print("found goal")
-            print(count)
-            print(front_element)
+            # print("found goal")
+            # print(count)
+            # print(front_element)
             break
         else:
             for y in range(len(delta)):
@@ -188,7 +188,7 @@ def smooth(path, grid, weight_data=0.5, weight_smooth=0.1, tolerance=0.000001, n
             error[i] = np.abs(np.mean(old_val-newpath[i]))
         if np.mean(error) < tolerance:
             break
-    print(count)
+    # print(count)
     return newpath
 
 
@@ -272,7 +272,6 @@ def transform_pos_angle(position, orientation):
 
 def follow_path(robot, init_position, get_marker_object, vrep, clientID):
     try:
-        print('Back to initial position!')
         robot.t_stop()
         grid = np.full((880, 1190), 255)
         lad = 0.09  # look ahead distance in meters (m)
@@ -328,7 +327,7 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID):
 
         # transform GRID goal to real (x, y) coordinates
         goal_position = init_position
-
+        print('TASK - go to init position')
         while not is_near(robot_current_position, goal_position, dist_thresh=0.05):
             # get robot marker
             robot_m = get_marker_object(7)
@@ -380,7 +379,7 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID):
 
         robot.t_stop()
         angle_error = 1.0
-
+        print('TASK - rotate to init angle')
         while not is_angle_right(angle_error, angle_thresh=0.07):
             # calculate robot orientation
             robot_m = get_marker_object(7)
@@ -394,13 +393,11 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID):
             vr, vl = pioneer_robot_model(v_sp, om_sp, wheel_axis, wheel_radius)
             robot.t_set_motors(vl*10, vr*10)
         else:
-            print('GOAAAAAAALL !!')
-            print('robot_position: ', robot_current_position)
-            print('robot_goal: ', goal_position)
+            print('TASK - init position ok')
             robot.t_stop()
     finally:
         if (vrep.simxStopSimulation(clientID, vrep.simx_opmode_oneshot) == -1):
-            print('Failed to stop the simulation\n')
-            print('Program ended\n')
+            print('Failed to stop the simulation')
+            print('Program ended')
             return
         time.sleep(1)
