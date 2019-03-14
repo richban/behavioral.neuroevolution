@@ -14,7 +14,7 @@ OP_MODE = vrep.simx_opmode_oneshot_wait
 
 class VrepRobot(object):
 
-    def __init__(self, client_id, id, op_mode, **kw):
+    def __init__(self, client_id, id, op_mode, robot_type, **kw):
         # super(VrepRobot, self).__init__(**kw)
 
         self.id = id
@@ -30,23 +30,21 @@ class VrepRobot(object):
         self.v_sensor_activation = np.array([])
         self.v_norm_wheel_speeds = np.array([])
         self.v_position = (0, 0, 0)
-        self.v_num_sensors = 16
+        self.v_num_sensors = robot_type['num_sensors']
         self.v_min_detection = 0.05
+        self.v_robot_type = robot_type
 
         # Initialize Robot Body
         _, self.v_body = vrep.simxGetObjectHandle(
-            self.client_id, "Pioneer_p3dx%s" %
-            self.suffix, self.op_mode)
+            self.client_id, "{}{}".format(self.v_robot_type['body'], self.suffix), self.op_mode)
 
         # Initialize Left Motor
         _, self.v_left_motor = vrep.simxGetObjectHandle(
-            self.client_id, "Pioneer_p3dx_leftMotor%s" %
-            self.suffix, self.op_mode)
+            self.client_id, "{}{}".format(self.v_robot_type['left_motor'], self.suffix), self.op_mode)
 
         # Initialize Right Motor
         _, self.v_right_motor = vrep.simxGetObjectHandle(
-            self.client_id, "Pioneer_p3dx_rightMotor%s" %
-            self.suffix, self.op_mode)
+            self.client_id, "{}{}".format(self.v_robot_type['right_motor'], self.suffix), self.op_mode)
 
         # Initialize Wheels
         self.v_wheels = [self.v_left_motor, self.v_right_motor]
@@ -56,8 +54,7 @@ class VrepRobot(object):
         self.v_prox_sensors_val = np.array([])
         for i in range(1, self.v_num_sensors + 1):
             _, sensor = vrep.simxGetObjectHandle(
-                self.client_id, 'Pioneer_p3dx_ultrasonicSensor%d%s' %
-                (i, self.suffix), self.op_mode)
+                self.client_id, "{}{}{}".format(self.v_robot_type['sensor'], i, self.suffix), self.op_mode)
             self.v_prox_sensors.append(sensor)
             _, _, detectedPoint, _, _ = vrep.simxReadProximitySensor(
                 self.client_id, sensor, vrep.simx_opmode_streaming)
@@ -73,8 +70,10 @@ class VrepRobot(object):
 
     @property
     def suffix(self):
-        if self.id is not None:
+        if self.id is not None and self.v_robot_type['name'] == 'pd3x':
             return '#%d' % self.id
+        elif self.id is not None and self.v_robot_type['name'] == 'thymio':
+            return '%d' % self.id
         return ''
 
     def v_reset_init(self):
@@ -222,6 +221,9 @@ class VrepRobot(object):
             else:
                 self.v_sensor_activation = np.append(
                     self.v_sensor_activation, 0)
+
+    def v_stop(self):
+        self.v_set_motors(0, 0)
 
 
 if __name__ == '__main__':

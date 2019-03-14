@@ -47,7 +47,7 @@ def run_vrep_simluation(settings, config_file):
         client_id=settings.client_id,
         id=None,
         op_mode=settings.op_mode,
-        chromosome=None
+        robot_type=settings.robot_type
     )
 
     # Run for up to N_GENERATIONS generations.
