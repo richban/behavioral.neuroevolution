@@ -66,8 +66,9 @@ if __name__ == '__main__':
             settings = Settings(thymio)
             run_simulator(settings, config)
 
-        elif (sys.argv[1] == 'thymio'):
+        elif (sys.argv[1] == 'hw' and sys.argv[2] == 'thymio'):
             config = os.path.join(local_dir, 'config_thymio.ini')
+            settings = Settings(thymio)
             run_hardware(settings, config)
         else:
             print('Error!')
