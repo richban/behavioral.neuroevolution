@@ -192,7 +192,7 @@ def smooth(path, grid, weight_data=0.5, weight_smooth=0.1, tolerance=0.000001, n
     return newpath
 
 
-def transform_points_from_image2real(points, scale=1/1000):
+def transform_points_from_image2real(points, scale=1/100):
     """transform from grid frame to real coordinates"""
     if points.ndim < 2:
         flipped = np.flipud(points)
@@ -245,12 +245,12 @@ def pioneer_robot_model(v_des, omega_des, w_axis, w_radius):
     return omega_right, omega_left
 
 
-def send_path_4_drawing(path, sleep_time=0.07, clientID=0):
+def send_path_4_drawing(path, sleep_time=0.07, clientID=0, scale=1/100):
     """ send path to VREP; the bigger the sleep time the 
         more accurate the points are placed but yo
     """
     for i in path:
-        point2send = transform_points_from_image2real(i, 4/1000)
+        point2send = transform_points_from_image2real(i, scale)
         packedData = vrep.simxPackFloats(point2send.flatten())
         raw_bytes = (ctypes.c_ubyte * len(packedData)
                      ).from_buffer_copy(packedData)
@@ -263,9 +263,9 @@ def get_distance(points1, points2):
     return np.sqrt(np.sum(np.square(points1 - points2), axis=1))
 
 
-def transform_pos_angle(position, orientation):
+def transform_pos_angle(position, orientation, scale=1):
     (x, y) = position
-    pos = [x*4, y*4, 0.1388]
+    pos = [x*scale, y*scale, 0.1388]
     angle = [0, 0, degrees(orientation)]
     return pos, angle
 
@@ -273,7 +273,7 @@ def transform_pos_angle(position, orientation):
 def follow_path(robot, init_position, get_marker_object, vrep, clientID):
     try:
         robot.t_stop()
-        grid = np.full((880, 1190), 255)
+        grid = np.full((88, 119), 255)  # grid system in cm
         lad = 0.09  # look ahead distance in meters (m)
         wheel_axis = 0.11  # wheel axis distance in meters (m)
         wheel_radius = 0.02  # wheel radius in meters (m)
@@ -292,10 +292,10 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID):
             robot_m = get_marker_object(7)
 
         # transform robot position to grid system
-        robot_current_position = (robot_m.realxy()[:2]*1000).astype(int)
+        robot_current_position = (robot_m.realxy()[:2]*100).astype(int)
 
         # transform goal position to grid system
-        goal_position = (init_position*1000).astype(int)
+        goal_position = (init_position*100).astype(int)
 
         # set position of the robot in simulator
         position, orientation = transform_pos_angle(robot_m.realxy()[:2],
@@ -361,8 +361,8 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID):
                 clientID,
                 look_ahead_sphere,
                 -1,
-                (path_to_track[indx, 0]*4,
-                 path_to_track[indx, 1]*4,
+                (path_to_track[indx, 0],
+                 path_to_track[indx, 1],
                  0.005),
                 vrep.simx_opmode_oneshot
             )

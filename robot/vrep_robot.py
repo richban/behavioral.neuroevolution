@@ -85,7 +85,7 @@ class VrepRobot(object):
     def v_get_position(self):
         _, self.v_position = vrep.simxGetObjectPosition(
             self.client_id, self.v_body, -1, self.op_mode)
-        return self.v_position
+        return np.array(self.v_position)
 
     def v_set_position(self, position):
         returnCode = vrep.simxSetObjectPosition(

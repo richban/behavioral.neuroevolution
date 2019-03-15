@@ -85,15 +85,16 @@ def run_hardware_simulation(settings, config_file):
     p.add_reporter(neat.StdOutReporter(True))
     p.add_reporter(stats)
 
-    robot = EvolvedRobot(
+    individual = EvolvedRobot(
         'thymio-II',
         client_id=settings.client_id,
         id=None,
         op_mode=settings.op_mode,
-        chromosome=None
+        chromosome=None,
+        robot_type=settings.robot_type
     )
 
     # Run for up to N_GENERATIONS generations.
-    winner = p.run(partial(eval_genomes_hardware, robot, settings), 2)
+    winner = p.run(partial(eval_genomes_hardware, individual, settings), 2)
 
     return config, stats, winner

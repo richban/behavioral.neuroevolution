@@ -79,6 +79,8 @@ def eval_genomes_simulation(individual, settings, genomes, config):
         _, collision = vrep.simxReadCollision(
             settings.client_id, collision_handle, vrep.simx_opmode_streaming)
 
+        start_position = individual.v_get_position()
+
         while not collision and datetime.now() - now < timedelta(seconds=settings.run_time):
 
             # The first simulation step waits for a trigger before being executed
@@ -99,7 +101,9 @@ def eval_genomes_simulation(individual, settings, genomes, config):
             vrep.simxGetPingTime(settings.client_id)
 
         # fitness calculation
-        fitness = 1
+        end_position = individual.v_get_position()
+        # calculate the euclidean distance
+        fitness = euclidean_distance(end_position[:2], start_position[:2])
 
         # Now send some data to V-REP in a non-blocking fashion:
         vrep.simxAddStatusbarMessage(
@@ -111,4 +115,4 @@ def eval_genomes_simulation(individual, settings, genomes, config):
         if (vrep.simxStopSimulation(settings.client_id, settings.op_mode) == -1):
             return
 
-        genome.fitness = fitness
+        genome.fitness = fitness[0]

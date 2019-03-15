@@ -20,7 +20,7 @@ pd3x = {
     'body': 'Pioneer_p3dx',
     'left_motor': 'Pioneer_p3dx_leftMotor',
     'right_motor': 'Pioneer_p3dx_rightMotor',
-    'sensor': 'Pioneer_p3dx_ultrasonicSensor'
+    'sensor': 'Pioneer_p3dx_ultrasonicSensor',
     'num_sensors': 16
 }
 
@@ -56,12 +56,12 @@ def run_simulator(settings, config_file):
 if __name__ == '__main__':
     local_dir = os.path.abspath('evolution')
     try:
-        if (sys.argv[1] == 'vrep' and sys.argv[2] === 'pd3x'):
+        if (sys.argv[1] == 'vrep' and sys.argv[2] == 'pd3x'):
             config = os.path.join(local_dir, 'config_pd3x.ini')
             settings = Settings(pd3x)
             run_simulator(settings, config)
 
-        elif (sys.argv[1] == 'vrep' and sys.argv[2] === 'pd3x'):
+        elif (sys.argv[1] == 'vrep' and sys.argv[2] == 'thymio'):
             config = os.path.join(local_dir, 'config_thymio.ini')
             settings = Settings(thymio)
             run_simulator(settings, config)
