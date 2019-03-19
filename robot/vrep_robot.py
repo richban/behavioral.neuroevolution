@@ -194,9 +194,8 @@ class VrepRobot(object):
                 else:
                     self.v_sensor_activation = np.append(
                         self.v_sensor_activation, 0)
-
-            self.logger.info('Sensors Activation {}'.format(
-                self.v_sensor_activation))
+            print(self.v_sensor_activation)
+            time.sleep(10)
 
     def v_read_prox(self):
         self.v_sensor_activation = np.array([])

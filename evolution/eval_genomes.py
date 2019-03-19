@@ -1,4 +1,4 @@
-from utility.helpers import scale, euclidean_distance
+from utility.helpers import scale, euclidean_distance, f_wheel_center, f_straight_movements, f_pain, scale
 from utility.path_tracking import follow_path
 from vision.tracker import get_marker_object
 from datetime import datetime, timedelta
@@ -90,7 +90,9 @@ def eval_genomes_simulation(individual, settings, genomes, config):
 
             individual.v_neuro_loop()
 
+            # Net output [0, 1]
             output = network.activate(individual.v_sensor_activation)
+
             # scale motor wheel wheel_speeds [0.0, 2.0] - robot
             scaled_output = np.array(
                 [scale(xi, 0.0, 2.0) for xi in output])
@@ -99,6 +101,17 @@ def eval_genomes_simulation(individual, settings, genomes, config):
 
             # After this call, the first simulation step is finished
             vrep.simxGetPingTime(settings.client_id)
+
+            # Fitness function; each feature;
+            # V - wheel center
+            V = f_wheel_center(output[0], output[1])
+            # pleasure - straight movements
+            pleasure = f_straight_movements(output[0], output[1])
+            # pain - closer to an obstacle more pain
+            pain = f_pain(individual.sensor_activation)
+            #  fitness_t at time stamp
+            fitness_t = V * pleasure * pain
+            fitness_agg = np.append(fitness_agg, fitness_t)
 
         # fitness calculation
         end_position = individual.v_get_position()
