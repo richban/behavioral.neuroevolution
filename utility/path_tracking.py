@@ -192,7 +192,7 @@ def smooth(path, grid, weight_data=0.5, weight_smooth=0.1, tolerance=0.000001, n
     return newpath
 
 
-def transform_points_from_image2real(points, scale=1/100):
+def transform_points_from_image2real(points, scale=1/1000):
     """transform from grid frame to real coordinates"""
     if points.ndim < 2:
         flipped = np.flipud(points)
@@ -245,7 +245,7 @@ def pioneer_robot_model(v_des, omega_des, w_axis, w_radius):
     return omega_right, omega_left
 
 
-def send_path_4_drawing(path, sleep_time=0.07, clientID=0, scale=1/100):
+def send_path_4_drawing(path, sleep_time=0.07, clientID=0, scale=1/1000):
     """ send path to VREP; the bigger the sleep time the 
         more accurate the points are placed but yo
     """
@@ -273,7 +273,7 @@ def transform_pos_angle(position, orientation, scale=1):
 def follow_path(robot, init_position, get_marker_object, vrep, clientID):
     try:
         robot.t_stop()
-        grid = np.full((88, 119), 255)  # grid system in cm
+        grid = np.full((880, 1190), 255)  # grid system in mm
         lad = 0.09  # look ahead distance in meters (m)
         wheel_axis = 0.11  # wheel axis distance in meters (m)
         wheel_radius = 0.02  # wheel radius in meters (m)
@@ -292,10 +292,10 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID):
             robot_m = get_marker_object(7)
 
         # transform robot position to grid system
-        robot_current_position = (robot_m.realxy()[:2]*100).astype(int)
+        robot_current_position = (robot_m.realxy()[:2]*1000).astype(int)
 
         # transform goal position to grid system
-        goal_position = (init_position*100).astype(int)
+        goal_position = (init_position*1000).astype(int)
 
         # set position of the robot in simulator
         position, orientation = transform_pos_angle(robot_m.realxy()[:2],
@@ -374,7 +374,7 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID):
             om_sp = omega_controller.control(orient_error)
             vr, vl = pioneer_robot_model(v_sp, om_sp, wheel_axis, wheel_radius)
 
-            robot.t_set_motors(vl*40, vr*40)
+            robot.t_set_motors(vl*30, vr*30)
             count += 1
 
         robot.t_stop()
