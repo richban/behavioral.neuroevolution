@@ -209,12 +209,15 @@ class VrepRobot(object):
                     self.v_sensor_activation, 0)
         return self.v_sensor_activation
 
-    def v_neuro_loop(self):
+    def v_neuro_loop(self, offset=False):
         self.v_sensor_activation = np.array([])
         for _, sensor in enumerate(self.v_prox_sensors):
             if self.v_get_sensor_state(sensor):
-                activation = sensors_offset(self.v_get_sensor_distance(
-                    sensor), self.v_min_detection, self.v_no_detection)
+                if offset:
+                    activation = sensors_offset(self.v_get_sensor_distance(
+                        sensor), self.v_min_detection, self.v_no_detection)
+                else:
+                    activation = self.v_get_sensor_distance(sensor)
                 self.v_sensor_activation = np.append(
                     self.v_sensor_activation, activation)
             else:

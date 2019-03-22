@@ -21,6 +21,10 @@ def scale(x, a, b):
     return interval_map(x, 0.0, 1.0, a, b)
 
 
+def scale_thymio_sensors(x, a, b):
+    return interval_map(x, 0.0, 0.1, a, b)
+
+
 def sensors_offset(distance, minDetection, noDetection):
     return (1 - ((distance - minDetection) / (noDetection - minDetection)))
 

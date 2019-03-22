@@ -1,4 +1,4 @@
-from utility.helpers import scale, euclidean_distance, f_wheel_center, f_straight_movements, f_pain, scale
+from utility.helpers import scale, euclidean_distance, f_wheel_center, f_straight_movements, f_pain, scale, scale_thymio_sensors
 from utility.path_tracking import follow_path
 from vision.tracker import get_marker_object
 from datetime import datetime, timedelta
@@ -71,6 +71,7 @@ def eval_genomes_simulation(individual, settings, genomes, config):
         now = datetime.now()
         collision = False
         scaled_output = np.array([])
+        fitness_agg = np.array([])
         network = neat.nn.FeedForwardNetwork.create(genome, config)
 
         # collistion detection initialization
@@ -95,7 +96,7 @@ def eval_genomes_simulation(individual, settings, genomes, config):
 
             # scale motor wheel wheel_speeds [0.0, 2.0] - robot
             scaled_output = np.array(
-                [scale(xi, 0.0, 2.0) for xi in output])
+                [scale(xi, -2.0, 2.0) for xi in output])
 
             individual.v_set_motors(*list(scaled_output))
 
@@ -108,15 +109,14 @@ def eval_genomes_simulation(individual, settings, genomes, config):
             # pleasure - straight movements
             pleasure = f_straight_movements(output[0], output[1])
             # pain - closer to an obstacle more pain
-            pain = f_pain(individual.sensor_activation)
+            pain = f_pain(np.array([scale_thymio_sensors(xi, 0.0, 1.0)
+                                    for xi in individual.sensor_activation]))
             #  fitness_t at time stamp
             fitness_t = V * pleasure * pain
             fitness_agg = np.append(fitness_agg, fitness_t)
 
-        # fitness calculation
-        end_position = individual.v_get_position()
-        # calculate the euclidean distance
-        fitness = euclidean_distance(end_position[:2], start_position[:2])
+        # calculate the fitnesss
+        fitness = np.sum(fitness_agg)
 
         # Now send some data to V-REP in a non-blocking fashion:
         vrep.simxAddStatusbarMessage(
@@ -128,4 +128,4 @@ def eval_genomes_simulation(individual, settings, genomes, config):
         if (vrep.simxStopSimulation(settings.client_id, settings.op_mode) == -1):
             return
 
-        genome.fitness = fitness[0]
+        genome.fitness = fitness
