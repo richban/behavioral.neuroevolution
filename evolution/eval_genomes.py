@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 import vrep.vrep as vrep
 import numpy as np
 import neat
+import uuid
+import time
 
 
 def eval_genomes_hardware(individual, settings, genomes, config):
@@ -68,6 +70,7 @@ def eval_genomes_simulation(individual, settings, genomes, config):
 
         individual.v_reset_init()
         individual.chromosome = genome
+        id = uuid.uuid1()
         now = datetime.now()
         collision = False
         scaled_output = np.array([])
@@ -80,40 +83,65 @@ def eval_genomes_simulation(individual, settings, genomes, config):
         _, collision = vrep.simxReadCollision(
             settings.client_id, collision_handle, vrep.simx_opmode_streaming)
 
-        start_position = individual.v_get_position()
-
         while not collision and datetime.now() - now < timedelta(seconds=settings.run_time):
-
+            step_start = time.time()
             # The first simulation step waits for a trigger before being executed
             vrep.simxSynchronousTrigger(settings.client_id)
             _, collision = vrep.simxReadCollision(
                 settings.client_id, collision_handle, vrep.simx_opmode_buffer)
 
+            ts = time.time()
             individual.v_neuro_loop()
+            te = time.time()
+            if settings.exec_time:
+                time_sensors = (te - ts) * 1000
+                # print('%s  %2.2f ms' % ('sensory readings', (ts - te) * 1000))
 
             # Net output [0, 1]
+            ts = time.time()
             output = network.activate(individual.v_sensor_activation)
+            te = time.time()
+            if settings.exec_time:
+                time_network = (te - ts) * 1000
+                # print('%s  %2.2f ms' % ('network output', (te - ts) * 1000))
 
+            ts = time.time()
             # scale motor wheel wheel_speeds [0.0, 2.0] - robot
             scaled_output = np.array(
                 [scale(xi, -2.0, 2.0) for xi in output])
 
             individual.v_set_motors(*list(scaled_output))
-
             # After this call, the first simulation step is finished
             vrep.simxGetPingTime(settings.client_id)
-
             # Fitness function; each feature;
             # V - wheel center
-            V = f_wheel_center(output[0], output[1])
+            wheel_center = f_wheel_center(output[0], output[1])
             # pleasure - straight movements
-            pleasure = f_straight_movements(output[0], output[1])
+            straight_movements = f_straight_movements(output[0], output[1])
             # pain - closer to an obstacle more pain
-            pain = f_pain(np.array([scale_thymio_sensors(xi, 0.0, 1.0)
-                                    for xi in individual.sensor_activation]))
+            obstacles_distance = f_pain(np.array([scale_thymio_sensors(xi, 0.0, 1.0)
+                                                  for xi in individual.v_sensor_activation]))
             #  fitness_t at time stamp
-            fitness_t = V * pleasure * pain
+            fitness_t = wheel_center * straight_movements * obstacles_distance
             fitness_agg = np.append(fitness_agg, fitness_t)
+
+            te = time.time()
+            if settings.exec_time:
+                time_calculation = (te - ts) * 1000
+                # print('%s  %2.2f ms' % ('fitness calculation', (te - ts) * 1000))
+
+            step_end = time.time()
+            if settings.exec_time:
+                time_simulation_step = (step_end - step_start) * 1000
+                # print('%s  %2.2f ms' % ('simulation_step', (step_end - step_start) * 1000))
+
+            # dump individuals data
+            if settings.save_data:
+                with open(settings.path + str(id) + '_simulation.txt', 'a') as f:
+                    f.write('{0!s},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12}\n'.format(
+                        id, output[0], output[1], scaled_output[0], scaled_output[1],
+                        wheel_center, straight_movements, obstacles_distance, fitness_t,
+                        time_sensors, time_network, time_calculation, time_simulation_step))
 
         # calculate the fitnesss
         fitness = np.sum(fitness_agg)
@@ -128,4 +156,7 @@ def eval_genomes_simulation(individual, settings, genomes, config):
         if (vrep.simxStopSimulation(settings.client_id, settings.op_mode) == -1):
             return
 
+        print('%s fitness: %f' % (str(id), fitness))
+
+        time.sleep(1)
         genome.fitness = fitness

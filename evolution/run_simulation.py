@@ -51,7 +51,8 @@ def run_vrep_simluation(settings, config_file):
     )
 
     # Run for up to N_GENERATIONS generations.
-    winner = p.run(partial(eval_genomes_simulation, individual, settings), 2)
+    winner = p.run(partial(eval_genomes_simulation,
+                           individual, settings), settings.n_gen)
 
     return config, stats, winner
 
@@ -95,6 +96,7 @@ def run_hardware_simulation(settings, config_file):
     )
 
     # Run for up to N_GENERATIONS generations.
-    winner = p.run(partial(eval_genomes_hardware, individual, settings), 2)
+    winner = p.run(partial(eval_genomes_hardware,
+                           individual, settings), settings.n_gen)
 
     return config, stats, winner

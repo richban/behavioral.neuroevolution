@@ -63,7 +63,7 @@ if __name__ == '__main__':
 
         elif (sys.argv[1] == 'vrep' and sys.argv[2] == 'thymio'):
             config = os.path.join(local_dir, 'config_thymio.ini')
-            settings = Settings(thymio)
+            settings = Settings(thymio, True)
             run_simulator(settings, config)
 
         elif (sys.argv[1] == 'hw' and sys.argv[2] == 'thymio'):

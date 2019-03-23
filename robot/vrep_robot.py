@@ -241,11 +241,9 @@ if __name__ == '__main__':
     if client_id != -1:
         print('Connected to remote API server')
         op_mode = vrep.simx_opmode_oneshot_wait
-        robot = VrepRobot(client_id=client_id, id=None, op_mode=OP_MODE)
         vrep.simxStopSimulation(client_id, op_mode)
         vrep.simxStartSimulation(client_id, op_mode)
-        robot.v_set_motors(2.0, 2.0)
-        time.sleep(100)
+        time.sleep(10)
         vrep.simxStopSimulation(client_id, op_mode)
         vrep.simxFinish(client_id)
 
