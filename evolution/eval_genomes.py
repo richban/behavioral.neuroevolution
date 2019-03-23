@@ -61,7 +61,7 @@ def eval_genomes_hardware(individual, settings, genomes, config):
 
 def eval_genomes_simulation(individual, settings, genomes, config):
 
-    for _, genome in genomes:
+    for genome_id, genome in genomes:
         # Enable the synchronous mode
         vrep.simxSynchronous(settings.client_id, True)
 
@@ -70,7 +70,7 @@ def eval_genomes_simulation(individual, settings, genomes, config):
 
         individual.v_reset_init()
         individual.chromosome = genome
-        id = uuid.uuid1()
+        id = genome_id
         now = datetime.now()
         collision = False
         scaled_output = np.array([])
@@ -104,9 +104,8 @@ def eval_genomes_simulation(individual, settings, genomes, config):
             if settings.exec_time:
                 time_network = (te - ts) * 1000
                 # print('%s  %2.2f ms' % ('network output', (te - ts) * 1000))
-
             ts = time.time()
-            # scale motor wheel wheel_speeds [0.0, 2.0] - robot
+            # scale motor wheel wheel_speeds [-2.0, 2.0] - robot
             scaled_output = np.array(
                 [scale(xi, -2.0, 2.0) for xi in output])
 
@@ -156,7 +155,7 @@ def eval_genomes_simulation(individual, settings, genomes, config):
         if (vrep.simxStopSimulation(settings.client_id, settings.op_mode) == -1):
             return
 
-        print('%s fitness: %f' % (str(id), fitness))
+        print('genome_id: %s fitness: %f' % (str(id), fitness))
 
         time.sleep(1)
         genome.fitness = fitness

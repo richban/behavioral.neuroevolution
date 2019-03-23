@@ -15,6 +15,7 @@ class Settings:
         self.save_data = save_data
         self.n_gen = n_gen
         self.exec_time = True
+        self.base_path = './data/neat/'
 
         if not os.path.exists(self.path):
             os.makedirs(self.path)

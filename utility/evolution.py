@@ -1,8 +1,9 @@
 import utility.visualize as visualize
+import pickle
 
 
 def log_statistics(stats, winner, path):
-        # Write run statistics to file.
+    # Write run statistics to file.
     stats.save_genome_fitness(filename=path+'fitnesss_history.csv')
     stats.save_species_count(filename=path+'speciation.csv')
     stats.save_species_fitness(filename=path+'species_fitness.csv')
@@ -11,6 +12,10 @@ def log_statistics(stats, winner, path):
     with open(path + 'winner_network.txt', 'w') as s:
         s.write('\nBest genome:\n{!s}'.format(winner))
         s.write('\nBest genomes:\n{!s}'.format(print(stats.best_genomes(5))))
+
+    # Save the winner.
+    with open(path + 'winner_genome', 'wb') as f:
+        pickle.dump(winner, f)
 
 
 def visualize_results(config, stats, winner,  path):
