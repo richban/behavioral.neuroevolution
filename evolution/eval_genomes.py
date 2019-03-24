@@ -1,12 +1,14 @@
-from utility.helpers import scale, euclidean_distance, f_wheel_center, f_straight_movements, f_pain, scale, scale_thymio_sensors
-from utility.path_tracking import follow_path
-from vision.tracker import get_marker_object
-from datetime import datetime, timedelta
-import vrep.vrep as vrep
-import numpy as np
-import neat
-import uuid
 import time
+import uuid
+import neat
+import numpy as np
+import vrep.vrep as vrep
+from datetime import datetime, timedelta
+from vision.tracker import get_marker_object
+from utility.path_tracking import follow_path
+from utility.helpers import scale, euclidean_distance, \
+    f_wheel_center, f_straight_movements, \
+    f_obstacle_dist, scale, scale_thymio_sensors, normalize_0_1
 
 
 def eval_genomes_hardware(individual, settings, genomes, config):
@@ -105,21 +107,25 @@ def eval_genomes_simulation(individual, settings, genomes, config):
                 time_network = (te - ts) * 1000
                 # print('%s  %2.2f ms' % ('network output', (te - ts) * 1000))
             ts = time.time()
-            # scale motor wheel wheel_speeds [-2.0, 2.0] - robot
+
+            # Scalling and normalization
+            # [-2, 2] wheel speed thymio
             scaled_output = np.array(
                 [scale(xi, -2.0, 2.0) for xi in output])
-
+            # set motor wheel speeds
             individual.v_set_motors(*list(scaled_output))
+
             # After this call, the first simulation step is finished
             vrep.simxGetPingTime(settings.client_id)
+
             # Fitness function; each feature;
             # V - wheel center
-            wheel_center = f_wheel_center(output[0], output[1])
+            wheel_center = f_wheel_center(scaled_output)
             # pleasure - straight movements
-            straight_movements = f_straight_movements(output[0], output[1])
+            straight_movements = f_straight_movements(scaled_output)
             # pain - closer to an obstacle more pain
-            obstacles_distance = f_pain(np.array([scale_thymio_sensors(xi, 0.0, 1.0)
-                                                  for xi in individual.v_sensor_activation]))
+            obstacles_distance = f_obstacle_dist(
+                individual.v_sensor_activation)
             #  fitness_t at time stamp
             fitness_t = wheel_center * straight_movements * obstacles_distance
             fitness_agg = np.append(fitness_agg, fitness_t)

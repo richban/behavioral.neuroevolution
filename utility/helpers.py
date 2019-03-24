@@ -29,16 +29,18 @@ def sensors_offset(distance, minDetection, noDetection):
     return (1 - ((distance - minDetection) / (noDetection - minDetection)))
 
 
-def f_wheel_center(left, right):
-    return ((left + right) / 2)
+def f_wheel_center(wheels):
+    return normalize((((wheels[0]) + (wheels[1])) / 2), -2.0, 2.0)
 
 
-def f_straight_movements(left, right):
-    return (1 - (np.sqrt(np.absolute(left - right))))
+def f_straight_movements(wheels):
+    return (1 - (np.sqrt(normalize(np.absolute(wheels[0] - wheels[1]), 0.0, 4.0))))
 
 
-def f_pain(sensor_activation):
-    return (1 - np.amax(sensor_activation))
+def f_obstacle_dist(sensors):
+    s = np.array([interval_map(s, 0.11, 0.0, 0.0, 1.0)
+                  for s in sensors])
+    return (1 - np.amax(s))
 
 
 def euclidean_distance(points1, points2):

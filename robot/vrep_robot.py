@@ -24,14 +24,13 @@ class VrepRobot(object):
         # Robot Specific Attributes
         self.v_chromosome = None
         self.v_no_detection = 1.0
-        self.v_min_detection = 0.05
+        self.v_min_detection = 0.0050
         self.v_initSpeed = 0.0
         self.v_wheel_speeds = np.array([])
         self.v_sensor_activation = np.array([])
         self.v_norm_wheel_speeds = np.array([])
         self.v_position = (0, 0, 0)
         self.v_num_sensors = robot_type['num_sensors']
-        self.v_min_detection = 0.05
         self.v_robot_type = robot_type
 
         # Initialize Robot Body
@@ -221,8 +220,12 @@ class VrepRobot(object):
                 self.v_sensor_activation = np.append(
                     self.v_sensor_activation, activation)
             else:
+                if self.v_robot_type['name'] == 'thymio':
+                    no_reading = 0.1
+                else:
+                    no_reading = 0.0
                 self.v_sensor_activation = np.append(
-                    self.v_sensor_activation, 0)
+                    self.v_sensor_activation, no_reading)
 
     def v_stop(self):
         self.v_set_motors(0, 0)
