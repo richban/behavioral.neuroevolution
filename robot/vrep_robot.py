@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import numpy as np
 import pickle
 import logging
-from utility.helpers import sensors_offset, normalize
+from utility.helpers import sensors_offset, normalize, interval_map
 import uuid
 
 PORT_NUM = 19997
@@ -28,6 +28,7 @@ class VrepRobot(object):
         self.v_initSpeed = 0.0
         self.v_wheel_speeds = np.array([])
         self.v_sensor_activation = np.array([])
+        self.v_norm_sensor_activation = np.array([])
         self.v_norm_wheel_speeds = np.array([])
         self.v_position = (0, 0, 0)
         self.v_num_sensors = robot_type['num_sensors']
@@ -210,6 +211,7 @@ class VrepRobot(object):
 
     def v_neuro_loop(self, offset=False):
         self.v_sensor_activation = np.array([])
+        self.v_norm_sensor_activation = np.array([])
         for _, sensor in enumerate(self.v_prox_sensors):
             if self.v_get_sensor_state(sensor):
                 if offset:
@@ -221,11 +223,14 @@ class VrepRobot(object):
                     self.v_sensor_activation, activation)
             else:
                 if self.v_robot_type['name'] == 'thymio':
-                    no_reading = 0.0
+                    no_reading = 0.1
                 else:
                     no_reading = 0.0
                 self.v_sensor_activation = np.append(
                     self.v_sensor_activation, no_reading)
+
+        self.v_norm_sensor_activation = np.array([interval_map(s, 0.1, 0.0, 0.0, 1.0)
+                                                  for s in self.v_sensor_activation])
 
     def v_stop(self):
         self.v_set_motors(0, 0)

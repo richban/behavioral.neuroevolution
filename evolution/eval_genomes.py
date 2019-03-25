@@ -101,7 +101,8 @@ def eval_genomes_simulation(individual, settings, genomes, config):
 
             # Net output [0, 1]
             ts = time.time()
-            output = network.activate(individual.v_sensor_activation)
+            print(individual.v_norm_sensor_activation)
+            output = network.activate(individual.v_norm_sensor_activation)
             te = time.time()
             if settings.exec_time:
                 time_network = (te - ts) * 1000
@@ -125,7 +126,7 @@ def eval_genomes_simulation(individual, settings, genomes, config):
             straight_movements = f_straight_movements(scaled_output)
             # pain - closer to an obstacle more pain
             obstacles_distance = f_obstacle_dist(
-                individual.v_sensor_activation)
+                individual.v_norm_sensor_activation)
             #  fitness_t at time stamp
             fitness_t = wheel_center * straight_movements * obstacles_distance
             fitness_agg = np.append(fitness_agg, fitness_t)
