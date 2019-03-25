@@ -21,6 +21,7 @@ Pillow = "*"
 jupyter = "*"
 pyyaml = "*"
 pandas = "*"
+seaborn = "*"
 
 [requires]
 python_version = "3.7"

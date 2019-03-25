@@ -221,7 +221,7 @@ class VrepRobot(object):
                     self.v_sensor_activation, activation)
             else:
                 if self.v_robot_type['name'] == 'thymio':
-                    no_reading = 0.1
+                    no_reading = 0.0
                 else:
                     no_reading = 0.0
                 self.v_sensor_activation = np.append(

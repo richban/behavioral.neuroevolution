@@ -149,7 +149,7 @@ def eval_genomes_simulation(individual, settings, genomes, config):
                         time_sensors, time_network, time_calculation, time_simulation_step))
 
         # calculate the fitnesss
-        fitness = np.sum(fitness_agg)
+        fitness = np.sum(fitness_agg)/fitness_agg.size
 
         # Now send some data to V-REP in a non-blocking fashion:
         vrep.simxAddStatusbarMessage(

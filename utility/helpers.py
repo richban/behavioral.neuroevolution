@@ -38,9 +38,12 @@ def f_straight_movements(wheels):
 
 
 def f_obstacle_dist(sensors):
-    s = np.array([interval_map(s, 0.11, 0.0, 0.0, 1.0)
+    s = np.array([interval_map(s, 0.1, 0.0, 0.0, 1.0)
                   for s in sensors])
-    return (1 - np.amax(s))
+    if np.all(s == s[0]):
+        return 1
+    else:
+        return (1 - np.amax(s))
 
 
 def euclidean_distance(points1, points2):
