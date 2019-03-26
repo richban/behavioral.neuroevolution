@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import numpy as np
 import pickle
 import logging
-from utility.helpers import sensors_offset, normalize
+from utility.helpers import sensors_offset, normalize, interval_map
 import uuid
 
 PORT_NUM = 19997
@@ -24,14 +24,14 @@ class VrepRobot(object):
         # Robot Specific Attributes
         self.v_chromosome = None
         self.v_no_detection = 1.0
-        self.v_min_detection = 0.05
+        self.v_min_detection = 0.0050
         self.v_initSpeed = 0.0
         self.v_wheel_speeds = np.array([])
         self.v_sensor_activation = np.array([])
+        self.v_norm_sensor_activation = np.array([])
         self.v_norm_wheel_speeds = np.array([])
         self.v_position = (0, 0, 0)
         self.v_num_sensors = robot_type['num_sensors']
-        self.v_min_detection = 0.05
         self.v_robot_type = robot_type
 
         # Initialize Robot Body
@@ -194,9 +194,8 @@ class VrepRobot(object):
                 else:
                     self.v_sensor_activation = np.append(
                         self.v_sensor_activation, 0)
-
-            self.logger.info('Sensors Activation {}'.format(
-                self.v_sensor_activation))
+            print(self.v_sensor_activation)
+            time.sleep(10)
 
     def v_read_prox(self):
         self.v_sensor_activation = np.array([])
@@ -210,17 +209,28 @@ class VrepRobot(object):
                     self.v_sensor_activation, 0)
         return self.v_sensor_activation
 
-    def v_neuro_loop(self):
+    def v_neuro_loop(self, offset=False):
         self.v_sensor_activation = np.array([])
+        self.v_norm_sensor_activation = np.array([])
         for _, sensor in enumerate(self.v_prox_sensors):
             if self.v_get_sensor_state(sensor):
-                activation = sensors_offset(self.v_get_sensor_distance(
-                    sensor), self.v_min_detection, self.v_no_detection)
+                if offset:
+                    activation = sensors_offset(self.v_get_sensor_distance(
+                        sensor), self.v_min_detection, self.v_no_detection)
+                else:
+                    activation = self.v_get_sensor_distance(sensor)
                 self.v_sensor_activation = np.append(
                     self.v_sensor_activation, activation)
             else:
+                if self.v_robot_type['name'] == 'thymio':
+                    no_reading = 0.1
+                else:
+                    no_reading = 0.0
                 self.v_sensor_activation = np.append(
-                    self.v_sensor_activation, 0)
+                    self.v_sensor_activation, no_reading)
+
+        self.v_norm_sensor_activation = np.array([interval_map(s, 0.1, 0.0, 0.0, 1.0)
+                                                  for s in self.v_sensor_activation])
 
     def v_stop(self):
         self.v_set_motors(0, 0)
@@ -239,11 +249,9 @@ if __name__ == '__main__':
     if client_id != -1:
         print('Connected to remote API server')
         op_mode = vrep.simx_opmode_oneshot_wait
-        robot = VrepRobot(client_id=client_id, id=None, op_mode=OP_MODE)
         vrep.simxStopSimulation(client_id, op_mode)
         vrep.simxStartSimulation(client_id, op_mode)
-        robot.v_set_motors(2.0, 2.0)
-        time.sleep(100)
+        time.sleep(10)
         vrep.simxStopSimulation(client_id, op_mode)
         vrep.simxFinish(client_id)
 
