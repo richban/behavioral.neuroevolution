@@ -25,7 +25,7 @@ def eval_genomes_hardware(individual, settings, genomes, config):
             print('Failed to start the simulation\n')
             print('Program ended\n')
             return
-
+        
         individual.n_t_sensor_activation = np.array([])
         individual.chromosome = genome
         now = datetime.now()
@@ -34,7 +34,21 @@ def eval_genomes_hardware(individual, settings, genomes, config):
         scaled_output = np.array([])
         fitness_agg = np.array([])
         net = neat.nn.FeedForwardNetwork.create(genome, config)
+ 
+        # get robot marker
+        robot_m = get_marker_object(7)
+        if robot_m.realxy() is not None:
+            # update current position of the robot
+            robot_current_position = robot_m.realxy()[:2]
 
+        # calculate robot orientation
+        theta = 2*np.pi - robot_m.orientation()
+        theta = np.arctan2(np.sin(theta), np.cos(theta))
+        # update position and orientation of the robot in vrep
+        position, orientation = transform_pos_angle(
+            robot_current_position, theta)
+        individual.v_set_pos_angle(position, orientation)
+        
         # collistion detection initialization
         _, collision_handle = vrep.simxGetCollisionHandle(
             settings.client_id, 'wall_collision', vrep.simx_opmode_blocking)
