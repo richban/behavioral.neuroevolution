@@ -265,7 +265,7 @@ def get_distance(points1, points2):
 
 def transform_pos_angle(position, orientation, scale=1):
     (x, y) = position
-    pos = [x*scale, y*scale, 0.1388]
+    pos = [x*scale, y*scale, 0.0287]
     angle = [0, 0, degrees(orientation)]
     return pos, angle
 
@@ -342,7 +342,7 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID):
             # update position and orientation of the robot in vrep
             position, orientation = transform_pos_angle(
                 robot_current_position, theta)
-            robot.v_set_pos_angle(position, orientation)
+            robot.v_set_pos_angle(position, [0, 0, 0])
 
             # path transformation to vehicle coordinates; relative to the robot
             path_transformed = transform2robot_frame(
@@ -374,7 +374,7 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID):
             om_sp = omega_controller.control(orient_error)
             vr, vl = pioneer_robot_model(v_sp, om_sp, wheel_axis, wheel_radius)
 
-            robot.t_set_motors(vl*30, vr*30)
+            robot.t_set_motors(vl*10, vr*10)
             count += 1
 
         robot.t_stop()
