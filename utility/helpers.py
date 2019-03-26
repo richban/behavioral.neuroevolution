@@ -29,12 +29,12 @@ def sensors_offset(distance, minDetection, noDetection):
     return (1 - ((distance - minDetection) / (noDetection - minDetection)))
 
 
-def f_wheel_center(wheels):
-    return normalize((((wheels[0]) + (wheels[1])) / 2), -2.0, 2.0)
+def f_wheel_center(wheels, min, max):
+    return normalize((((wheels[0]) + (wheels[1])) / 2), min, max)
 
 
-def f_straight_movements(wheels):
-    return (1 - (np.sqrt(normalize(np.absolute(wheels[0] - wheels[1]), 0.0, 4.0))))
+def f_straight_movements(wheels, min, max):
+    return (1 - (np.sqrt(normalize(np.absolute(wheels[0] - wheels[1]), min, max))))
 
 
 def f_obstacle_dist(sensors):
