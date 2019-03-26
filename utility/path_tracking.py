@@ -396,8 +396,5 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID):
             print('TASK - init position ok')
             robot.t_stop()
     finally:
-        if (vrep.simxStopSimulation(clientID, vrep.simx_opmode_oneshot) == -1):
-            print('Failed to stop the simulation')
-            print('Program ended')
-            return
-        time.sleep(1)
+        print('Individual in position...evolution continues...')
+        time.sleep(.1)
