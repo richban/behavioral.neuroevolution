@@ -37,7 +37,7 @@ def run_vrep_simluation(settings, config_file):
     stats = neat.StatisticsReporter()
     p.add_reporter(neat.StdOutReporter(True))
     p.add_reporter(stats)
-    p.add_reporter(neat.Checkpointer(1, 60, 'simulation-checkpoint'))
+    p.add_reporter(neat.Checkpointer(5))
 
     # Create the population, which is the top-level object for a NEAT run.
     p = neat.Population(config)

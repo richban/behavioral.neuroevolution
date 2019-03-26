@@ -98,10 +98,9 @@ def eval_genomes_simulation(individual, settings, genomes, config):
             if settings.exec_time:
                 time_sensors = (te - ts) * 1000
                 # print('%s  %2.2f ms' % ('sensory readings', (ts - te) * 1000))
-
+            # print(individual.v_sensor_activation)
             # Net output [0, 1]
             ts = time.time()
-            print(individual.v_norm_sensor_activation)
             output = network.activate(individual.v_norm_sensor_activation)
             te = time.time()
             if settings.exec_time:
@@ -144,9 +143,14 @@ def eval_genomes_simulation(individual, settings, genomes, config):
             # dump individuals data
             if settings.save_data:
                 with open(settings.path + str(id) + '_simulation.txt', 'a') as f:
-                    f.write('{0!s},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12}\n'.format(
+                    f.write('{0!s},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15}\n'.format(
                         id, output[0], output[1], scaled_output[0], scaled_output[1],
-                        wheel_center, straight_movements, obstacles_distance, fitness_t,
+                        np.array2string(
+                            individual.v_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
+                        np.array2string(
+                            individual.v_norm_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
+                        wheel_center, straight_movements, obstacles_distance, np.max(
+                            individual.v_norm_sensor_activation), fitness_t,
                         time_sensors, time_network, time_calculation, time_simulation_step))
 
         # calculate the fitnesss
