@@ -270,7 +270,7 @@ def transform_pos_angle(position, orientation, scale=1):
     return pos, angle
 
 
-def follow_path(robot, init_position, get_marker_object, vrep, clientID):
+def follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=False):
     try:
         robot.t_stop()
         grid = np.full((880, 1190), 255)  # grid system in mm
@@ -327,7 +327,10 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID):
 
         # transform GRID goal to real (x, y) coordinates
         goal_position = init_position
-        print('TASK - go to init position')
+        
+        if debug:
+            print('TASK - go to init position')
+        
         while not is_near(robot_current_position, goal_position, dist_thresh=0.05):
             # get robot marker
             robot_m = get_marker_object(7)
@@ -374,12 +377,15 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID):
             om_sp = omega_controller.control(orient_error)
             vr, vl = pioneer_robot_model(v_sp, om_sp, wheel_axis, wheel_radius)
 
-            robot.t_set_motors(vl*15, vr*15)
+            robot.t_set_motors(vl*25, vr*25)
             count += 1
 
         robot.t_stop()
         angle_error = 1.0
-        print('TASK - rotate to init angle')
+        
+        if debug:
+            print('TASK - rotate to init angle')
+        
         while not is_angle_right(angle_error, angle_thresh=0.07):
             # calculate robot orientation
             robot_m = get_marker_object(7)
@@ -391,10 +397,12 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID):
 
             om_sp = omega_controller.control(angle_error)
             vr, vl = pioneer_robot_model(v_sp, om_sp, wheel_axis, wheel_radius)
-            robot.t_set_motors(vl*10, vr*10)
+            robot.t_set_motors(vl*15, vr*15)
         else:
-            print('TASK - init position ok')
+            if debug:
+                print('TASK - init position ok')
             robot.t_stop()
     finally:
-        print('Individual in position...evolution continues...')
+        if debug:
+            print('Individual in position...evolution continues...')
         time.sleep(.1)

@@ -16,9 +16,10 @@ class EvolvedRobot(VrepRobot, ThymioII):
 
         self.chromosome = chromosome
         self.n_t_sensor_activation = np.array([])
-
+        self.t_sensor_activation = np.array([])
+    
     def t_read_prox(self):
-        sensor_activation = super(EvolvedRobot, self).t_read_prox()
+        self.t_sensor_activation = np.array(super(EvolvedRobot, self).t_read_prox())
         self.n_t_sensor_activation = np.array(
-            [normalize(xi, T_SEN_MIN, T_SEN_MAX, 0.0, 1.0) for xi in sensor_activation])
+            [normalize(xi, T_SEN_MIN, T_SEN_MAX, 0.0, 1.0) for xi in self.t_sensor_activation])
         return self.n_t_sensor_activation
