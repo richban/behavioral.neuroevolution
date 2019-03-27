@@ -339,8 +339,6 @@ vision/cdata.json
 !scenes/*.ttt
 *.fff
 
-data/
-
 # Latexian
 TSWLatexianTemp*
 
