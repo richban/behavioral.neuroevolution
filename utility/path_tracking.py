@@ -274,6 +274,10 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=F
     try:
         robot.t_stop()
         grid = np.full((880, 1190), 255)  # grid system in mm
+        # obstacle
+        for y in range(0, 400):
+            for x in range(550, 639):
+            grid[y, x] = 0
         lad = 0.09  # look ahead distance in meters (m)
         wheel_axis = 0.11  # wheel axis distance in meters (m)
         wheel_radius = 0.02  # wheel radius in meters (m)
@@ -327,10 +331,10 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=F
 
         # transform GRID goal to real (x, y) coordinates
         goal_position = init_position
-        
+
         if debug:
             print('TASK - go to init position')
-        
+
         while not is_near(robot_current_position, goal_position, dist_thresh=0.05):
             # get robot marker
             robot_m = get_marker_object(7)
@@ -382,10 +386,10 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=F
 
         robot.t_stop()
         angle_error = 1.0
-        
+
         if debug:
             print('TASK - rotate to init angle')
-        
+
         while not is_angle_right(angle_error, angle_thresh=0.07):
             # calculate robot orientation
             robot_m = get_marker_object(7)
