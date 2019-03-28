@@ -121,16 +121,16 @@ def search(grid, init, goal, cost, D=1, fnc='Euclidean', D2=1):
                 if (grid[indx_new] >= 128) and (indx_new not in discovered):
                     count += 1
                     # if the obstacle is inside the robot :D, have a really high cost
-                    if near_obstacles(indx_new, half_kernel=35):
+                    if near_obstacles(indx_new, half_kernel=75):
                         g_new = G + 1500*cost
                     # if the obstacle is about a robot's length near it , have a high cost
-                    elif near_obstacles(indx_new, half_kernel=70):
+                    elif near_obstacles(indx_new, half_kernel=90):
                         g_new = G + 15*cost
                     # as before
-                    elif near_obstacles(indx_new, half_kernel=100):
+                    elif near_obstacles(indx_new, half_kernel=130):
                         g_new = G + 10*cost
                     # as before
-                    elif near_obstacles(indx_new, half_kernel=110):
+                    elif near_obstacles(indx_new, half_kernel=160):
                         g_new = G + 5*cost
                     else:
                         g_new = G + cost
@@ -168,7 +168,7 @@ def smooth(path, grid, weight_data=0.5, weight_smooth=0.1, tolerance=0.000001, n
             points = point.copy()
         return points
 
-    def near_obstacles(point, half_kernel=2):
+    def near_obstacles(point, half_kernel=10):
         x_start = int(max(point[0] - half_kernel, 0))
         x_end = int(point[0] + half_kernel)
         y_start = int(max(point[1] - half_kernel, 0))
@@ -275,9 +275,9 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=F
         robot.t_stop()
         grid = np.full((880, 1190), 255)  # grid system in mm
         # obstacle
-        for y in range(0, 400):
-            for x in range(550, 639):
-            grid[y, x] = 0
+        for y in range(500, 840):
+            for x in range(550, 640):
+                grid[y, x] = 0
         lad = 0.09  # look ahead distance in meters (m)
         wheel_axis = 0.11  # wheel axis distance in meters (m)
         wheel_radius = 0.02  # wheel radius in meters (m)
@@ -312,6 +312,7 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=F
                           robot_current_position[0]),
                          (goal_position[1],
                           goal_position[0]),
+
                          cost=1,
                          D=0.5,
                          fnc='Manhattan')
@@ -401,7 +402,7 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=F
 
             om_sp = omega_controller.control(angle_error)
             vr, vl = pioneer_robot_model(v_sp, om_sp, wheel_axis, wheel_radius)
-            robot.t_set_motors(vl*15, vr*15)
+            robot.t_set_motors(vl*10, vr*10)
         else:
             if debug:
                 print('TASK - init position ok')
