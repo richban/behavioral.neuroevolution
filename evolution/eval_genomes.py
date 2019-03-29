@@ -41,11 +41,9 @@ def eval_genomes_hardware(individual, settings, genomes, config):
             robot_current_position = robot_m.realxy()[:2]
 
         # calculate robot orientation
-        theta = 2*np.pi - robot_m.orientation()
-        theta = np.arctan2(np.sin(theta), np.cos(theta))
         # update position and orientation of the robot in vrep
         position, orientation = transform_pos_angle(
-            robot_current_position, theta)
+            robot_current_position, robot_m.orientation())
         individual.v_set_pos_angle(position, orientation)
         
         # collistion detection initialization
@@ -64,12 +62,9 @@ def eval_genomes_hardware(individual, settings, genomes, config):
                 # update current position of the robot
                 robot_current_position = robot_m.realxy()[:2]
 
-            # calculate robot orientation
-            theta = 2*np.pi - robot_m.orientation()
-            theta = np.arctan2(np.sin(theta), np.cos(theta))
             # update position and orientation of the robot in vrep
             position, orientation = transform_pos_angle(
-                robot_current_position, theta)
+                robot_current_position, robot_m.orientation())
             individual.v_set_pos_angle(position, orientation)
             te = time.time()
             if settings.exec_time:
@@ -88,8 +83,8 @@ def eval_genomes_hardware(individual, settings, genomes, config):
 
             # input data to the neural network
             ts = time.time()
-            net_output = net.activate(
-                list(map(lambda x: x if x != 0.0 else 1.0, individual.n_t_sensor_activation)))
+            net_output = net.activate(individual.n_t_sensor_activation)
+                # list(map(lambda x: x if x != 0.0 else 1.0, individual.n_t_sensor_activation)))
             te = time.time()
             if settings.exec_time:
                 time_network = (te - ts) * 1000
