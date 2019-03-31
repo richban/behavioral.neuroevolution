@@ -118,7 +118,7 @@ class ParrallelEvolution(object):
 
 def vrep_ports():
     """Load the vrep ports"""
-    with open("vrep_ports.yml", 'r') as f:
+    with open("ports.yml", 'r') as f:
         portConfig = yaml.load(f)
     return portConfig['ports']
 
@@ -173,9 +173,9 @@ def run_vrep_parallel(settings, config_file):
     ports = vrep_ports()
     FNULL = open(os.devnull, 'w')
 
-    # spawns multiple vrep instances
+    spawns multiple vrep instances
     vrep_servers = [Popen(
-        ['{0} -h -gREMOTEAPISERVERSERVICE_{1}_TRUE_TRUE {2}'
+        ['{0} -gREMOTEAPISERVERSERVICE_{1}_TRUE_TRUE {2}'
             .format(settings.vrep_abspath, port, settings.vrep_scene)],
         shell=True, stdout=FNULL) for port in ports]
 
@@ -206,9 +206,15 @@ def run_vrep_parallel(settings, config_file):
 
     # Run for up to N generations.
     pe = ParrallelEvolution(clients, settings, len(clients), eval_genome)
-    winner = p.run(pe.evaluate, 2)
+    winner = p.run(pe.evaluate, settings.n_gen)
 
-    _ = [server.kill() for server in vrep_servers]
+    # stop the workers
+    pe.stop()
+
+    # stop vrep simulation
+    _ = [vrep.simxFinish(client) for client in clients]
+    # kill vrep instances
+    # _ = [server.kill() for server in vrep_servers]
 
     return config, stats, winner
 

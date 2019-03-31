@@ -16,7 +16,7 @@ class Settings:
         self.n_gen = n_gen
         self.exec_time = True
         self.base_path = './data/neat/'
-        self.vrep_scene = os.getcwd() + '/scenes/thymio_2.ttt'
+        self.vrep_scene = os.getcwd() + '/scenes/thymio_v.ttt'
         self.vrep_abspath = '~/Developer/vrep-edu/vrep.app/Contents/MacOS/vrep'
 
         if not os.path.exists(self.path):

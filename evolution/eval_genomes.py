@@ -305,7 +305,7 @@ def eval_genome(client_id, settings, genome, config):
         if settings.exec_time:
             time_sensors = (te - ts) * 1000
             # print('%s  %2.2f ms' % ('sensory readings', (ts - te) * 1000))
-
+        print(individual.v_sensor_activation)
         # Net output [0, 1]
         ts = time.time()
         output = network.activate(individual.v_norm_sensor_activation)
