@@ -35,7 +35,7 @@ class ParrallelEvolution(object):
     Useful on python implementations without GIL (Global Interpreter Lock).
     """
 
-    def __init__(self, clients, num_workers, eval_function):
+    def __init__(self, clients, settings, num_workers, eval_function):
         """
         eval_function should take two arguments (a genome object and the
         configuration) and return a single float (the genome's fitness).
@@ -45,6 +45,7 @@ class ParrallelEvolution(object):
         self.workers = []
         self.working = False
         self.clients = clients
+        self.settings = settings
         self.inqueue = queue.Queue()
         self.outqueue = queue.Queue()
 
@@ -71,7 +72,7 @@ class ParrallelEvolution(object):
             w = threading.Thread(
                 name="Worker Thread #{i}".format(i=i),
                 target=self._worker,
-                args=(self.clients[i],),
+                args=(self.clients[i], self.settings,),
             )
             w.daemon = True
             w.start()
@@ -86,7 +87,7 @@ class ParrallelEvolution(object):
             w.join()
         self.workers = []
 
-    def _worker(self, client_id):
+    def _worker(self, client_id, settings):
         """The worker function"""
         while self.working:
             try:
@@ -96,7 +97,7 @@ class ParrallelEvolution(object):
                 )
             except queue.Empty:
                 continue
-            f = self.eval_function(client_id, genome, config)
+            f = self.eval_function(client_id, settings, genome, config)
             self.outqueue.put((genome_id, genome, f))
 
     def evaluate(self, genomes, config):
@@ -204,7 +205,7 @@ def run_vrep_parallel(settings, config_file):
     p.add_reporter(neat.Checkpointer(1))
 
     # Run for up to N generations.
-    pe = ParrallelEvolution(clients, len(clients), eval_genome)
+    pe = ParrallelEvolution(clients, settings, len(clients), eval_genome)
     winner = p.run(pe.evaluate, 2)
 
     _ = [server.kill() for server in vrep_servers]
