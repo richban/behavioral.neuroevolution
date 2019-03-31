@@ -3,6 +3,7 @@ import uuid
 import neat
 import numpy as np
 import vrep.vrep as vrep
+import threading
 from datetime import datetime, timedelta
 from vision.tracker import get_marker_object
 from robot.vrep_robot import VrepRobot
@@ -264,7 +265,7 @@ def eval_genomes_simulation(individual, settings, genomes, config):
 
 
 def eval_genome(client_id, settings, genome_id, genome, config):
-
+    t = threading.currentThread()
     kw = {'v_chromosome': genome}
     individual = VrepRobot(
         client_id=client_id,
@@ -372,7 +373,7 @@ def eval_genome(client_id, settings, genome_id, genome, config):
     if (vrep.simxStopSimulation(client_id, settings.op_mode) == -1):
         return
 
-    print('genome_id: %s fitness: %f' % (str(individual.id), fitness))
+    print('%s genome_id: %s fitness: %f' % (str(t.getName()), str(individual.id), fitness))
 
     time.sleep(1)
     return fitness

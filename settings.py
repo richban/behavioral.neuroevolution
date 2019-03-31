@@ -1,10 +1,11 @@
 from datetime import datetime
 import vrep.vrep as vrep
+import platform
 import os
 
 
 class Settings:
-    def __init__(self, robot_type, save_data=False, n_gen=5):
+    def __init__(self, robot_type, save_data=False, n_gen=80):
         self.client_id = -1
         self.op_mode = vrep.simx_opmode_oneshot_wait
         self.path = './data/neat/' + datetime.now().strftime('%Y-%m-%d') + '/'
@@ -19,5 +20,8 @@ class Settings:
         self.vrep_scene = os.getcwd() + '/scenes/thymio_v.ttt'
         self.vrep_abspath = '~/Developer/vrep-edu/vrep.app/Contents/MacOS/vrep'
 
+        if platform.system() == 'Linux':
+            self.vrep_abspath = '~/Developer/vrep-edu/vrep.sh'
+        
         if not os.path.exists(self.path):
             os.makedirs(self.path)
