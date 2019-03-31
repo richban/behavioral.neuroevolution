@@ -1,4 +1,4 @@
-from evolution.run_simulation import run_vrep_simluation, run_hardware_simulation, restore_vrep_simulation
+from evolution.run_simulation import run_vrep_simluation, run_hardware_simulation, restore_vrep_simulation, run_vrep_parallel
 from utility.evolution import log_statistics, visualize_results
 from vision.tracker import Tracker
 from settings import Settings
@@ -53,6 +53,12 @@ def run_simulation(settings, config_file):
     visualize_results(config, stats, winner, settings.path)
 
 
+def run_simulation_parallel(settings, config_file):
+    config, stats, winner = run_vrep_parallel(settings, config_file)
+    log_statistics(stats, winner, settings.path)
+    visualize_results(config, stats, winner, settings.path)
+
+
 def restore_simulation(settings, config_file, checkpoint, path):
     if checkpoint:
         config, stats, winner = restore_vrep_simulation(
@@ -76,17 +82,25 @@ if __name__ == '__main__':
             settings = Settings(thymio, True)
             run_simulation(settings, config)
 
+        elif (sys.argv[1] == 'vrep' and sys.argv[2] == 'parallel'):
+            config = os.path.join(local_dir, 'config_thymio.ini')
+            settings = Settings(thymio, True)
+            run_simulation_parallel(settings, config)
+
         elif (sys.argv[1] == 'hw' and sys.argv[2] == 'thymio'):
             config = os.path.join(local_dir, 'config_thymio.ini')
             settings = Settings(thymio, True)
             run_hardware(settings, config)
+
         elif (sys.argv[1] == 'restore'):
             data = os.path.abspath('data/neat/')
+
             if sys.argv[2] == 'checkpoint':
                 checkpoint = sys.argv[3]
                 config = os.path.join(local_dir, 'config_thymio.ini')
                 settings = Settings(thymio)
                 restore_simulation(settings, config, checkpoint, None)
+
             elif sys.argv[2] == 'file':
                 date = sys.argv[3]
                 path = os.path.join(data, date)

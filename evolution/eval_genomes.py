@@ -24,7 +24,7 @@ def eval_genomes_hardware(individual, settings, genomes, config):
             print('Failed to start the simulation\n')
             print('Program ended\n')
             return
-        
+
         individual.n_t_sensor_activation = np.array([])
         individual.chromosome = genome
         now = datetime.now()
@@ -33,7 +33,7 @@ def eval_genomes_hardware(individual, settings, genomes, config):
         scaled_output = np.array([])
         fitness_agg = np.array([])
         net = neat.nn.FeedForwardNetwork.create(genome, config)
- 
+
         # get robot marker
         robot_m = get_marker_object(7)
         if robot_m.realxy() is not None:
@@ -47,7 +47,7 @@ def eval_genomes_hardware(individual, settings, genomes, config):
         position, orientation = transform_pos_angle(
             robot_current_position, theta)
         individual.v_set_pos_angle(position, orientation)
-        
+
         # collistion detection initialization
         _, collision_handle = vrep.simxGetCollisionHandle(
             settings.client_id, 'wall_collision', vrep.simx_opmode_blocking)
@@ -167,7 +167,7 @@ def eval_genomes_simulation(individual, settings, genomes, config):
 
         individual.v_reset_init()
         individual.chromosome = genome
-        id = genome_id
+        individual.id = genome_id
         now = datetime.now()
         collision = False
         scaled_output = np.array([])
@@ -193,7 +193,7 @@ def eval_genomes_simulation(individual, settings, genomes, config):
             if settings.exec_time:
                 time_sensors = (te - ts) * 1000
                 # print('%s  %2.2f ms' % ('sensory readings', (ts - te) * 1000))
-            # print(individual.v_sensor_activation)
+
             # Net output [0, 1]
             ts = time.time()
             output = network.activate(individual.v_norm_sensor_activation)
@@ -239,7 +239,7 @@ def eval_genomes_simulation(individual, settings, genomes, config):
             if settings.save_data:
                 with open(settings.path + str(id) + '_simulation.txt', 'a') as f:
                     f.write('{0!s},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15}\n'.format(
-                        id, output[0], output[1], scaled_output[0], scaled_output[1],
+                        individual.id, output[0], output[1], scaled_output[0], scaled_output[1],
                         np.array2string(
                             individual.v_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
                         np.array2string(
@@ -261,7 +261,7 @@ def eval_genomes_simulation(individual, settings, genomes, config):
         if (vrep.simxStopSimulation(settings.client_id, settings.op_mode) == -1):
             return
 
-        print('genome_id: %s fitness: %f' % (str(id), fitness))
+        print('genome_id: %s fitness: %f' % (str(individual.id), fitness))
 
         time.sleep(1)
         genome.fitness = fitness
