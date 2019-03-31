@@ -54,7 +54,7 @@ class VrepRobot(object):
         self.v_prox_sensors_val = np.array([])
         for i in range(1, self.v_num_sensors + 1):
             _, sensor = vrep.simxGetObjectHandle(
-                self.client_id, "{}{}{}".format(self.v_robot_type['sensor'], i, self.suffix), self.op_mode)
+                self.client_id, '{0}_{1}{2}'.format(self.v_robot_type['sensor'], i, self.suffix), self.op_mode)
             self.v_prox_sensors.append(sensor)
             _, _, detectedPoint, _, _ = vrep.simxReadProximitySensor(
                 self.client_id, sensor, vrep.simx_opmode_streaming)
@@ -73,8 +73,9 @@ class VrepRobot(object):
         if self.id is not None and self.v_robot_type['name'] == 'pd3x':
             return '#%d' % self.id
         elif self.id is not None and self.v_robot_type['name'] == 'thymio':
-            return '%d' % self.id
-        return ''
+            return ''
+        else:
+            return ''
 
     def v_reset_init(self):
         self.v_chromosome = None
@@ -207,7 +208,7 @@ class VrepRobot(object):
             else:
                 self.v_sensor_activation = np.append(
                     self.v_sensor_activation, 0)
-        return self.v_sensor_activation
+        return (self.v_sensor_activation)
 
     def v_neuro_loop(self, offset=False):
         self.v_sensor_activation = np.array([])

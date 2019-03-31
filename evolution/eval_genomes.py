@@ -263,12 +263,12 @@ def eval_genomes_simulation(individual, settings, genomes, config):
         genome.fitness = fitness
 
 
-def eval_genome(client_id, settings, genome, config):
+def eval_genome(client_id, settings, genome_id, genome, config):
 
     kw = {'v_chromosome': genome}
     individual = VrepRobot(
         client_id=client_id,
-        id=uuid.uuid1(),
+        id=genome_id,
         op_mode=settings.op_mode,
         robot_type=settings.robot_type,
         **kw
@@ -305,7 +305,6 @@ def eval_genome(client_id, settings, genome, config):
         if settings.exec_time:
             time_sensors = (te - ts) * 1000
             # print('%s  %2.2f ms' % ('sensory readings', (ts - te) * 1000))
-        print(individual.v_sensor_activation)
         # Net output [0, 1]
         ts = time.time()
         output = network.activate(individual.v_norm_sensor_activation)
@@ -349,7 +348,7 @@ def eval_genome(client_id, settings, genome, config):
 
         # dump individuals data
         if settings.save_data:
-            with open(settings.path + str(id) + '_simulation.txt', 'a') as f:
+            with open(settings.path + str(individual.id) + '_simulation.txt', 'a') as f:
                 f.write('{0!s},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15}\n'.format(
                     individual.id, output[0], output[1], scaled_output[0], scaled_output[1],
                     np.array2string(

@@ -76,7 +76,7 @@ class ParrallelEvolution(object):
             )
             w.daemon = True
             w.start()
-            print("thread_id = {0} client_id = {1}".format(
+            print("{0} client_id = {1}".format(
                 w.getName(), self.clients[i]))
             self.workers.append(w)
 
@@ -97,7 +97,8 @@ class ParrallelEvolution(object):
                 )
             except queue.Empty:
                 continue
-            f = self.eval_function(client_id, settings, genome, config)
+            f = self.eval_function(client_id, settings,
+                                   genome_id, genome, config)
             self.outqueue.put((genome_id, genome, f))
 
     def evaluate(self, genomes, config):
@@ -112,7 +113,7 @@ class ParrallelEvolution(object):
         # assign the fitness back to each genome
         while p > 0:
             p -= 1
-            ignored_genome_id, genome, fitness = self.outqueue.get()
+            _, genome, fitness = self.outqueue.get()
             genome.fitness = fitness
 
 
@@ -173,9 +174,9 @@ def run_vrep_parallel(settings, config_file):
     ports = vrep_ports()
     FNULL = open(os.devnull, 'w')
 
-    spawns multiple vrep instances
+    # spawns multiple vrep instances
     vrep_servers = [Popen(
-        ['{0} -gREMOTEAPISERVERSERVICE_{1}_TRUE_TRUE {2}'
+        ['{0} -h -gREMOTEAPISERVERSERVICE_{1}_TRUE_TRUE {2}'
             .format(settings.vrep_abspath, port, settings.vrep_scene)],
         shell=True, stdout=FNULL) for port in ports]
 
@@ -214,7 +215,7 @@ def run_vrep_parallel(settings, config_file):
     # stop vrep simulation
     _ = [vrep.simxFinish(client) for client in clients]
     # kill vrep instances
-    # _ = [server.kill() for server in vrep_servers]
+    _ = [server.kill() for server in vrep_servers]
 
     return config, stats, winner
 
