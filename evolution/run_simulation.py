@@ -99,6 +99,7 @@ class ParrallelEvolution(object):
                 continue
             f = self.eval_function(client_id, settings,
                                    genome_id, genome, config)
+            self.inqueue.task_done()
             self.outqueue.put((genome_id, genome, f))
 
     def evaluate(self, genomes, config):
@@ -110,6 +111,7 @@ class ParrallelEvolution(object):
             p += 1
             self.inqueue.put((genome_id, genome, config))
 
+        self.inqueue.join()
         # assign the fitness back to each genome
         while p > 0:
             p -= 1
@@ -189,6 +191,9 @@ def run_vrep_parallel(settings, config_file):
         True,
         5000,
         5) for port in ports]
+
+    if not all(c >= 0 for c in clients):
+        print('Not all clients were connected!')
 
     # Load configuration.
     config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
