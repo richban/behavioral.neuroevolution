@@ -340,6 +340,7 @@ data/**/*.txt
 !scenes/*.ttt
 *.fff
 
+*.gv
 # Latexian
 TSWLatexianTemp*
 
