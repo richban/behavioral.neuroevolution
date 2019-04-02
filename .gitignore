@@ -33,7 +33,7 @@ MANIFEST
 *.spec
 
 # Installer logs
-pip-log.txt
+pip-log./txt
 pip-delete-this-directory.txt
 
 # Unit test / coverage reports
@@ -335,6 +335,7 @@ vision/corners/*.png
 vision/videos/*
 vision/cdata.json
 
+data/**/*.txt
 # endfloat
 !scenes/*.ttt
 *.fff
