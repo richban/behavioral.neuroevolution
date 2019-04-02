@@ -7,6 +7,8 @@ import yaml
 import warnings
 import os
 import time
+import sys
+from settings import Settings
 from robot.vrep_robot import VrepRobot
 from evolution.eval_genomes import eval_genomes_simulation, eval_genomes_hardware, eval_genome
 try:
@@ -27,6 +29,10 @@ except ImportError:  # pragma: no cover
     HAVE_THREADS = False
 else:
     HAVE_THREADS = True
+try:
+    from yaml import CLoader as Loader
+except ImportError:
+    from yaml import Loader
 
 
 class ParrallelEvolution(object):
@@ -122,7 +128,7 @@ class ParrallelEvolution(object):
 def vrep_ports():
     """Load the vrep ports"""
     with open("ports.yml", 'r') as f:
-        portConfig = yaml.load(f)
+        portConfig = yaml.load(f, Loader=Loader)
     return portConfig['ports']
 
 
@@ -138,6 +144,8 @@ def run_vrep_simluation(settings, config_file):
         5)
 
     if settings.client_id == -1:
+        print('Failed connecting to remote API server')
+        print('Program ended')
         return
 
     # Load configuration.
@@ -317,3 +325,143 @@ def restore_vrep_simulation(settings, config_file, checkpoint=None, path=None):
         return
 
     return
+
+
+class Simulation(object):
+
+    def __init__(self, config_file, eval_function, settings,
+                 simulation_type, threaded, checkpoint=None, genome_path=None):
+        self.config_file = config_file
+        self.threaded = threaded
+        self.settings = settings
+        self.simulation_type = simulation_type
+        self.eval_function = eval_function
+        self.checkpoint = checkpoint
+        self.genome_path = genome_path
+        self._init_vrep()
+        self._init_network()
+        self._init_agent()
+        self._init_genome()
+
+    def _init_vrep(self):
+        """initialize vrep simulator"""
+        vrep.simxFinish(-1)
+        self.fnull = open(os.devnull, 'w')
+
+        if self.threaded:
+            self.ports = vrep_ports()
+        else:
+            self.ports = vrep_ports()[0]
+
+        self.vrep_servers = [Popen(
+            ['{0} -h -gREMOTEAPISERVERSERVICE_{1}_TRUE_TRUE {2}'
+                .format(self.settings.vrep_abspath, port, self.settings.vrep_scene)],
+            shell=True, stdout=self.fnull) for port in self.ports]
+
+        time.sleep(10)
+
+        self.clients = [vrep.simxStart(
+            '127.0.0.1',
+            port,
+            True,
+            True,
+            5000,
+            5) for port in self.ports]
+
+        if not all(c >= 0 for c in self.clients):
+            sys.exit('Some clients were not correctly initialized!')
+
+        if len(self.clients) == 1:
+            self.settings.client_id = self.clients[0]
+
+        self.client_initialized = True
+
+    def _init_network(self):
+        """initialize the neural network"""
+        # load the confifuration file
+        self.config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
+                                  neat.DefaultSpeciesSet, neat.DefaultStagnation,
+                                  self.config_file)
+        self.config.save(self.settings.path + 'config.ini')
+
+        if self.checkpoint:
+            # restore population from a checkpoint
+            self.restored_population = neat.Checkpointer.restore_checkpoint(
+                self.checkpoint)
+            self.population = neat.population.Population(
+                self.config, (self.restored_population.population,
+                              self.restored_population.population.species, self.settings.n_gen))
+        else:
+            # initialize the network and population
+            self.population = neat.Population(self.config)
+        # Add a stdout reporter to show progress in the terminal.
+        self.stats = neat.StatisticsReporter()
+        self.population.add_reporter(neat.StdOutReporter(True))
+        self.population.add_reporter(self.stats)
+        self.population.add_reporter(neat.Checkpointer(1))
+        self.network_initialized = True
+
+    def _init_agent(self):
+        if self.simulation_type == 'VREP':
+            self.individual = VrepRobot(
+                client_id=self.settings.client_id,
+                id=None,
+                op_mode=self.settings.op_mode,
+                robot_type=self.settings.robot_type
+            )
+        elif self.simulation_type == 'HW':
+            self.individual = EvolvedRobot(
+                'thymio-II',
+                client_id=self.settings.client_id,
+                id=None,
+                op_mode=self.settings.op_mode,
+                chromosome=None,
+                robot_type=self.settings.robot_type
+            )
+        else:
+            self.individual = None
+            return
+        self.agent_initialized = True
+
+    def _init_genome(self):
+        if self.genome_path:
+            with open(self.genome_path, 'rb') as f:
+                genome = pickle.load(f)
+            self.winner = [(genome.key, genome)]
+            print(self.winner)
+        return
+
+    def _stop_vrep(self):
+        # stop vrep simulations
+        _ = [vrep.simxFinish(client) for client in self.clients]
+
+    def _kill_vrep(self):
+        # kill vrep server instances
+        _ = [server.kill() for server in self.vrep_servers]
+
+    def start(self, simulation):
+        default = None
+        return getattr(self, str(simulation), lambda: default)()
+
+    def simulation(self):
+        # run simulation in vrep
+        self.winner = self.population.run(partial(self.eval_function,
+                                                  self.individual, self.settings), self.n_gen)
+        return self.config, self.stats, self.winner
+
+    def simulation_parralel(self):
+        """run simulation using threads in vrep"""
+        # Run for up to N generations.
+        pe = ParrallelEvolution(self.clients, self.settings, len(
+            self.clients), self.eval_function)
+        self.winner = self.population.run(pe.evaluate, self.settings.n_gen)
+        # stop the workers
+        pe.stop()
+
+        return self.config, self.stats, self.winner
+
+    def simulation_genome(self):
+        """restore genome and re-run simulation"""
+        self.winner = self.eval_function(
+            self.individual, self.settings, self.winner, self.config)
+        return
