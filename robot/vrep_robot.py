@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import numpy as np
 import pickle
 import logging
-from utility.helpers import sensors_offset, normalize, interval_map
+from utility.util_functions import sensors_offset, normalize, interval_map
 import uuid
 
 PORT_NUM = 19997

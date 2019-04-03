@@ -2,6 +2,7 @@ import utility.visualize as visualize
 from robot.vrep_robot import VrepRobot
 from vision.tracker import Tracker
 from settings import Settings
+from utility.util_functions import vrep_ports, timeit
 from evolution.eval_genomes import \
     eval_genomes_simulation, \
     eval_genomes_hardware, \
@@ -11,7 +12,6 @@ from functools import partial
 import vrep.vrep as vrep
 import neat
 import pickle
-import yaml
 import warnings
 import os
 import time
@@ -34,32 +34,6 @@ except ImportError:  # pragma: no cover
     HAVE_THREADS = False
 else:
     HAVE_THREADS = True
-try:
-    from yaml import CLoader as Loader
-except ImportError:
-    from yaml import Loader
-
-
-def vrep_ports():
-    """Load the vrep ports"""
-    with open("ports.yml", 'r') as f:
-        portConfig = yaml.load(f, Loader=Loader)
-    return portConfig['ports']
-
-
-def timeit(method):
-    def timed(*args, **kw):
-        ts = time.time()
-        result = method(*args, **kw)
-        te = time.time()
-        if 'log_time' in kw:
-            name = kw.get('log_name', method.__name__.upper())
-            kw['log_time'][name] = int((te - ts))
-        else:
-            print('{}  {:.2f} ms'.format(
-                  method.__name__, (te - ts)))
-        return result
-    return timed
 
 
 class ParrallelEvolution(object):
