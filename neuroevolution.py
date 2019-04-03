@@ -42,31 +42,38 @@ if __name__ == '__main__':
                         help='Run vrep in headless mode.')
 
     args = parser.parse_args()
-
     kwargs = {'config_file': config}
+    simulation = 'simulation'
+
     if args.simulation == 'vrep':
         kwargs.update({'simulation_type': 'vrep'})
 
         if args.threaded and not args.restore_genome:
             kwargs.update({'eval_function': eval_genome})
             kwargs.update({'threaded': True})
+            simulation = 'simulation_parallel'
         else:
             kwargs.update({'eval_function': eval_genomes_simulation})
 
         if args.restore_genome and not args.threaded:
             kwargs.update({'genome_path': args.restore_genome})
+            simulation = 'simulation_genome'
 
         if args.checkpoint:
             kwargs.update({'checkpoint': args.checkpoint})
 
         if args.config:
             kwargs.update({'config_file': args.config})
+
+        if args.headless:
+            kwargs.update({'headless': args.headless})
     else:
         kwargs.update({'simulation_type': 'thymio'})
         kwargs.update({'eval_function': eval_genomes_hardware})
 
         if args.restore_genome:
             kwargs.update({'genome_path': args.restore_genome})
+            simulation = 'simulation_genome'
 
         if args.checkpoint:
             kwargs.update({'checkpoint': args.checkpoint})
@@ -74,5 +81,5 @@ if __name__ == '__main__':
         if args.config:
             kwargs.update({'config_file': args.config})
 
-    simulation = Simulation(settings, **kwargs)
-    simulation.start('simulation_genome')
+    sim = Simulation(settings, **kwargs)
+    sim.start(simulation)

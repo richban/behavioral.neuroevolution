@@ -288,7 +288,7 @@ class Simulation(object):
         return self.config, self.stats, self.winner
 
     @timeit
-    def simulation_parralel(self):
+    def simulation_parallel(self):
         """run simulation using threads in vrep"""
         # Run for up to N generations.
         self.parallel_eval = ParrallelEvolution(self.clients, self.settings, len(

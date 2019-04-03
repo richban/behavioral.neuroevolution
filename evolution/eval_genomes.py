@@ -269,16 +269,16 @@ def eval_genome(client_id, settings, genome_id, genome, config):
     # neural network initialization
     network = neat.nn.FeedForwardNetwork.create(genome, config)
 
+    # Enable the synchronous mode
+    vrep.simxSynchronous(client_id, True)
+    if (vrep.simxStartSimulation(client_id, vrep.simx_opmode_oneshot) == -1):
+        return
+
     # collistion detection initialization
     _, collision_handle = vrep.simxGetCollisionHandle(
         client_id, 'wall_collision', vrep.simx_opmode_blocking)
     _, collision = vrep.simxReadCollision(
         client_id, collision_handle, vrep.simx_opmode_streaming)
-
-    # Enable the synchronous mode
-    vrep.simxSynchronous(client_id, True)
-    if (vrep.simxStartSimulation(client_id, vrep.simx_opmode_oneshot) == -1):
-        return
 
     now = datetime.now()
 
@@ -354,8 +354,8 @@ def eval_genome(client_id, settings, genome_id, genome, config):
     if (vrep.simxStopSimulation(client_id, settings.op_mode) == -1):
         return
 
-    print('{0} genome_id: {1} fitness: {:.4f}'.format(
-        t.getName(), str(individual.id), fitness))
+    print('%s genome_id: %s fitness: %f' %
+          (str(t.getName()), str(individual.id), fitness))
 
     time.sleep(1)
     return fitness
