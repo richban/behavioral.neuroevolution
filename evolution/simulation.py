@@ -1,3 +1,11 @@
+import utility.visualize as visualize
+from robot.vrep_robot import VrepRobot
+from vision.tracker import Tracker
+from settings import Settings
+from evolution.eval_genomes import \
+    eval_genomes_simulation, \
+    eval_genomes_hardware, \
+    eval_genome
 from subprocess import Popen
 from functools import partial
 import vrep.vrep as vrep
@@ -8,9 +16,6 @@ import warnings
 import os
 import time
 import sys
-from settings import Settings
-from robot.vrep_robot import VrepRobot
-from evolution.eval_genomes import eval_genomes_simulation, eval_genomes_hardware, eval_genome
 try:
     from robot.evolved_robot import EvolvedRobot
 except ImportError as error:
@@ -33,6 +38,13 @@ try:
     from yaml import CLoader as Loader
 except ImportError:
     from yaml import Loader
+
+
+def vrep_ports():
+    """Load the vrep ports"""
+    with open("ports.yml", 'r') as f:
+        portConfig = yaml.load(f, Loader=Loader)
+    return portConfig['ports']
 
 
 class ParrallelEvolution(object):
@@ -125,223 +137,23 @@ class ParrallelEvolution(object):
             genome.fitness = fitness
 
 
-def vrep_ports():
-    """Load the vrep ports"""
-    with open("ports.yml", 'r') as f:
-        portConfig = yaml.load(f, Loader=Loader)
-    return portConfig['ports']
-
-
-def run_vrep_simluation(settings, config_file):
-    print('Neuroevolutionary program started!')
-    vrep.simxFinish(-1)
-    settings.client_id = vrep.simxStart(
-        '127.0.0.1',
-        settings.port_num,
-        True,
-        True,
-        5000,
-        5)
-
-    if settings.client_id == -1:
-        print('Failed connecting to remote API server')
-        print('Program ended')
-        return
-
-    # Load configuration.
-    config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
-                         neat.DefaultSpeciesSet, neat.DefaultStagnation,
-                         config_file)
-
-    config.save(settings.path + 'config.ini')
-
-    # Create the population, which is the top-level object for a NEAT run.
-    p = neat.Population(config)
-    # Add a stdout reporter to show progress in the terminal.
-    stats = neat.StatisticsReporter()
-    p.add_reporter(neat.StdOutReporter(True))
-    p.add_reporter(stats)
-    p.add_reporter(neat.Checkpointer(1))
-
-    individual = VrepRobot(
-        client_id=settings.client_id,
-        id=None,
-        op_mode=settings.op_mode,
-        robot_type=settings.robot_type
-    )
-
-    # Run for up to N_GENERATIONS generations.
-    winner = p.run(partial(eval_genomes_simulation,
-                           individual, settings), settings.n_gen)
-
-    return config, stats, winner
-
-
-def run_vrep_parallel(settings, config_file):
-    print('Neuroevolutionary program started in parallel!')
-    vrep.simxFinish(-1)
-
-    ports = vrep_ports()
-    FNULL = open(os.devnull, 'w')
-
-    # spawns multiple vrep instances
-    vrep_servers = [Popen(
-        ['{0} -h -gREMOTEAPISERVERSERVICE_{1}_TRUE_TRUE {2}'
-            .format(settings.vrep_abspath, port, settings.vrep_scene)],
-        shell=True, stdout=FNULL) for port in ports]
-
-    time.sleep(5)
-
-    clients = [vrep.simxStart(
-        '127.0.0.1',
-        port,
-        True,
-        True,
-        5000,
-        5) for port in ports]
-
-    if not all(c >= 0 for c in clients):
-        print('Not all clients were connected!')
-
-    # Load configuration.
-    config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
-                         neat.DefaultSpeciesSet, neat.DefaultStagnation,
-                         config_file)
-
-    config.save(settings.path + 'config.ini')
-
-    # Create the population, which is the top-level object for a NEAT run.
-    p = neat.Population(config)
-    # Add a stdout reporter to show progress in the terminal.
-    stats = neat.StatisticsReporter()
-    p.add_reporter(neat.StdOutReporter(True))
-    p.add_reporter(stats)
-    p.add_reporter(neat.Checkpointer(1))
-
-    # Run for up to N generations.
-    pe = ParrallelEvolution(clients, settings, len(clients), eval_genome)
-    winner = p.run(pe.evaluate, settings.n_gen)
-
-    # stop the workers
-    pe.stop()
-
-    # stop vrep simulation
-    _ = [vrep.simxFinish(client) for client in clients]
-    # kill vrep instances
-    _ = [server.kill() for server in vrep_servers]
-
-    return config, stats, winner
-
-
-def run_hardware_simulation(settings, config_file):
-    print('Neuroevolutionary program started!')
-    vrep.simxFinish(-1)
-    settings.client_id = vrep.simxStart(
-        settings.address,
-        settings.port_num,
-        True,
-        True,
-        5000,
-        5)  # Connect to V-REP
-
-    if settings.client_id == -1:
-        print('Failed connecting to remote API server')
-        print('Program ended')
-        return
-
-    # Load configuration.
-    config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
-                         neat.DefaultSpeciesSet, neat.DefaultStagnation,
-                         config_file)
-
-    # Create the population, which is the top-level object for a NEAT run.
-    p = neat.Population(config)
-
-    # Add a stdout reporter to show progress in the terminal.
-    stats = neat.StatisticsReporter()
-    p.add_reporter(neat.StdOutReporter(True))
-    p.add_reporter(stats)
-
-    individual = EvolvedRobot(
-        'thymio-II',
-        client_id=settings.client_id,
-        id=None,
-        op_mode=settings.op_mode,
-        chromosome=None,
-        robot_type=settings.robot_type
-    )
-
-    # Run for up to N_GENERATIONS generations.
-    winner = p.run(partial(eval_genomes_hardware,
-                           individual, settings), settings.n_gen)
-
-    return config, stats, winner
-
-
-def restore_vrep_simulation(settings, config_file, checkpoint=None, path=None):
-    print('Restore neuroevolutionary program started!')
-    vrep.simxFinish(-1)
-    settings.client_id = vrep.simxStart(
-        '127.0.0.1',
-        settings.port_num,
-        True,
-        True,
-        5000,
-        5)
-
-    if settings.client_id == -1:
-        return
-
-    individual = VrepRobot(
-        client_id=settings.client_id,
-        id=None,
-        op_mode=settings.op_mode,
-        robot_type=settings.robot_type
-    )
-
-    # Load configuration.
-    config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
-                         neat.DefaultSpeciesSet, neat.DefaultStagnation,
-                         config_file)
-    stats = neat.StatisticsReporter()
-
-    if checkpoint:
-        population = neat.Checkpointer.restore_checkpoint(checkpoint)
-        p = neat.population.Population(
-            config, (population.population, population.species, settings.n_gen))
-        # Add a stdout reporter to show progress in the terminal.
-        p.add_reporter(neat.StdOutReporter(True))
-        p.add_reporter(stats)
-        # Run for up to N_GENERATIONS generations.
-        winner = p.run(partial(eval_genomes_simulation,
-                               individual, settings), settings.n_gen)
-        return config, stats, winner
-    elif path:
-        with open(path + '/winner_genome', 'rb') as f:
-            c = pickle.load(f)
-        print('Loaded genome:')
-        print(c)
-        eval_genomes_simulation(individual, settings, [(c.key, c)], config)
-        return
-
-    return
-
-
 class Simulation(object):
 
-    def __init__(self, config_file, eval_function, settings,
-                 simulation_type, threaded, checkpoint=None, genome_path=None):
+    def __init__(self, settings, config_file, eval_function,
+                 simulation_type, threaded=False, checkpoint=None, genome_path=None):
         self.config_file = config_file
         self.threaded = threaded
         self.settings = settings
         self.simulation_type = simulation_type
         self.eval_function = eval_function
+        self.parallel_eval = None
         self.checkpoint = checkpoint
         self.genome_path = genome_path
         self._init_vrep()
         self._init_network()
         self._init_agent()
         self._init_genome()
+        self._init_vision()
 
     def _init_vrep(self):
         """initialize vrep simulator"""
@@ -351,10 +163,10 @@ class Simulation(object):
         if self.threaded:
             self.ports = vrep_ports()
         else:
-            self.ports = vrep_ports()[0]
+            self.ports = [vrep_ports()[0]]
 
         self.vrep_servers = [Popen(
-            ['{0} -h -gREMOTEAPISERVERSERVICE_{1}_TRUE_TRUE {2}'
+            ['{0} -gREMOTEAPISERVERSERVICE_{1}_TRUE_TRUE {2}'
                 .format(self.settings.vrep_abspath, port, self.settings.vrep_scene)],
             shell=True, stdout=self.fnull) for port in self.ports]
 
@@ -402,14 +214,14 @@ class Simulation(object):
         self.network_initialized = True
 
     def _init_agent(self):
-        if self.simulation_type == 'VREP':
+        if self.simulation_type == 'vrep':
             self.individual = VrepRobot(
                 client_id=self.settings.client_id,
                 id=None,
                 op_mode=self.settings.op_mode,
                 robot_type=self.settings.robot_type
             )
-        elif self.simulation_type == 'HW':
+        elif self.simulation_type == 'thymio':
             self.individual = EvolvedRobot(
                 'thymio-II',
                 client_id=self.settings.client_id,
@@ -431,6 +243,25 @@ class Simulation(object):
             print(self.winner)
         return
 
+    def _init_vision(self):
+        if self.simulation_type == 'thymio':
+            self.vision_thread = Tracker(mid=5,
+                                         transform=None,
+                                         mid_aux=0,
+                                         video_source=-1,
+                                         capture=False,
+                                         show=True,
+                                         debug=False,
+                                         )
+
+            self.vision_thread.start()
+
+            while self.vision_thread.cornersDetected is not True:
+                time.sleep(2)
+
+            self.vision_initialized = True
+        return
+
     def _stop_vrep(self):
         # stop vrep simulations
         _ = [vrep.simxFinish(client) for client in self.clients]
@@ -441,23 +272,30 @@ class Simulation(object):
 
     def start(self, simulation):
         default = None
-        return getattr(self, str(simulation), lambda: default)()
+        return getattr(self, simulation, lambda: default)()
+
+    def stop(self):
+        if self.parallel_eval:
+            self.parallel_eval.stop()
+        self._stop_vrep()
+        time.sleep(3)
+        self._kill_vrep()
 
     def simulation(self):
         # run simulation in vrep
         self.winner = self.population.run(partial(self.eval_function,
-                                                  self.individual, self.settings), self.n_gen)
+                                                  self.individual, self.settings), self.settings.n_gen)
+
         return self.config, self.stats, self.winner
 
     def simulation_parralel(self):
         """run simulation using threads in vrep"""
         # Run for up to N generations.
-        pe = ParrallelEvolution(self.clients, self.settings, len(
+        self.parallel_eval = ParrallelEvolution(self.clients, self.settings, len(
             self.clients), self.eval_function)
-        self.winner = self.population.run(pe.evaluate, self.settings.n_gen)
-        # stop the workers
-        pe.stop()
-
+        self.winner = self.population.run(
+            self.parallel_eval.evaluate, self.settings.n_gen)
+        self.stop()
         return self.config, self.stats, self.winner
 
     def simulation_genome(self):
@@ -465,3 +303,48 @@ class Simulation(object):
         self.winner = self.eval_function(
             self.individual, self.settings, self.winner, self.config)
         return
+
+    def log_statistics(self):
+        """log results and save best/winner genomes"""
+        # Write run statistics to file.
+        self.stats.save_genome_fitness(
+            filename=self.settings.path+'fitnesss_history.csv')
+        self.stats.save_species_count(
+            filename=self.settings.path+'speciation.csv')
+        self.stats.save_species_fitness(
+            filename=self.settings.path+'species_fitness.csv')
+        # log the winner network
+        with open(self.settings.path + 'winner_network.txt', 'w') as s:
+            s.write('\nBest genome:\n{!s}'.format(self.winner))
+            s.write('\nBest genomes:\n{!s}'.format(
+                print(self.stats.best_genomes(5))))
+        # Save the winner.
+        with open(self.settings.path + 'winner_genome', 'wb') as f:
+            pickle.dump(self.winner, f)
+        # save the 10 best genomes
+        for i, best in enumerate(self.stats.best_genomes(10)):
+            with open(self.settings.path + 'best_genome_{0}'.format(i), 'wb') as g:
+                pickle.dump(best, g)
+
+    def visualize_results(self):
+        """Visualize network topology, species, results"""
+        node_names = {-1: 'A', -2: 'B', -3: 'C', -4: 'D', -5: 'E',
+                      -6: 'F', -7: 'G', 0: 'LEFT', 1: 'RIGHT', }
+
+        visualize.draw_net(self.config, self.winner, True, node_names=node_names,
+                           filename=self.settings.path+'network')
+
+        visualize.plot_stats(self.stats, ylog=False, view=False,
+                             filename=self.settings.path+'feedforward-fitness.svg')
+
+        visualize.plot_species(
+            self.stats, view=False, filename=self.settings.path+'feedforward-speciation.svg')
+
+        visualize.draw_net(self.config, self.winner, view=False, node_names=node_names,
+                           filename=self.settings.path+'winner-feedforward.gv')
+
+        visualize.draw_net(self.config, self.winner, view=False, node_names=node_names,
+                           filename=self.settings.path+'winner-feedforward-enabled.gv', show_disabled=False)
+
+        visualize.draw_net(self.config, self.winner, view=False, node_names=node_names,
+                           filename=self.settings.path+'winner-feedforward-enabled-pruned.gv', show_disabled=False, prune_unused=False)

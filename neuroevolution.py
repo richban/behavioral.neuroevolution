@@ -1,7 +1,10 @@
-from evolution.run_simulation import run_vrep_simluation, run_hardware_simulation, restore_vrep_simulation, run_vrep_parallel
-from utility.evolution import log_statistics, visualize_results
-from vision.tracker import Tracker
+from evolution.simulation import Simulation
+from argparse import ArgumentParser
 from settings import Settings
+from evolution.eval_genomes import \
+    eval_genomes_simulation, \
+    eval_genomes_hardware, \
+    eval_genome
 import time
 import sys
 import os
@@ -16,85 +19,57 @@ thymio = {
 }
 
 
-def start_vision():
-    vision_thread = Tracker(mid=5,
-                            transform=None,
-                            mid_aux=0,
-                            video_source=-1,
-                            capture=False,
-                            show=True,
-                            debug=False,
-                            )
-    vision_thread.start()
-
-    while vision_thread.cornersDetected is not True:
-        time.sleep(2)
-
-
-def run_hardware(settings, config_file):
-    start_vision()
-    config, stats, winner = run_hardware_simulation(settings, config_file)
-    log_statistics(stats, winner, settings.path)
-    visualize_results(config, stats, winner, settings.path)
-
-
-def run_simulation(settings, config_file):
-    config, stats, winner = run_vrep_simluation(settings, config_file)
-    log_statistics(stats, winner, settings.path)
-    visualize_results(config, stats, winner, settings.path)
-
-
-def run_simulation_parallel(settings, config_file):
-    config, stats, winner = run_vrep_parallel(settings, config_file)
-    log_statistics(stats, winner, settings.path)
-    visualize_results(config, stats, winner, settings.path)
-
-
-def restore_simulation(settings, config_file, checkpoint, path):
-    if checkpoint:
-        config, stats, winner = restore_vrep_simulation(
-            settings, config_file, checkpoint, path)
-        log_statistics(stats, winner, settings.path)
-        visualize_results(config, stats, winner, settings.path)
-    restore_vrep_simulation(
-        settings, config_file, checkpoint, path)
-
-
 if __name__ == '__main__':
     local_dir = os.path.abspath('evolution')
-    try:
+    config = os.path.join(local_dir, 'config_thymio.ini')
+    settings = Settings(thymio, True)
 
-        if (sys.argv[1] == 'vrep' and sys.argv[2] == 'thymio'):
-            config = os.path.join(local_dir, 'config_thymio.ini')
-            settings = Settings(thymio, True)
-            run_simulation(settings, config)
+    parser = ArgumentParser(
+        description='I am here to guide you through the evolution!')
+    parser.add_argument('-simulation', choices=['vrep', 'thymio'],
+                        description='Run the evolution in vrep \
+                        simulator or on the physical robot (thymio).',
+                        required=True)
+    parser.add_argument('-threaded', type=bool, default=False, choices=[
+                        True, False], description='Runs evolution using threads only works in vrep.')
+    parser.add_argument('-restore_genome', type=str,
+                        description='Restore a specific genome. Path to the genome is required!')
+    parser.add_argument('-checkpoint', type=str,
+                        description='Restore evolution from a checkpoint. Path to the checkpoint is required!')
+    parser.add_argument('-config', type=str,
+                        description='Load specific NEAT configuration file. Path to the config is required!')
 
-        elif (sys.argv[1] == 'vrep' and sys.argv[2] == 'parallel'):
-            config = os.path.join(local_dir, 'config_thymio.ini')
-            settings = Settings(thymio, True)
-            run_simulation_parallel(settings, config)
+    args = parser.parse_args()
 
-        elif (sys.argv[1] == 'hw' and sys.argv[2] == 'thymio'):
-            config = os.path.join(local_dir, 'config_thymio.ini')
-            settings = Settings(thymio, True)
-            run_hardware(settings, config)
+    kwargs = {'config_file': config}
+    if args.simulation == 'vrep':
+        kwargs.update({'simulation_type': 'vrep'})
 
-        elif (sys.argv[1] == 'restore'):
-            data = os.path.abspath('data/neat/')
-
-            if sys.argv[2] == 'checkpoint':
-                checkpoint = sys.argv[3]
-                config = os.path.join(local_dir, 'config_thymio.ini')
-                settings = Settings(thymio)
-                restore_simulation(settings, config, checkpoint, None)
-
-            elif sys.argv[2] == 'file':
-                date = sys.argv[3]
-                path = os.path.join(data, date)
-                config = os.path.join(local_dir, 'config_thymio.ini')
-                settings = Settings(thymio)
-                restore_simulation(settings, config, None, path)
+        if args.thread and not args.restore_genome:
+            kwargs.update({'eval_function': eval_genome})
+            kwargs.update({'threaded': True})
         else:
-            print('Error!')
-    except IndexError:
-        print('Wrong Arguments!')
+            kwargs.update({'eval_function': eval_genomes_simulation})
+
+        if args.restore_genome not args.thread:
+            kwargs.update({'genome_path': args.restore_genome})
+
+        if args.checkpoint:
+            kwargs.update({'checkpoint': args.checkpoint})
+
+        if args.config:
+            kwargs.update({'config_file': args.config})
+    else:
+        kwargs.update({'simulation_type': 'thymio'})
+        kwargs.update({'eval_function': eval_genomes_hardware})
+
+        if args.restore_genome:
+            kwargs.update({'genome_path': args.restore_genome})
+
+        if args.checkpoint:
+            kwargs.update({'checkpoint': args.checkpoint})
+
+        if args.config:
+            kwargs.update({'config_file': args.config})
+
+    simulation = Simulation(settings, **kwargs)
