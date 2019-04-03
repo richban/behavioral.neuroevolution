@@ -27,17 +27,19 @@ if __name__ == '__main__':
     parser = ArgumentParser(
         description='I am here to guide you through the evolution!')
     parser.add_argument('-simulation', choices=['vrep', 'thymio'],
-                        description='Run the evolution in vrep \
+                        help='Run the evolution in vrep \
                         simulator or on the physical robot (thymio).',
                         required=True)
     parser.add_argument('-threaded', type=bool, default=False, choices=[
-                        True, False], description='Runs evolution using threads only works in vrep.')
+                        True, False], help='Runs evolution using threads only works in vrep.')
     parser.add_argument('-restore_genome', type=str,
-                        description='Restore a specific genome. Path to the genome is required!')
+                        help='Restore a specific genome. Path to the genome is required!')
     parser.add_argument('-checkpoint', type=str,
-                        description='Restore evolution from a checkpoint. Path to the checkpoint is required!')
+                        help='Restore evolution from a checkpoint. Path to the checkpoint is required!')
     parser.add_argument('-config', type=str,
-                        description='Load specific NEAT configuration file. Path to the config is required!')
+                        help='Load specific NEAT configuration file. Path to the config is required!')
+    parser.add_argument('-headless', type=bool, default=False,
+                        help='Run vrep in headless mode.')
 
     args = parser.parse_args()
 
@@ -45,13 +47,13 @@ if __name__ == '__main__':
     if args.simulation == 'vrep':
         kwargs.update({'simulation_type': 'vrep'})
 
-        if args.thread and not args.restore_genome:
+        if args.threaded and not args.restore_genome:
             kwargs.update({'eval_function': eval_genome})
             kwargs.update({'threaded': True})
         else:
             kwargs.update({'eval_function': eval_genomes_simulation})
 
-        if args.restore_genome not args.thread:
+        if args.restore_genome and not args.threaded:
             kwargs.update({'genome_path': args.restore_genome})
 
         if args.checkpoint:
@@ -73,3 +75,4 @@ if __name__ == '__main__':
             kwargs.update({'config_file': args.config})
 
     simulation = Simulation(settings, **kwargs)
+    simulation.start('simulation_genome')

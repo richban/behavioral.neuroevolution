@@ -373,7 +373,8 @@ def eval_genome(client_id, settings, genome_id, genome, config):
     if (vrep.simxStopSimulation(client_id, settings.op_mode) == -1):
         return
 
-    print('%s genome_id: %s fitness: %f' % (str(t.getName()), str(individual.id), fitness))
+    print('%s genome_id: %s fitness: %f' %
+          (str(t.getName()), str(individual.id), fitness))
 
     time.sleep(1)
     return fitness

@@ -47,6 +47,21 @@ def vrep_ports():
     return portConfig['ports']
 
 
+def timeit(method):
+    def timed(*args, **kw):
+        ts = time.time()
+        result = method(*args, **kw)
+        te = time.time()
+        if 'log_time' in kw:
+            name = kw.get('log_name', method.__name__.upper())
+            kw['log_time'][name] = int((te - ts))
+        else:
+            print('{}  {:.2f} ms'.format(
+                  method.__name__, (te - ts)))
+        return result
+    return timed
+
+
 class ParrallelEvolution(object):
     """
     A threaded genome evaluator.
@@ -81,6 +96,7 @@ class ParrallelEvolution(object):
         if self.working:
             self.stop()
 
+    @timeit
     def start(self):
         """Starts the worker threads each connected to specific vrep server"""
         if self.working:
@@ -120,6 +136,7 @@ class ParrallelEvolution(object):
             self.inqueue.task_done()
             self.outqueue.put((genome_id, genome, f))
 
+    @timeit
     def evaluate(self, genomes, config):
         """Evaluate the genomes"""
         if not self.working:
@@ -140,7 +157,7 @@ class ParrallelEvolution(object):
 class Simulation(object):
 
     def __init__(self, settings, config_file, eval_function,
-                 simulation_type, threaded=False, checkpoint=None, genome_path=None):
+                 simulation_type, threaded=False, checkpoint=None, genome_path=None, headless=False):
         self.config_file = config_file
         self.threaded = threaded
         self.settings = settings
@@ -149,6 +166,7 @@ class Simulation(object):
         self.parallel_eval = None
         self.checkpoint = checkpoint
         self.genome_path = genome_path
+        self.headless = headless
         self._init_vrep()
         self._init_network()
         self._init_agent()
@@ -165,12 +183,17 @@ class Simulation(object):
         else:
             self.ports = [vrep_ports()[0]]
 
+        if self.headless:
+            h = '-h'
+        else:
+            h = ''
+
         self.vrep_servers = [Popen(
-            ['{0} -gREMOTEAPISERVERSERVICE_{1}_TRUE_TRUE {2}'
-                .format(self.settings.vrep_abspath, port, self.settings.vrep_scene)],
+            ['{0} {1} -gREMOTEAPISERVERSERVICE_{2}_TRUE_TRUE {3}'
+                .format(self.settings.vrep_abspath, h, port, self.settings.vrep_scene)],
             shell=True, stdout=self.fnull) for port in self.ports]
 
-        time.sleep(10)
+        time.sleep(5)
 
         self.clients = [vrep.simxStart(
             '127.0.0.1',
@@ -240,7 +263,7 @@ class Simulation(object):
             with open(self.genome_path, 'rb') as f:
                 genome = pickle.load(f)
             self.winner = [(genome.key, genome)]
-            print(self.winner)
+            print(genome)
         return
 
     def _init_vision(self):
@@ -270,6 +293,7 @@ class Simulation(object):
         # kill vrep server instances
         _ = [server.kill() for server in self.vrep_servers]
 
+    @timeit
     def start(self, simulation):
         default = None
         return getattr(self, simulation, lambda: default)()
@@ -281,6 +305,7 @@ class Simulation(object):
         time.sleep(3)
         self._kill_vrep()
 
+    @timeit
     def simulation(self):
         # run simulation in vrep
         self.winner = self.population.run(partial(self.eval_function,
@@ -288,6 +313,7 @@ class Simulation(object):
 
         return self.config, self.stats, self.winner
 
+    @timeit
     def simulation_parralel(self):
         """run simulation using threads in vrep"""
         # Run for up to N generations.
@@ -298,6 +324,7 @@ class Simulation(object):
         self.stop()
         return self.config, self.stats, self.winner
 
+    @timeit
     def simulation_genome(self):
         """restore genome and re-run simulation"""
         self.winner = self.eval_function(
