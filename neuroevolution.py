@@ -83,3 +83,5 @@ if __name__ == '__main__':
 
     sim = Simulation(settings, **kwargs)
     sim.start(simulation)
+    sim.log_statistics()
+    sim.visualize_results()
