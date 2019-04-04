@@ -141,6 +141,7 @@ class Simulation(object):
         self.checkpoint = checkpoint
         self.genome_path = genome_path
         self.headless = headless
+        self.vrep_scene = None
         self._init_vrep()
         self._init_network()
         self._init_agent()
@@ -162,9 +163,14 @@ class Simulation(object):
         else:
             h = ''
 
+        if self.simulation_type == 'thymio':
+            self.vrep_scene = os.getcwd() + '/scenes/thymio_hw.ttt'
+        else:
+            self.vrep_scene = os.getcwd() + '/scenes/thymio_v.ttt'
+
         self.vrep_servers = [Popen(
             ['{0} {1} -gREMOTEAPISERVERSERVICE_{2}_TRUE_TRUE {3}'
-                .format(self.settings.vrep_abspath, h, port, self.settings.vrep_scene)],
+                .format(self.settings.vrep_abspath, h, port, self.vrep_scene)],
             shell=True, stdout=self.fnull) for port in self.ports]
 
         time.sleep(5)
@@ -283,8 +289,9 @@ class Simulation(object):
     def simulation(self):
         # run simulation in vrep
         self.winner = self.population.run(partial(self.eval_function,
-                                                  self.individual, self.settings), self.settings.n_gen)
-
+                                                  self.individual,
+                                                  self.settings),
+                                          self.settings.n_gen)
         return self.config, self.stats, self.winner
 
     @timeit

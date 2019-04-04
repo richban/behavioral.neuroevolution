@@ -22,7 +22,6 @@ thymio = {
 if __name__ == '__main__':
     local_dir = os.path.abspath('evolution')
     config = os.path.join(local_dir, 'config_thymio.ini')
-    settings = Settings(thymio, True)
 
     parser = ArgumentParser(
         description='I am here to guide you through the evolution!')
@@ -40,10 +39,15 @@ if __name__ == '__main__':
                         help='Load specific NEAT configuration file. Path to the config is required!')
     parser.add_argument('-headless', type=bool, default=False,
                         help='Run vrep in headless mode.')
+    parser.add_argument('-generations', type=int, default=10,
+                        help='Number of generations.')
+    parser.add_argument('-save_data', type=bool, default=False,
+                        help='Number of generations.')
 
     args = parser.parse_args()
     kwargs = {'config_file': config}
     simulation = 'simulation'
+    settings = Settings(thymio, args.save_data, args.generations)
 
     if args.simulation == 'vrep':
         kwargs.update({'simulation_type': 'vrep'})
@@ -83,5 +87,7 @@ if __name__ == '__main__':
 
     sim = Simulation(settings, **kwargs)
     sim.start(simulation)
-    sim.log_statistics()
-    sim.visualize_results()
+
+    if simulation != 'simulation_genome':
+        sim.log_statistics()
+        sim.visualize_results()
