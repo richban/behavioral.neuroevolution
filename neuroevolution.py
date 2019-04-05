@@ -4,6 +4,7 @@ from settings import Settings
 from evolution.eval_genomes import \
     eval_genomes_simulation, \
     eval_genomes_hardware, \
+    post_eval_genome, \
     eval_genome
 import time
 import sys
@@ -67,6 +68,7 @@ if __name__ == '__main__':
 
         if args.restore_genome and args.post_eval:
             kwargs.update({'genome_path': args.restore_genome})
+            kwargs.update({'eval_function': post_eval_genome})
             simulation = 'post_eval'
 
         if args.checkpoint:
@@ -94,6 +96,6 @@ if __name__ == '__main__':
     sim = Simulation(settings, **kwargs)
     sim.start(simulation)
 
-    if simulation != 'simulation_genome':
+    if simulation != 'simulation_genome' and simulation != 'post_eval':
         sim.log_statistics()
         sim.visualize_results()

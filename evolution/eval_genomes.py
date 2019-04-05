@@ -363,7 +363,9 @@ def post_eval_genome(individual, settings, genome, config):
         _, collision = vrep.simxReadCollision(
             settings.client_id, collision_handle, vrep.simx_opmode_streaming)
 
-        while not collision:
+        now = datetime.now()
+
+        while not collision and datetime.now() - now < timedelta(seconds=settings.run_time):
             # The first simulation step waits for a trigger before being executed
             vrep.simxSynchronousTrigger(settings.client_id)
             _, collision = vrep.simxReadCollision(
