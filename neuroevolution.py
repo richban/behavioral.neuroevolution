@@ -89,6 +89,11 @@ if __name__ == '__main__':
             kwargs.update({'genome_path': args.restore_genome})
             simulation = 'simulation_genome'
 
+        if args.restore_genome and args.post_eval:
+            kwargs.update({'genome_path': args.restore_genome})
+            kwargs.update({'eval_function': post_eval_genome})
+            simulation = 'post_eval'
+
         if args.checkpoint:
             kwargs.update({'checkpoint': args.checkpoint})
 

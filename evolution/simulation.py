@@ -197,17 +197,14 @@ class Simulation(object):
         self.config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
                                   neat.DefaultSpeciesSet, neat.DefaultStagnation,
                                   self.config_file)
-        self.config.save(self.settings.path + 'config.ini')
+        if self.settings.save_data:
+            self.config.save(self.settings.path + 'config.ini')
 
         if self.checkpoint:
             # restore population from a checkpoint
             self.restored_population = neat.Checkpointer.restore_checkpoint(
                 self.checkpoint)
             self.population = self.restored_population 
-            
-            # neat.population.Population(
-            #    self.config, (self.restored_population.population,
-            #                  self.restored_population.species, self.settings.n_gen))
         else:
             # initialize the network and population
             self.population = neat.Population(self.config)

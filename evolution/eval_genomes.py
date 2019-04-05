@@ -348,9 +348,12 @@ def eval_genome(client_id, settings, genome_id, genome, config):
 
 
 def post_eval_genome(individual, settings, genome, config):
+    
+    print('Postevaluation of {0} started!'.format(type(individual).__name__))
+    
     network = neat.nn.FeedForwardNetwork.create(genome, config)
-
-    if isinstance(individual, VrepRobot):
+    
+    if type(individual).__name__ == 'VrepRobot':
         individual.v_chromosome = genome
         individual.id = genome.key
         # Enable the synchronous mode
@@ -389,18 +392,19 @@ def post_eval_genome(individual, settings, genome, config):
             return
         return individual
 
-    elif isinstance(individual, EvolvedRobot):
+    elif type(individual).__name__ == 'EvolvedRobot':
         individual.chromosome = genome
         individual.id = genome.key
         t_xy, t_angle = thymio_position()
+        
+        if (vrep.simxStartSimulation(settings.client_id, vrep.simx_opmode_oneshot) == -1):
+            print('Failed to start the simulation\n')
+            return
+ 
         # update position and orientation of the robot in vrep
         position, orientation = transform_pos_angle(
             t_xy, t_angle)
         individual.v_set_pos_angle(position, orientation)
-
-        if (vrep.simxStartSimulation(settings.client_id, vrep.simx_opmode_oneshot) == -1):
-            print('Failed to start the simulation\n')
-            return
 
         # collistion detection initialization
         _, collision_handle = vrep.simxGetCollisionHandle(
@@ -410,7 +414,7 @@ def post_eval_genome(individual, settings, genome, config):
 
         now = datetime.now()
 
-        while not collision and datetime.now() - now < timedelta(seconds=settings.run_time):
+        while datetime.now() - now < timedelta(seconds=settings.run_time):
 
             t_xy, t_angle = thymio_position()
             # update position and orientation of the robot in vrep
@@ -422,7 +426,7 @@ def post_eval_genome(individual, settings, genome, config):
                 settings.client_id, collision_handle, vrep.simx_opmode_buffer)
             # read proximity sensors data
             individual.t_read_prox()
-
+            
             net_output = network.activate(individual.n_t_sensor_activation)
             # normalize motor wheel wheel_speeds [0.0, 2.0] - robot
             scaled_output = np.array([scale(xi, -200, 200)
