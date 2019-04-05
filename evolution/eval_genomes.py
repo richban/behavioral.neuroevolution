@@ -62,9 +62,7 @@ def eval_genomes_hardware(individual, settings, genomes, config):
         now = datetime.now()
 
         while not collision and datetime.now() - now < timedelta(seconds=settings.run_time):
-            step_start = time.time()
 
-            ts = time.time()
             # get robot marker
             robot_m = get_marker_object(7)
             if robot_m.realxy() is not None:
@@ -75,31 +73,14 @@ def eval_genomes_hardware(individual, settings, genomes, config):
             position, orientation = transform_pos_angle(
                 robot_current_position, robot_m.orientation())
             individual.v_set_pos_angle(position, orientation)
-            te = time.time()
-            if settings.exec_time:
-                time_marker = (te - ts) * 1000
-                # print('%s  %2.2f ms' % ('get/set position', time_marker))
 
             _, collision = vrep.simxReadCollision(
                 settings.client_id, collision_handle, vrep.simx_opmode_buffer)
             # read proximity sensors data
-            ts = time.time()
             individual.t_read_prox()
-            te = time.time()
-            if settings.exec_time:
-                time_sensors = (te - ts) * 1000
-                # print('%s  %2.2f ms' % ('sensory readings', time_sensors))
 
             # input data to the neural network
-            ts = time.time()
             net_output = net.activate(individual.n_t_sensor_activation)
-            # list(map(lambda x: x if x != 0.0 else 1.0, individual.n_t_sensor_activation)))
-            te = time.time()
-            if settings.exec_time:
-                time_network = (te - ts) * 1000
-                # print('%s  %2.2f ms' % ('network output', time_network))
-
-            ts = time.time()
             # normalize motor wheel wheel_speeds [0.0, 2.0] - robot
             scaled_output = np.array([scale(xi, -200, 200)
                                       for xi in net_output])
@@ -118,30 +99,17 @@ def eval_genomes_hardware(individual, settings, genomes, config):
             fitness_t = wheel_center * straight_movements * obstacles_distance
             fitness_agg = np.append(fitness_agg, fitness_t)
 
-            te = time.time()
-            if settings.exec_time:
-                time_calculation = (te - ts) * 1000
-                # print('%s  %2.2f ms' %
-                #      ('fitness calculation', (te - ts) * 1000))
-
-            step_end = time.time()
-            if settings.exec_time:
-                time_simulation_step = (step_end - step_start) * 1000
-                # print('%s  %2.2f ms' %
-                #      ('simulation_step', (step_end - step_start) * 1000))
-
             # dump individuals data
             if settings.debug:
-                with open(settings.path + str(id) + '_hw_simulation.txt', 'a') as f:
-                    f.write('{0!s},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16}\n'.format(
+                with open(settings.path + str(individual.id) + '_hw_simulation.txt', 'a') as f:
+                    f.write('{0!s},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}\n'.format(
                         individual.id, net_output[0], net_output[1], scaled_output[0], scaled_output[1],
                         np.array2string(
                             individual.t_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
                         np.array2string(
                             individual.n_t_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
                         wheel_center, straight_movements, obstacles_distance, np.max(
-                            individual.n_t_sensor_activation), fitness_t,
-                        time_marker, time_sensors, time_network, time_calculation, time_simulation_step))
+                            individual.n_t_sensor_activation), fitness_t))
 
         individual.t_stop()
         # calculate the fitnesss
@@ -229,7 +197,7 @@ def eval_genomes_simulation(individual, settings, genomes, config):
             if settings.debug:
                 with open(settings.path + str(individual.id) + '_simulation.txt', 'a') as f:
                     f.write('{0!s},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}\n'.format(
-                        individual.id, output[0], output[1], scaled_output[0], scaled_output[1],
+                        str(individual.id), output[0], output[1], scaled_output[0], scaled_output[1],
                         np.array2string(
                             individual.v_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
                         np.array2string(
