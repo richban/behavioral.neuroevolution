@@ -46,11 +46,13 @@ if __name__ == '__main__':
                         help='Number of generations.')
     parser.add_argument('-post_eval', type=bool, default=False,
                         help='Run postevaluation on the genome')
+    parser.add_argument('-debug', type=bool, default=False,
+                        help='Log fitness, inputs, etc.')
 
     args = parser.parse_args()
     kwargs = {'config_file': config}
     simulation = 'simulation'
-    settings = Settings(thymio, args.save_data, args.generations)
+    settings = Settings(thymio, args.save_data, args.debug, args.generations)
 
     if args.simulation == 'vrep':
         kwargs.update({'simulation_type': 'vrep'})

@@ -131,7 +131,7 @@ def eval_genomes_hardware(individual, settings, genomes, config):
                 #      ('simulation_step', (step_end - step_start) * 1000))
 
             # dump individuals data
-            if settings.save_data:
+            if settings.debug:
                 with open(settings.path + str(id) + '_hw_simulation.txt', 'a') as f:
                     f.write('{0!s},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16}\n'.format(
                         individual.id, net_output[0], net_output[1], scaled_output[0], scaled_output[1],
@@ -226,7 +226,7 @@ def eval_genomes_simulation(individual, settings, genomes, config):
             fitness_agg = np.append(fitness_agg, fitness_t)
 
             # dump individuals data
-            if settings.save_data:
+            if settings.debug:
                 with open(settings.path + str(individual.id) + '_simulation.txt', 'a') as f:
                     f.write('{0!s},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}\n'.format(
                         individual.id, output[0], output[1], scaled_output[0], scaled_output[1],
@@ -319,7 +319,7 @@ def eval_genome(client_id, settings, genome_id, genome, config):
         fitness_agg = np.append(fitness_agg, fitness_t)
 
         # dump individuals data
-        if settings.save_data:
+        if settings.debug:
             with open(settings.path + str(individual.id) + '_simulation.txt', 'a') as f:
                 f.write('{0!s},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}\n'.format(
                     individual.id, output[0], output[1], scaled_output[0], scaled_output[1],
