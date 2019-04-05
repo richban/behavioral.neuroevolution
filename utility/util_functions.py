@@ -1,6 +1,7 @@
 import numpy as np
 import time
 import yaml
+from vision.tracker import get_marker_object
 try:
     from yaml import CLoader as Loader
 except ImportError:
@@ -90,3 +91,10 @@ def f_t_obstacle_avoidance(wheels, sensors, simulation):
     fitness_t = wheel_center * straight_movements * obstacles_distance
 
     return (fitness_t, wheel_center, straight_movements, obstacles_distance)
+
+
+def thymio_position():
+    thymio = get_marker_object(7)
+    while thymio.realxy() is None:
+        thymio = get_marker_object(7)
+    return (thymio.realxy()[:2], thymio.orientation())

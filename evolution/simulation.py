@@ -244,7 +244,7 @@ class Simulation(object):
         if self.genome_path:
             with open(self.genome_path, 'rb') as f:
                 genome = pickle.load(f)
-            self.winner = [(genome.key, genome)]
+            self.winner = genome
             print(genome)
         return
 
@@ -311,8 +311,14 @@ class Simulation(object):
     def simulation_genome(self):
         """restore genome and re-run simulation"""
         self.winner = self.eval_function(
-            self.individual, self.settings, self.winner, self.config)
+            self.individual, self.settings, [(self.winner.key, self.winner)], self.config)
         return
+
+    def post_eval(self):
+        """post evalution of genome"""
+        self.individual = self.eval_function(
+            self.individual, self.settings, self.winner, self.config)
+        return self.individual
 
     def log_statistics(self):
         """log results and save best/winner genomes"""

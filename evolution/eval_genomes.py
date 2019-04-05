@@ -11,7 +11,11 @@ from utility.path_tracking import follow_path, transform_pos_angle
 from utility.util_functions import scale, euclidean_distance, \
     f_wheel_center, f_straight_movements, \
     f_obstacle_dist, scale, scale_thymio_sensors, \
-    normalize_0_1, f_t_obstacle_avoidance
+    normalize_0_1, f_t_obstacle_avoidance, thymio_position
+try:
+    from robot.evolved_robot import EvolvedRobot
+except ImportError as error:
+    print(error.__class__.__name__ + ": " + 'DBus works only on linux!')
 
 
 def eval_genomes_hardware(individual, settings, genomes, config):
@@ -165,6 +169,7 @@ def eval_genomes_simulation(individual, settings, genomes, config):
         individual.id = genome_id
 
         # evaluation specific props
+        collision = False
         scaled_output = np.array([])
         fitness_agg = np.array([])
 
@@ -340,3 +345,95 @@ def eval_genome(client_id, settings, genome_id, genome, config):
 
     time.sleep(1)
     return fitness
+
+
+def post_eval_genome(individual, settings, genome, config):
+    network = neat.nn.FeedForwardNetwork.create(genome, config)
+
+    if isinstance(individual, VrepRobot):
+        individual.v_chromosome = genome
+        individual.id = genome.key
+        # Enable the synchronous mode
+        vrep.simxSynchronous(settings.client_id, True)
+        if (vrep.simxStartSimulation(settings.client_id, vrep.simx_opmode_oneshot) == -1):
+            return
+        # collistion detection initialization
+        _, collision_handle = vrep.simxGetCollisionHandle(
+            settings.client_id, 'wall_collision', vrep.simx_opmode_blocking)
+        _, collision = vrep.simxReadCollision(
+            settings.client_id, collision_handle, vrep.simx_opmode_streaming)
+
+        while not collision:
+            # The first simulation step waits for a trigger before being executed
+            vrep.simxSynchronousTrigger(settings.client_id)
+            _, collision = vrep.simxReadCollision(
+                settings.client_id, collision_handle, vrep.simx_opmode_buffer)
+
+            individual.v_neuro_loop()
+            # Net output [0, 1]
+            output = network.activate(individual.v_norm_sensor_activation)
+            # [-2, 2] wheel speed thymio
+            scaled_output = np.array(
+                [scale(xi, -2.0, 2.0) for xi in output])
+            # set motor wheel speeds
+            individual.v_set_motors(*list(scaled_output))
+            # After this call, the first simulation step is finished
+            vrep.simxGetPingTime(settings.client_id)
+
+        # Before closing the connection to V-REP, make sure that the last command sent out had time to arrive.
+        vrep.simxGetPingTime(settings.client_id)
+
+        if (vrep.simxStopSimulation(settings.client_id, settings.op_mode) == -1):
+            return
+        return individual
+
+    elif isinstance(individual, EvolvedRobot):
+        individual.chromosome = genome
+        individual.id = genome.key
+        t_xy, t_angle = thymio_position()
+        # update position and orientation of the robot in vrep
+        position, orientation = transform_pos_angle(
+            t_xy, t_angle)
+        individual.v_set_pos_angle(position, orientation)
+
+        if (vrep.simxStartSimulation(settings.client_id, vrep.simx_opmode_oneshot) == -1):
+            print('Failed to start the simulation\n')
+            return
+
+        # collistion detection initialization
+        _, collision_handle = vrep.simxGetCollisionHandle(
+            settings.client_id, 'wall_collision', vrep.simx_opmode_blocking)
+        _, collision = vrep.simxReadCollision(
+            settings.client_id, collision_handle, vrep.simx_opmode_streaming)
+
+        now = datetime.now()
+
+        while not collision and datetime.now() - now < timedelta(seconds=settings.run_time):
+
+            t_xy, t_angle = thymio_position()
+            # update position and orientation of the robot in vrep
+            position, orientation = transform_pos_angle(
+                t_xy, t_angle)
+            individual.v_set_pos_angle(position, orientation)
+
+            _, collision = vrep.simxReadCollision(
+                settings.client_id, collision_handle, vrep.simx_opmode_buffer)
+            # read proximity sensors data
+            individual.t_read_prox()
+
+            net_output = network.activate(individual.n_t_sensor_activation)
+            # normalize motor wheel wheel_speeds [0.0, 2.0] - robot
+            scaled_output = np.array([scale(xi, -200, 200)
+                                      for xi in net_output])
+            # set thymio wheel speeds
+            individual.t_set_motors(*list(scaled_output))
+
+        individual.t_stop()
+
+        if (vrep.simxStopSimulation(settings.client_id, settings.op_mode) == -1):
+            print('Failed to stop the simulation')
+            print('Program ended')
+            return
+        return individual
+    else:
+        return None

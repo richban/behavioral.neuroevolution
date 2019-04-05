@@ -43,6 +43,8 @@ if __name__ == '__main__':
                         help='Number of generations.')
     parser.add_argument('-save_data', type=bool, default=False,
                         help='Number of generations.')
+    parser.add_argument('-post_eval', type=bool, default=False,
+                        help='Run postevaluation on the genome')
 
     args = parser.parse_args()
     kwargs = {'config_file': config}
@@ -62,6 +64,10 @@ if __name__ == '__main__':
         if args.restore_genome and not args.threaded:
             kwargs.update({'genome_path': args.restore_genome})
             simulation = 'simulation_genome'
+
+        if args.restore_genome and args.post_eval:
+            kwargs.update({'genome_path': args.restore_genome})
+            simulation = 'post_eval'
 
         if args.checkpoint:
             kwargs.update({'checkpoint': args.checkpoint})
