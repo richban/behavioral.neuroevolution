@@ -203,9 +203,11 @@ class Simulation(object):
             # restore population from a checkpoint
             self.restored_population = neat.Checkpointer.restore_checkpoint(
                 self.checkpoint)
-            self.population = neat.population.Population(
-                self.config, (self.restored_population.population,
-                              self.restored_population.population.species, self.settings.n_gen))
+            self.population = self.restored_population 
+            
+            # neat.population.Population(
+            #    self.config, (self.restored_population.population,
+            #                  self.restored_population.species, self.settings.n_gen))
         else:
             # initialize the network and population
             self.population = neat.Population(self.config)
