@@ -335,7 +335,8 @@ vision/corners/*.png
 vision/videos/*
 vision/cdata.json
 
-data/**/*.txt
+data/neat/2019-03-31/*.txt
+
 # endfloat
 !scenes/*.ttt
 *.fff
