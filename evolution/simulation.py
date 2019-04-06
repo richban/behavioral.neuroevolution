@@ -166,7 +166,7 @@ class Simulation(object):
         if self.simulation_type == 'thymio':
             self.vrep_scene = os.getcwd() + '/scenes/thymio_hw.ttt'
         else:
-            self.vrep_scene = os.getcwd() + '/scenes/thymio_v.ttt'
+            self.vrep_scene = os.getcwd() + '/scenes/thymio_v_infrared.ttt'
 
         self.vrep_servers = [Popen(
             ['{0} {1} -gREMOTEAPISERVERSERVICE_{2}_TRUE_TRUE {3}'
