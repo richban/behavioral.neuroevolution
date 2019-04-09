@@ -4,7 +4,7 @@ import ctypes
 from math import degrees
 import time
 import vrep.vrep as vrep
-
+from utility.util_functions import timeit
 
 class pid():
     """PID Controller"""
@@ -275,12 +275,13 @@ def transform_pos_angle(position, orientation, scale=1):
     return pos, angle
 
 
+@timeit
 def follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=False):
     try:
         robot.t_stop()
         grid = np.full((880, 1190), 255)  # grid system in mm
         # obstacle
-        for y in range(500, 840):
+        for y in range(350, 840):
             for x in range(550, 640):
                 grid[y, x] = 0
         lad = 0.09  # look ahead distance in meters (m)
@@ -387,7 +388,7 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=F
             om_sp = omega_controller.control(orient_error)
             vr, vl = pioneer_robot_model(v_sp, om_sp, wheel_axis, wheel_radius)
 
-            robot.t_set_motors(vl*25, vr*25)
+            robot.t_set_motors(vl*40, vr*40)
             count += 1
 
         robot.t_stop()

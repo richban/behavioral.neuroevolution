@@ -44,6 +44,10 @@ def eval_genomes_hardware(individual, settings, genomes, config):
             # update current position of the robot
             robot_current_position = robot_m.realxy()[:2]
 
+        # timetep 50 ms
+        dt = 0.05
+        runtime = 0
+
         # update position and orientation of the robot in vrep
         position, orientation = transform_pos_angle(
             robot_current_position, robot_m.orientation())
@@ -86,17 +90,17 @@ def eval_genomes_hardware(individual, settings, genomes, config):
                                       for xi in net_output])
             # set thymio wheel speeds
             individual.t_set_motors(*list(scaled_output))
+            
+            runtime += dt
+             #  fitness_t at time stamp
+            (
+                fitness_t,
+                wheel_center,
+                straight_movements,
+                obstacles_distance
+            ) = f_t_obstacle_avoidance(
+                scaled_output, individual.n_t_sensor_activation, 'thymio')
 
-            # Fitness function; each feature;
-            # V - wheel center
-            wheel_center = f_wheel_center(scaled_output, -200, 200)
-            # pleasure - straight movements
-            straight_movements = f_straight_movements(scaled_output, 0, 400)
-            # pain - closer to an obstacle more pain
-            obstacles_distance = f_obstacle_dist(
-                individual.n_t_sensor_activation)
-            #  fitness_t at time stamp
-            fitness_t = wheel_center * straight_movements * obstacles_distance
             fitness_agg = np.append(fitness_agg, fitness_t)
 
             # dump individuals data
@@ -114,7 +118,9 @@ def eval_genomes_hardware(individual, settings, genomes, config):
         individual.t_stop()
         # calculate the fitnesss
         fitness = np.sum(fitness_agg)/fitness_agg.size
-        print('genome_id: %s fitness: %f' % (str(individual.id), fitness))
+        
+        print('genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(individual.id, fitness, runtime))
+        
         genome.fitness = fitness
 
         follow_path(individual, init_position,
