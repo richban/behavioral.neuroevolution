@@ -412,7 +412,7 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=F
 
             om_sp = omega_controller.control(angle_error)
             vr, vl = pioneer_robot_model(v_sp, om_sp, wheel_axis, wheel_radius)
-            robot.t_set_motors(vl*10, vr*10)
+            robot.t_set_motors(vl*15, vr*15)
         else:
             if debug:
                 print('TASK - init position ok')
