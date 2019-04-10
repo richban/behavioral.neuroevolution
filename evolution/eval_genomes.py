@@ -24,8 +24,7 @@ def eval_genomes_hardware(individual, settings, genomes, config):
     while robot_m.realxy() is None:
         # obtain goal marker postion
         robot_m = get_marker_object(7)
-    init_position = robot_m.realxy()[:2]
-    print(init_position)
+    init_position = np.array([0.27, 0.44])
 
     for genome_id, genome in genomes:
         # individual reset
@@ -127,7 +126,7 @@ def eval_genomes_hardware(individual, settings, genomes, config):
 
         follow_path(individual, init_position,
                     get_marker_object, vrep, settings.client_id)
-
+        
         if (vrep.simxStopSimulation(settings.client_id, settings.op_mode) == -1):
             print('Failed to stop the simulation')
             print('Program ended')
