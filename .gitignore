@@ -337,6 +337,8 @@ vision/cdata.json
 
 data/neat/**/*
 
+evolution/*.ini
+
 # endfloat
 !scenes/*.ttt
 *.fff
