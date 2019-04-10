@@ -1,0 +1,3 @@
+[submodule "neat"]
+	path = neat
+	url = git@github.com:CodeReclaimers/neat-python.git
