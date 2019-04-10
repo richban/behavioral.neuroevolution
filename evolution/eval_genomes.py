@@ -127,7 +127,7 @@ def eval_genomes_hardware(individual, settings, genomes, config):
 
         follow_path(individual, init_position,
                     get_marker_object, vrep, settings.client_id)
-        print(init_position)
+
         if (vrep.simxStopSimulation(settings.client_id, settings.op_mode) == -1):
             print('Failed to stop the simulation')
             print('Program ended')

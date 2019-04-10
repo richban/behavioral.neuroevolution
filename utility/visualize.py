@@ -241,12 +241,10 @@ def plot_species_stagnation(body, imgfilename):
     if len(id) < 2:
         return None
 
+    plt.figure(figsize=(12, 9))
+
     stagnation = np.array(stagnation).astype(np.float)
     id = np.array(id)
-    x_size = int(len(id) / 2) + 1
-    params = {'figure.figsize': (x_size, 5),
-              'xtick.labelsize': 'x-small'}
-    pylab.rcParams.update(params)
     points = plt.bar(id, stagnation, width=0.7)
 
     for ind, bar in enumerate(points):
@@ -284,26 +282,32 @@ def plot_fitness_over_gen(file, imgfilename):
     if len(gen) < 2:
         return None
 
-    x_size = int(len(gen) / 10) + 1
-    params = {'figure.figsize': (x_size, 5),
-              'xtick.labelsize': 'x-small'}
-    pylab.rcParams.update(params)
+    plt.figure(figsize=(12, 9))
+    ax = plt.subplot(111)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.get_xaxis().tick_bottom()
+    ax.get_yaxis().tick_left()
 
+    ax.get_xaxis().tick_bottom()
+    ax.get_yaxis().tick_left()
+
+    plt.grid()
     plt.plot(gen, avg_fit, 'b', linewidth=0.5,)
-    plt.plot(gen, stdv, 'r', linewidth=0.5,)
-    plt.plot(gen, max_fit, 'g', linewidth=0.5,)
-    plt.plot(gen, median, 'o', linewidth=0.5,)
+    plt.plot(gen, stdv, 'g', linewidth=0.5,)
+    plt.plot(gen, max_fit, 'r', linewidth=0.5,)
+    plt.plot(gen, median, 'y', linewidth=0.5,)
 
-    plt.plot(gen, max_fit, 'g^', markersize=5, label='Max fitness')
-    plt.plot(gen, avg_fit, 'bo', markersize=5, label='Average fitness')
-    plt.plot(gen, stdv, 'rs', markersize=5, label='Standard deviation')
-    plt.plot(gen, median, 'y-', markersize=5, label='Median')
+    plt.plot(gen, max_fit, 'r', markersize=5, label='Max fitness')
+    plt.plot(gen, avg_fit, 'b', markersize=5, label='Average fitness')
+    plt.plot(gen, stdv, 'g', markersize=5, label='Standard deviation')
+    plt.plot(gen, median, 'y', markersize=5, label='Median')
 
     plt.ylabel('Fitness')
     plt.xlabel('Generation')
 
     xmin, xmax, ymin, ymax = plt.axis()
-    plt.axis([xmin, xmax, ymin, ymax + 50])
+    plt.axis([xmin, xmax, ymin, ymax])
     plt.legend(bbox_to_anchor=(1, 1), loc='upper right')
     plt.tight_layout()
 
