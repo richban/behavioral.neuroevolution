@@ -24,6 +24,7 @@ def report(text, img=None):
 
     try:
         with smtplib.SMTP('smtp.office365.com', 587, timeout=10) as server_ssl:
+            server_ssl.ehlo()
             server_ssl.starttls()
             server_ssl.login(user, password)
             server_ssl.sendmail(msg['From'], msg['To'], msg.as_string())
