@@ -87,6 +87,8 @@ celerybeat-schedule
 */**/*.jpeg
 */**/*.png
 
+config.sh
+
 # Environments
 .env
 .venv
