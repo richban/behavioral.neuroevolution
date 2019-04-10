@@ -23,10 +23,9 @@ def report(text, img=None):
         msg.attach(image)
 
     try:
-        server_ssl = smtplib.SMTP('smtp.office365.com', 587)
-        server_ssl.starttls()
-        server_ssl.login(user, password)
-        server_ssl.sendmail(msg['From'], msg['To'], msg.as_string())
-        server_ssl.close()
+        with smtplib.SMTP('smtp.office365.com', 587, timeout=10) as server_ssl:
+            server_ssl.starttls()
+            server_ssl.login(user, password)
+            server_ssl.sendmail(msg['From'], msg['To'], msg.as_string())
     except Exception as ex:
         print(ex.__class__.__name__ + ": " + 'Email Not Sent!')
