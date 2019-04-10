@@ -89,6 +89,7 @@ celerybeat-schedule
 
 config.sh
 
+.DS_Store
 # Environments
 .env
 .venv
