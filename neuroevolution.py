@@ -1,16 +1,14 @@
-import sys
-import os
-# add neat-python to the path as submodule
-sys.path.insert(1, os.getcwd() + '/neat/neat')
-from evolution.simulation import Simulation
-from argparse import ArgumentParser
-from settings import Settings
+import time
 from evolution.eval_genomes import \
     eval_genomes_simulation, \
     eval_genomes_hardware, \
     post_eval_genome, \
     eval_genome
-import time
+from settings import Settings
+from argparse import ArgumentParser
+from evolution.simulation import Simulation
+import sys
+import os
 
 thymio = {
     'name': 'thymio',
@@ -105,6 +103,6 @@ if __name__ == '__main__':
     sim = Simulation(settings, **kwargs)
     sim.start(simulation)
 
-    if simulation != 'simulation_genome' and simulation != 'post_eval':
+    if simulation != 'simulation_genome' and simulation != 'post_eval' and settings.save_data:
         sim.log_statistics()
         sim.visualize_results()

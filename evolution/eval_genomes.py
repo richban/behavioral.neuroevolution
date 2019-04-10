@@ -25,6 +25,7 @@ def eval_genomes_hardware(individual, settings, genomes, config):
         # obtain goal marker postion
         robot_m = get_marker_object(7)
     init_position = robot_m.realxy()[:2]
+    print(init_position)
 
     for genome_id, genome in genomes:
         # individual reset
@@ -90,9 +91,9 @@ def eval_genomes_hardware(individual, settings, genomes, config):
                                       for xi in net_output])
             # set thymio wheel speeds
             individual.t_set_motors(*list(scaled_output))
-            
+
             runtime += dt
-             #  fitness_t at time stamp
+            #  fitness_t at time stamp
             (
                 fitness_t,
                 wheel_center,
@@ -118,14 +119,15 @@ def eval_genomes_hardware(individual, settings, genomes, config):
         individual.t_stop()
         # calculate the fitnesss
         fitness = np.sum(fitness_agg)/fitness_agg.size
-        
-        print('genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(individual.id, fitness, runtime))
-        
+
+        print('genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(
+            individual.id, fitness, runtime))
+
         genome.fitness = fitness
 
         follow_path(individual, init_position,
                     get_marker_object, vrep, settings.client_id)
-
+        print(init_position)
         if (vrep.simxStopSimulation(settings.client_id, settings.op_mode) == -1):
             print('Failed to stop the simulation')
             print('Program ended')
@@ -203,7 +205,8 @@ def eval_genomes_simulation(individual, settings, genomes, config):
             if settings.debug:
                 with open(settings.path + str(individual.id) + '_simulation.txt', 'a') as f:
                     f.write('{0!s},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}\n'.format(
-                        str(individual.id), output[0], output[1], scaled_output[0], scaled_output[1],
+                        str(
+                            individual.id), output[0], output[1], scaled_output[0], scaled_output[1],
                         np.array2string(
                             individual.v_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
                         np.array2string(
@@ -220,7 +223,8 @@ def eval_genomes_simulation(individual, settings, genomes, config):
         if (vrep.simxStopSimulation(settings.client_id, settings.op_mode) == -1):
             return
 
-        print('genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(individual.id, fitness, runtime))
+        print('genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(
+            individual.id, fitness, runtime))
 
         time.sleep(1)
         genome.fitness = fitness
@@ -313,18 +317,19 @@ def eval_genome(client_id, settings, genome_id, genome, config):
     if (vrep.simxStopSimulation(client_id, settings.op_mode) == -1):
         return
 
-    print('{} genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(str(t.getName()), individual.id, fitness, runtime))
+    print('{} genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(
+        str(t.getName()), individual.id, fitness, runtime))
 
     time.sleep(1)
     return fitness
 
 
 def post_eval_genome(individual, settings, genome, config):
-    
+
     print('Postevaluation of {0} started!'.format(type(individual).__name__))
-    
+
     network = neat.nn.FeedForwardNetwork.create(genome, config)
-    
+
     if type(individual).__name__ == 'VrepRobot':
         individual.v_chromosome = genome
         individual.id = genome.key
@@ -368,11 +373,11 @@ def post_eval_genome(individual, settings, genome, config):
         individual.chromosome = genome
         individual.id = genome.key
         t_xy, t_angle = thymio_position()
-        
+
         if (vrep.simxStartSimulation(settings.client_id, vrep.simx_opmode_oneshot) == -1):
             print('Failed to start the simulation\n')
             return
- 
+
         # update position and orientation of the robot in vrep
         position, orientation = transform_pos_angle(
             t_xy, t_angle)
@@ -398,7 +403,7 @@ def post_eval_genome(individual, settings, genome, config):
                 settings.client_id, collision_handle, vrep.simx_opmode_buffer)
             # read proximity sensors data
             individual.t_read_prox()
-            
+
             net_output = network.activate(individual.n_t_sensor_activation)
             # normalize motor wheel wheel_speeds [0.0, 2.0] - robot
             scaled_output = np.array([scale(xi, -200, 200)

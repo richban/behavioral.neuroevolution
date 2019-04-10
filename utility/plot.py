@@ -5,9 +5,9 @@ import csv
 
 __credits__ = 'vladas-v'
 
+
 def plot_species_stagnation(body, imgfilename):
     body = body[3:-2]
-
     stagnation = []
     id = []
     fitness = []
@@ -32,7 +32,7 @@ def plot_species_stagnation(body, imgfilename):
     id = np.array(id)
     x_size = int(len(id) / 2) + 1
     params = {'figure.figsize': (x_size, 5),
-              'xtick.labelsize':'x-small'}
+              'xtick.labelsize': 'x-small'}
     pylab.rcParams.update(params)
     points = plt.bar(id, stagnation, width=0.7)
 
@@ -72,7 +72,7 @@ def plot_fitness_over_gen(file, imgfilename):
 
     x_size = int(len(gen) / 10) + 1
     params = {'figure.figsize': (x_size, 5),
-              'xtick.labelsize':'x-small'}
+              'xtick.labelsize': 'x-small'}
     pylab.rcParams.update(params)
 
     plt.plot(gen, avg_fit, 'b', linewidth=0.5,)
