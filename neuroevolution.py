@@ -1,3 +1,7 @@
+import sys
+import os
+# add neat-python to the path as submodule
+sys.path.insert(1, os.getcwd() + '/neat/neat')
 from evolution.simulation import Simulation
 from argparse import ArgumentParser
 from settings import Settings
@@ -7,8 +11,6 @@ from evolution.eval_genomes import \
     post_eval_genome, \
     eval_genome
 import time
-import sys
-import os
 
 thymio = {
     'name': 'thymio',
