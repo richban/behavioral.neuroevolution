@@ -343,7 +343,7 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=F
         path_to_track = transform_points_from_image2real(newpath)
 
         # Send data to VREP
-        send_path_4_drawing(newpath, 0.05, clientID)
+        # send_path_4_drawing(newpath, 0.05, clientID)
 
         # transform GRID goal to real (x, y) coordinates
         goal_position = init_position
@@ -351,7 +351,9 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=F
         if debug:
             print('TASK - go to init position')
 
-        while not is_near(robot_current_position, goal_position, dist_thresh=0.05):
+        now = datetime.now()
+        
+        while not is_near(robot_current_position, goal_position, dist_thresh=0.05) and datetime.now() - now < timedelta(seconds=70):
             # get robot marker
             robot_m = get_marker_object(7)
             if robot_m.realxy() is not None:
