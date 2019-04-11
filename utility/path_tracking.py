@@ -5,6 +5,9 @@ from math import degrees
 import time
 import vrep.vrep as vrep
 from utility.util_functions import timeit
+from datetime import datetime, timedelta
+import time
+
 
 class pid():
     """PID Controller"""
@@ -397,7 +400,9 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=F
         if debug:
             print('TASK - rotate to init angle')
 
-        while not is_angle_right(angle_error, angle_thresh=0.07):
+        now = datetime.now()
+        # if the orientation tooks more than 20 s just continue
+        while not is_angle_right(angle_error, angle_thresh=0.07) and datetime.now() - now < timedelta(seconds=20):
             # calculate robot orientation
             robot_m = get_marker_object(7)
 
@@ -413,7 +418,7 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=F
 
             om_sp = omega_controller.control(angle_error)
             vr, vl = pioneer_robot_model(v_sp, om_sp, wheel_axis, wheel_radius)
-            robot.t_set_motors(vl*15, vr*15)
+            robot.t_set_motors(vl*20, vr*20)
         else:
             if debug:
                 print('TASK - init position ok')
