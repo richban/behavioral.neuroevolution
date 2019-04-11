@@ -283,6 +283,7 @@ def plot_fitness_over_gen(file, imgfilename):
         return None
 
     plt.figure(figsize=(12, 9))
+
     ax = plt.subplot(111)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
@@ -306,9 +307,9 @@ def plot_fitness_over_gen(file, imgfilename):
     plt.ylabel('Fitness')
     plt.xlabel('Generation')
 
-    xmin, xmax, ymin, ymax = plt.axis()
-    plt.axis([xmin, xmax, ymin, ymax])
-    plt.legend(bbox_to_anchor=(1, 1), loc='upper right')
+    # xmin, xmax, ymin, ymax = plt.axis()
+    # plt.axis([xmin, xmax, ymin, ymax])
+    plt.legend(bbox_to_anchor=(1, 1), loc='best')
     plt.tight_layout()
 
     plt.savefig(imgfilename)

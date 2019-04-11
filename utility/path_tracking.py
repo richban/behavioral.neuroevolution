@@ -6,6 +6,7 @@ import time
 import vrep.vrep as vrep
 from utility.util_functions import timeit
 
+
 class pid():
     """PID Controller"""
 
@@ -278,7 +279,12 @@ def transform_pos_angle(position, orientation, scale=1):
 @timeit
 def follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=False):
     try:
+
+        # dummy way to avoid robot to be stucked
+        robot.t_set_motors(-200, -200)
+        time.sleep(2)
         robot.t_stop()
+
         grid = np.full((880, 1190), 255)  # grid system in mm
         # obstacle
         for y in range(350, 840):
