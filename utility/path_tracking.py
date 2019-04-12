@@ -9,7 +9,6 @@ from datetime import datetime, timedelta
 import time
 
 
-
 class pid():
     """PID Controller"""
 
@@ -352,8 +351,8 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=F
             print('TASK - go to init position')
 
         now = datetime.now()
-        
-        while not is_near(robot_current_position, goal_position, dist_thresh=0.05) and datetime.now() - now < timedelta(seconds=70):
+
+        while not is_near(robot_current_position, goal_position, dist_thresh=0.05):
             # get robot marker
             robot_m = get_marker_object(7)
             if robot_m.realxy() is not None:
@@ -401,6 +400,9 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=F
 
             robot.t_set_motors(vl*40, vr*40)
             count += 1
+            # recurse the robot is probably stuck
+            if not (datetime.now() - now < timedelta(seconds=70)):
+                return follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=False)
 
         robot.t_stop()
         angle_error = 1.0

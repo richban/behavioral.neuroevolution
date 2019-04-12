@@ -117,7 +117,7 @@ def eval_genomes_hardware(individual, settings, genomes, config):
 
         individual.t_stop()
         # calculate the fitnesss
-        fitness = np.sum(fitness_agg)/fitness_agg.size
+        fitness = np.sum(fitness_agg)/settings.run_time
 
         print('genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(
             individual.id, fitness, runtime))
@@ -126,7 +126,7 @@ def eval_genomes_hardware(individual, settings, genomes, config):
 
         follow_path(individual, init_position,
                     get_marker_object, vrep, settings.client_id)
-        
+
         if (vrep.simxStopSimulation(settings.client_id, settings.op_mode) == -1):
             print('Failed to stop the simulation')
             print('Program ended')
@@ -214,9 +214,14 @@ def eval_genomes_simulation(individual, settings, genomes, config):
                             individual.v_norm_sensor_activation), fitness_t))
 
         # calculate the fitnesss
-        fitness = np.sum(fitness_agg)/fitness_agg.size
+        fitness = np.sum(fitness_agg)/settings.run_time
 
-        # Before closing the connection to V-REP, make sure that the last command sent out had time to arrive.
+        # Now send some data to V-REP in a non-blocking fashion:
+        vrep.simxAddStatusbarMessage(
+            settings.client_id, 'genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(
+                individual.id, fitness, runtime), vrep.simx_opmode_oneshot)
+
+        # Before closing the connection to V-REP, make sure that the last command sent out had time to arrive. You can guarantee this with (for example):
         vrep.simxGetPingTime(settings.client_id)
 
         if (vrep.simxStopSimulation(settings.client_id, settings.op_mode) == -1):
@@ -308,10 +313,15 @@ def eval_genome(client_id, settings, genome_id, genome, config):
                 ))
 
     # calculate the fitnesss
-    fitness = np.sum(fitness_agg)/fitness_agg.size
+    fitness = np.sum(fitness_agg)/settings.run_time
 
-    # Before closing the connection to V-REP, make sure that the last command sent out had time to arrive.
-    vrep.simxGetPingTime(client_id)
+    # Now send some data to V-REP in a non-blocking fashion:
+    vrep.simxAddStatusbarMessage(
+        settings.client_id, '{} genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(
+            str(t.getName()), individual.id, fitness, runtime), vrep.simx_opmode_oneshot)
+
+    # Before closing the connection to V-REP, make sure that the last command sent out had time to arrive. You can guarantee this with (for example):
+    vrep.simxGetPingTime(settings.client_id)
 
     if (vrep.simxStopSimulation(client_id, settings.op_mode) == -1):
         return
