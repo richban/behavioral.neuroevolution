@@ -24,7 +24,7 @@ def eval_genomes_hardware(individual, settings, genomes, config):
     while robot_m.realxy() is None:
         # obtain goal marker postion
         robot_m = get_marker_object(7)
-    init_position = np.array([0.19, 0.44])
+    init_position = np.array([0.19, 0.22])
 
     for genome_id, genome in genomes:
         # individual reset
