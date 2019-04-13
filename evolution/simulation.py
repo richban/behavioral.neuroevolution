@@ -204,7 +204,7 @@ class Simulation(object):
             # restore population from a checkpoint
             self.restored_population = neat.Checkpointer.restore_checkpoint(
                 self.checkpoint)
-            self.population = self.restored_population 
+            self.population = self.restored_population
         else:
             # initialize the network and population
             self.population = neat.Population(self.config)
@@ -287,10 +287,14 @@ class Simulation(object):
     @timeit
     def simulation(self):
         # run simulation in vrep
-        self.winner = self.population.run(partial(self.eval_function,
-                                                  self.individual,
-                                                  self.settings),
-                                          self.settings.n_gen)
+        try:
+            self.winner = self.population.run(partial(self.eval_function,
+                                                      self.individual,
+                                                      self.settings),
+                                              self.settings.n_gen)
+        except neat.CompleteExtinctionException() as ex:
+            print("Extinction: {0}".format(ex))
+
         return self.config, self.stats, self.winner
 
     @timeit
@@ -299,8 +303,12 @@ class Simulation(object):
         # Run for up to N generations.
         self.parallel_eval = ParrallelEvolution(self.clients, self.settings, len(
             self.clients), self.eval_function)
-        self.winner = self.population.run(
-            self.parallel_eval.evaluate, self.settings.n_gen)
+        try:
+            self.winner = self.population.run(
+                self.parallel_eval.evaluate, self.settings.n_gen)
+        except neat.CompleteExtinctionException() as ex:
+            print("Extinction: {0}".format(ex))
+
         self.stop()
         return self.config, self.stats, self.winner
 
