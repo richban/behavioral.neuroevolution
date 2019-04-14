@@ -16,6 +16,7 @@ try:
     from robot.evolved_robot import EvolvedRobot
 except ImportError as error:
     print(error.__class__.__name__ + ": " + 'DBus works only on linux!')
+from multiprocessing import current_process
 
 
 def eval_genomes_hardware(individual, settings, genomes, config):
@@ -288,7 +289,8 @@ def eval_genome(client_id, settings, genome_id, genome, config):
         # After this call, the first simulation step is finished
         vrep.simxGetPingTime(client_id)
         runtime += dt
-
+        print('\033[1;32;40m {} genome_id: {}'.format(
+            str(t.getName()), individual.id))
         (
             fitness_t,
             wheel_center,
@@ -331,6 +333,110 @@ def eval_genome(client_id, settings, genome_id, genome, config):
 
     time.sleep(1)
     return fitness
+
+
+def eval_genomes_parallel(client_id, settings, genomes, config):
+
+    process = current_process().name
+
+    for genome_id, genome in genomes:
+        kw = {'v_chromosome': genome}
+
+        individual = VrepRobot(
+            client_id=client_id,
+            id=genome_id,
+            op_mode=settings.op_mode,
+            robot_type=settings.robot_type,
+            **kw
+        )
+        # evolution specific props
+        scaled_output = np.array([])
+        fitness_agg = np.array([])
+
+        # neural network initialization
+        network = neat.nn.FeedForwardNetwork.create(genome, config)
+
+        # Enable the synchronous mode
+        vrep.simxSynchronous(client_id, True)
+
+        # timetep 50 ms
+        dt = 0.05
+        runtime = 0
+
+        if (vrep.simxStartSimulation(client_id, vrep.simx_opmode_oneshot) == -1):
+            return
+
+        # collistion detection initialization
+        _, collision_handle = vrep.simxGetCollisionHandle(
+            client_id, 'wall_collision', vrep.simx_opmode_blocking)
+        _, collision = vrep.simxReadCollision(
+            client_id, collision_handle, vrep.simx_opmode_streaming)
+
+        now = datetime.now()
+
+        while not collision and datetime.now() - now < timedelta(seconds=settings.run_time):
+            # The first simulation step waits for a trigger before being executed
+            vrep.simxSynchronousTrigger(client_id)
+            _, collision = vrep.simxReadCollision(
+                client_id, collision_handle, vrep.simx_opmode_buffer)
+
+            individual.v_neuro_loop()
+            # Net output [0, 1]
+            output = network.activate(individual.v_norm_sensor_activation)
+            # [-2, 2] wheel speed thymio
+            scaled_output = np.array(
+                [scale(xi, -2.0, 2.0) for xi in output])
+            # set motor wheel speeds
+            individual.v_set_motors(*list(scaled_output))
+            # After this call, the first simulation step is finished
+            vrep.simxGetPingTime(client_id)
+            runtime += dt
+            print('{} genome_id: {}'.format(process, individual.id))
+
+            (
+                fitness_t,
+                wheel_center,
+                straight_movements,
+                obstacles_distance
+            ) = f_t_obstacle_avoidance(
+                scaled_output, individual.v_norm_sensor_activation, 'vrep')
+
+            fitness_agg = np.append(fitness_agg, fitness_t)
+
+            # dump individuals data
+            if settings.debug:
+                with open(settings.path + str(individual.id) + '_simulation.txt', 'a') as f:
+                    f.write('{0!s},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}\n'.format(
+                        individual.id, output[0], output[1], scaled_output[0], scaled_output[1],
+                        np.array2string(
+                            individual.v_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
+                        np.array2string(
+                            individual.v_norm_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
+                        wheel_center, straight_movements, obstacles_distance, np.amax(
+                            individual.v_norm_sensor_activation), fitness_t,
+                    ))
+
+        # calculate the fitnesss
+        fitness = np.sum(fitness_agg)/settings.run_time
+
+        # Now send some data to V-REP in a non-blocking fashion:
+        vrep.simxAddStatusbarMessage(
+            settings.client_id, '{} genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(
+                process, individual.id, fitness, runtime), vrep.simx_opmode_oneshot)
+
+        # Before closing the connection to V-REP, make sure that the last command sent out had time to arrive. You can guarantee this with (for example):
+        vrep.simxGetPingTime(settings.client_id)
+
+        if (vrep.simxStopSimulation(client_id, settings.op_mode) == -1):
+            return
+
+        print('{} genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(
+            process, individual.id, fitness, runtime))
+
+        time.sleep(1)
+        genome.fitness = fitness
+
+    return genomes
 
 
 def post_eval_genome(individual, settings, genome, config):
