@@ -3,7 +3,8 @@ from evolution.eval_genomes import \
     eval_genomes_simulation, \
     eval_genomes_hardware, \
     post_eval_genome, \
-    eval_genome
+    eval_genome, \
+    eval_genomes_parallel
 from settings import Settings
 from argparse import ArgumentParser
 from evolution.simulation import Simulation
@@ -32,6 +33,8 @@ if __name__ == '__main__':
                         required=True)
     parser.add_argument('-threaded', type=bool, default=False, choices=[
                         True, False], help='Runs evolution using threads only works in vrep.')
+    parser.add_argument('-parallel', type=bool, default=False, choices=[
+                        True, False], help='Runs evolution using processes only works in vrep.')
     parser.add_argument('-restore_genome', type=str,
                         help='Restore a specific genome. Path to the genome is required!')
     parser.add_argument('-checkpoint', type=str,
@@ -60,6 +63,10 @@ if __name__ == '__main__':
         if args.threaded and not args.restore_genome:
             kwargs.update({'eval_function': eval_genome})
             kwargs.update({'threaded': True})
+            simulation = 'simulation_threaded'
+        elif args.parallel and not args.restore_genome:
+            kwargs.update({'eval_function': eval_genomes_parallel})
+            kwargs.update({'parallel': True})
             simulation = 'simulation_parallel'
         else:
             kwargs.update({'eval_function': eval_genomes_simulation})

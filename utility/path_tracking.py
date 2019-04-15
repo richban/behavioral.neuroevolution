@@ -279,7 +279,7 @@ def transform_pos_angle(position, orientation, scale=1):
 
 
 @timeit
-def follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=False):
+def follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=False, **kw):
     try:
 
         # dummy way to avoid robot to be stucked
@@ -402,7 +402,8 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=F
             count += 1
             # recurse the robot is probably stuck
             if not (datetime.now() - now < timedelta(seconds=70)):
-                follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=False)
+                follow_path(robot, init_position, get_marker_object,
+                            vrep, clientID, debug=False, **kw)
 
         robot.t_stop()
         angle_error = 1.0

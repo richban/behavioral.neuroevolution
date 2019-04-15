@@ -9,6 +9,7 @@ from evolution.eval_genomes import \
     eval_genome
 from subprocess import Popen
 from functools import partial
+from neat import ParallelEvaluator
 import vrep.vrep as vrep
 import neat
 import pickle
@@ -36,7 +37,7 @@ else:
     HAVE_THREADS = True
 
 
-class ParrallelEvolution(object):
+class ThreadedEvolution(object):
     """
     A threaded genome evaluator.
     Useful on python implementations without GIL (Global Interpreter Lock).
@@ -107,8 +108,8 @@ class ParrallelEvolution(object):
                 continue
             f = self.eval_function(client_id, settings,
                                    genome_id, genome, config)
-            self.inqueue.task_done()
             self.outqueue.put((genome_id, genome, f))
+            self.inqueue.task_done()
 
     @timeit
     def evaluate(self, genomes, config):
@@ -124,20 +125,23 @@ class ParrallelEvolution(object):
         # assign the fitness back to each genome
         while p > 0:
             p -= 1
-            _, genome, fitness = self.outqueue.get()
+            genome_id, genome, fitness = self.outqueue.get()
+            assert genome_id == genome.key
             genome.fitness = fitness
 
 
 class Simulation(object):
 
     def __init__(self, settings, config_file, eval_function,
-                 simulation_type, threaded=False, checkpoint=None, genome_path=None, headless=False):
+                 simulation_type, threaded=False, parallel=False, checkpoint=None, genome_path=None, headless=False):
         self.config_file = config_file
         self.threaded = threaded
+        self.parallel = parallel
         self.settings = settings
         self.simulation_type = simulation_type
         self.eval_function = eval_function
         self.parallel_eval = None
+        self.threaded_eval = None
         self.checkpoint = checkpoint
         self.genome_path = genome_path
         self.headless = headless
@@ -153,7 +157,7 @@ class Simulation(object):
         vrep.simxFinish(-1)
         self.fnull = open(os.devnull, 'w')
 
-        if self.threaded:
+        if self.threaded or self.parallel:
             self.ports = vrep_ports()
         else:
             self.ports = [vrep_ports()[0]]
@@ -204,7 +208,7 @@ class Simulation(object):
             # restore population from a checkpoint
             self.restored_population = neat.Checkpointer.restore_checkpoint(
                 self.checkpoint)
-            self.population = self.restored_population 
+            self.population = self.restored_population
         else:
             # initialize the network and population
             self.population = neat.Population(self.config)
@@ -278,29 +282,61 @@ class Simulation(object):
         return getattr(self, simulation, lambda: default)()
 
     def stop(self):
+        if self.threaded_eval:
+            self.threaded_eval.stop()
         if self.parallel_eval:
-            self.parallel_eval.stop()
+            self.parallel_eval.__del__()
         self._stop_vrep()
-        time.sleep(3)
+        time.sleep(5)
         self._kill_vrep()
 
     @timeit
     def simulation(self):
         # run simulation in vrep
-        self.winner = self.population.run(partial(self.eval_function,
-                                                  self.individual,
-                                                  self.settings),
-                                          self.settings.n_gen)
+        try:
+            self.winner = self.population.run(partial(self.eval_function,
+                                                      self.individual,
+                                                      self.settings),
+                                              self.settings.n_gen)
+        except neat.CompleteExtinctionException() as ex:
+            print("Extinction: {0}".format(ex))
+
+        return self.config, self.stats, self.winner
+
+    @timeit
+    def simulation_threaded(self):
+        """run simulation using threads in vrep"""
+        # Run for up to N generations.
+        t = threading.currentThread()
+        print('Main Thread: {}'.format(str(t.getName())))
+
+        self.threaded_eval = ThreadedEvolution(self.clients, self.settings, len(
+            self.clients), self.eval_function)
+        try:
+            self.winner = self.population.run(
+                self.threaded_eval.evaluate, self.settings.n_gen)
+        except neat.CompleteExtinctionException() as ex:
+            print("Extinction: {0}".format(ex))
+
+        self.stop()
         return self.config, self.stats, self.winner
 
     @timeit
     def simulation_parallel(self):
         """run simulation using threads in vrep"""
         # Run for up to N generations.
-        self.parallel_eval = ParrallelEvolution(self.clients, self.settings, len(
-            self.clients), self.eval_function)
-        self.winner = self.population.run(
-            self.parallel_eval.evaluate, self.settings.n_gen)
+        t = threading.currentThread()
+        print('Main Thread: {}'.format(str(t.getName())))
+        print('Eval Function: {}'.format(self.eval_function.__name__))
+
+        self.parallel_eval = ParallelEvaluator(
+            len(self.clients), self.eval_function, self.clients, self.settings)
+        try:
+            self.winner = self.population.run(
+                self.parallel_eval.evaluate, self.settings.n_gen)
+        except neat.CompleteExtinctionException() as ex:
+            print("Extinction: {0}".format(ex))
+
         self.stop()
         return self.config, self.stats, self.winner
 

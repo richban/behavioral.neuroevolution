@@ -19,6 +19,7 @@ class Settings:
         self.debug = debug
         self.base_path = './data/neat/'
         self.vrep_abspath = '~/Developer/vrep-edu/vrep.app/Contents/MacOS/vrep'
+        self.logtime_data = {}
 
         if platform.system() == 'Linux':
             self.vrep_abspath = '~/Developer/vrep-edu/vrep.sh'
