@@ -43,7 +43,7 @@ if __name__ == '__main__':
                         help='Load specific NEAT configuration file. Path to the config is required!')
     parser.add_argument('-headless', type=bool, default=False,
                         help='Run vrep in headless mode.')
-    parser.add_argument('-generations', type=int, default=10,
+    parser.add_argument('-generations', type=int, default=20,
                         help='Number of generations.')
     parser.add_argument('-save_data', type=bool, default=False,
                         help='Number of generations.')

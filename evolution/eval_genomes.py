@@ -289,8 +289,7 @@ def eval_genome(client_id, settings, genome_id, genome, config):
         # After this call, the first simulation step is finished
         vrep.simxGetPingTime(client_id)
         runtime += dt
-        print('\033[1;32;40m {} genome_id: {}'.format(
-            str(t.getName()), individual.id))
+        
         (
             fitness_t,
             wheel_center,
