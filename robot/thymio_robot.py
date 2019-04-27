@@ -1,4 +1,5 @@
 from aseba.aseba import Aseba, AsebaException
+from dbus import DBusException
 import math
 import time
 
@@ -40,4 +41,7 @@ class ThymioII(Aseba):
         self.network.SetVariable(self.t_name, 'motor.right.target', [0])
 
     def t_read_prox(self):
-        return self.get('prox.horizontal')
+        try:
+            return self.get('prox.horizontal')
+        except DBusException:
+            return [0, 0, 0, 0, 0, 0, 0]
