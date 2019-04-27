@@ -24,6 +24,7 @@ seaborn = "*"
 dbus-python = "*"
 pygobject = "*"
 pycairo = "*"
+plotly = "*"
 
 [requires]
 python_version = "3.7"
