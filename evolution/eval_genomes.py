@@ -107,14 +107,14 @@ def eval_genomes_hardware(individual, settings, genomes, config):
             # dump individuals data
             if settings.debug:
                 with open(settings.path + str(individual.id) + '_hw_simulation.txt', 'a') as f:
-                    f.write('{0!s},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}\n'.format(
+                    f.write('{0!s},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12}\n'.format(
                         individual.id, net_output[0], net_output[1], scaled_output[0], scaled_output[1],
                         np.array2string(
                             individual.t_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
                         np.array2string(
                             individual.n_t_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
                         wheel_center, straight_movements, obstacles_distance, np.max(
-                            individual.n_t_sensor_activation), fitness_t))
+                            individual.n_t_sensor_activation), fitness_t, robot_current_position))
 
         individual.t_stop()
         # calculate the fitnesss
