@@ -25,6 +25,7 @@ dbus-python = "*"
 pygobject = "*"
 pycairo = "*"
 plotly = "*"
+ipywebrtc = "*"
 
 [requires]
 python_version = "3.7"
