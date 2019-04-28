@@ -342,10 +342,19 @@ class Simulation(object):
         return self.config, self.stats, self.winner
 
     @timeit
-    def simulation_genome(self):
+    def simulation_genome(self, N=1):
         """restore genome and re-run simulation"""
-        self.winner = self.eval_function(
-            self.individual, self.settings, [(self.winner.key, self.winner)], self.config)
+
+        if N == 1:
+            self.winner = self.eval_function(
+                self.individual, self.settings, [(self.winner.key, self.winner)], self.config)
+        else:
+            for _ in range(0, N):
+                genome = self.eval_function(
+                    self.individual, self.settings, [(self.winner.key, self.winner)], self.config)
+
+                with open('{}_winner_post_eval_fitness.txt'.format(self.winner.key), 'w') as w:
+                    w.write('{0},{1}'.format(genome.key, genome.fitness))
         return
 
     def post_eval(self):
