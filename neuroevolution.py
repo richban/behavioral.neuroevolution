@@ -64,10 +64,6 @@ if __name__ == '__main__':
             kwargs.update({'eval_function': eval_genome})
             kwargs.update({'threaded': True})
             simulation = 'simulation_threaded'
-        elif args.parallel and not args.restore_genome:
-            kwargs.update({'eval_function': eval_genomes_parallel})
-            kwargs.update({'parallel': True})
-            simulation = 'simulation_parallel'
         else:
             kwargs.update({'eval_function': eval_genomes_simulation})
 
