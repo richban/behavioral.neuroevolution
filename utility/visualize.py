@@ -5,9 +5,16 @@ import warnings
 
 import matplotlib.pylab as pylab
 import matplotlib.pyplot as plt
+import plotly.plotly as py
+import plotly
+import plotly.graph_objs as go
 import numpy as np
 import graphviz
 import csv
+import os
+
+plotly.tools.set_credentials_file(username=os.environ['PLOTLY_USERNAME'],
+                                  api_key=os.environ['PLOTLY_API_KEY'])
 
 
 def plot_stats(statistics, ylog=False, view=False, filename='avg_fitness.svg'):
@@ -316,3 +323,95 @@ def plot_fitness_over_gen(file, imgfilename):
     plt.clf()
     plt.close('all')
     return imgfilename
+
+
+def plot_single_run_scatter(scatter, dt, title):
+    """Plots a single run with MAX, AVG, MEDIAN, All individuals"""
+    l = []
+    y = []
+
+    N = len(scatter.gen.unique())
+
+    c = ['hsl('+str(h)+',50%'+',50%)' for h in np.linspace(0, 360, N)]
+
+    for i in range(int(N)):
+        subset = scatter.loc[scatter['gen'] == i]
+
+        trace0 = go.Scatter(
+            x=subset.loc[:, 'gen'],
+            y=subset.loc[:, 'fitness'],
+            mode='markers',
+            marker=dict(size=7,
+                        line=dict(width=1),
+                        color=c[i],
+                        opacity=0.5
+                        ),
+            name='gen {}'.format(i),
+            text=subset.loc[:, 'genome']
+        )
+        l.append(trace0)
+
+    trace0 = go.Scatter(
+        x=dt.loc[:, 'gen'],
+        y=dt.loc[:, 'max'],
+        mode='lines',
+        name='Max',
+        line=dict(
+            color="rgb(204, 51, 51)",
+            dash="solid",
+            shape="spline",
+            smoothing=1.0,
+            width=2
+        ),
+    )
+
+    trace1 = go.Scatter(
+        x=dt.loc[:, 'gen'],
+        y=dt.loc[:, 'median'],
+        mode='lines',
+        name='Median',
+        line=dict(
+            color="rgb(173, 181, 97)",
+            shape="spline",
+            dash="solid",
+            smoothing=1.0,
+            width=2
+        )
+    )
+
+    trace2 = go.Scatter(
+        x=dt.loc[:, 'gen'],
+        y=dt.loc[:, 'avg'],
+        mode='lines',
+        name='Average',
+        line=dict(
+            color="rgb(62, 173, 212)",
+            shape="spline",
+            dash="solid",
+            smoothing=1.0,
+            width=2
+        )
+    )
+
+    data = [trace0, trace1, trace2]
+
+    layout = go.Layout(
+        title='Fitness of Population Individuals - {}'.format(title),
+        hovermode='closest',
+        xaxis=dict(
+            title='Generations',
+            ticklen=5,
+            zeroline=False,
+            gridwidth=2,
+        ),
+        yaxis=dict(
+            title='Fitness',
+            ticklen=5,
+            gridwidth=1,
+        ),
+        showlegend=False
+    )
+
+    fig = go.Figure(data=data+l, layout=layout)
+
+    return py.iplot(fig, filename='single-run-scater-line-plot', layout=layout)
