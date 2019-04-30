@@ -352,8 +352,7 @@ class Simulation(object):
             for _ in range(0, N):
                 genome = self.eval_function(
                     self.individual, self.settings, [(self.winner.key, self.winner)], self.config)
-
-                with open('{}_winner_post_eval_fitness.txt'.format(self.winner.key), 'w') as w:
+                with open('genome_{}_fitness.txt'.format(self.winner.key), 'a') as w:
                     w.write('{0},{1}'.format(genome.key, genome.fitness))
         return
 
