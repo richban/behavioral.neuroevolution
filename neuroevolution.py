@@ -3,7 +3,8 @@ from evolution.eval_genomes import \
     eval_genomes_simulation, \
     eval_genomes_hardware, \
     post_eval_genome, \
-    eval_genome
+    eval_genome, \
+    eval_transferability
 from settings import Settings
 from argparse import ArgumentParser
 from evolution.simulation import Simulation
@@ -26,7 +27,7 @@ if __name__ == '__main__':
 
     parser = ArgumentParser(
         description='I am here to guide you through the evolution!')
-    parser.add_argument('-simulation', choices=['vrep', 'thymio'],
+    parser.add_argument('-simulation', choices=['vrep', 'thymio', 'transferability'],
                         help='Run the evolution in vrep \
                         simulator or on the physical robot (thymio).',
                         required=True)
@@ -83,7 +84,7 @@ if __name__ == '__main__':
 
         if args.headless:
             kwargs.update({'headless': args.headless})
-    else:
+    elif args.simulation == 'thymio':
         kwargs.update({'simulation_type': 'thymio'})
         kwargs.update({'eval_function': eval_genomes_hardware})
 
@@ -101,6 +102,12 @@ if __name__ == '__main__':
 
         if args.config:
             kwargs.update({'config_file': args.config})
+    elif args.simulation == 'transferability':
+        kwargs.update({'simulation_type': 'transferability'})
+        kwargs.update({'eval_function': eval_genomes_hardware})
+        simulation = 'simulation_transferability'
+    else:
+        print('Something went really wrong!')
 
     sim = Simulation(settings, **kwargs)
     sim.start(simulation)
