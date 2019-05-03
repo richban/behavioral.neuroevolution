@@ -158,6 +158,8 @@ class Simulation(object):
 
         if self.threaded:
             self.ports = vrep_ports()
+        elif self.simulation_type == 'transferability':
+            self.ports = vrep_ports()[:2]
         else:
             self.ports = [vrep_ports()[0]]
 
@@ -168,6 +170,11 @@ class Simulation(object):
 
         if self.simulation_type == 'thymio':
             self.vrep_scene = os.getcwd() + '/scenes/thymio_hw.ttt'
+
+        elif self.simulation_type == 'transferability':
+            self.vrep_bot_scene = os.getcwd() + '/scenes/thymio_v_infrared.ttt'
+            self.thymio_bot_scene = os.getcwd() + '/scenes/thymio_hw.ttt'
+
         else:
             self.vrep_scene = os.getcwd() + '/scenes/thymio_v_infrared.ttt'
 
@@ -236,6 +243,21 @@ class Simulation(object):
                 chromosome=None,
                 robot_type=self.settings.robot_type
             )
+        elif self.simulation_type == 'transferability':
+            self.vrep_bot = VrepRobot(
+                client_id=self.clients[0],
+                id=None,
+                op_mode=self.settings.op_mode,
+                robot_type=self.settings.robot_type
+            )
+            self.thymio_bot = EvolvedRobot(
+                'thymio-II',
+                client_id=self.clients[1],
+                id=None,
+                op_mode=self.settings.op_mode,
+                chromosome=None,
+                robot_type=self.settings.robot_type
+            )
         else:
             self.individual = None
             return
@@ -250,7 +272,7 @@ class Simulation(object):
         return
 
     def _init_vision(self):
-        if self.simulation_type == 'thymio':
+        if self.simulation_type == 'thymio' or self.simulation_type == 'transferability':
             self.vision_thread = Tracker(mid=5,
                                          transform=None,
                                          mid_aux=0,
@@ -296,6 +318,20 @@ class Simulation(object):
         try:
             self.winner = self.population.run(partial(self.eval_function,
                                                       self.individual,
+                                                      self.settings),
+                                              self.settings.n_gen)
+        except neat.CompleteExtinctionException() as ex:
+            print("Extinction: {0}".format(ex))
+
+        return self.config, self.stats, self.winner
+
+    @timeit
+    def simulation_transferability(self):
+        # run simulation in vrep
+        try:
+            self.winner = self.population.run(partial(self.eval_function,
+                                                      self.vrep_bot,
+                                                      self.thymio_bot
                                                       self.settings),
                                               self.settings.n_gen)
         except neat.CompleteExtinctionException() as ex:

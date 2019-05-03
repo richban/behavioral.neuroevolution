@@ -430,3 +430,226 @@ def post_eval_genome(individual, settings, genome, config):
         return individual
     else:
         return None
+
+
+def eval_transferability(vrep_bot, thymio_bot, settings, genomes, config):
+
+    t = 0
+    for genome_id, genome in genomes:
+
+        # reset the vrep individual
+        vrep_bot.v_reset_init()
+        vrep_bot.chromosome = genome
+        vrep_bot.id = genome_id
+
+        # evaluation specific props
+        collision = False
+        scaled_output = np.array([])
+        fitness_agg = np.array([])
+
+        # neural network initialization
+        network = neat.nn.FeedForwardNetwork.create(genome, config)
+
+        # Enable the synchronous mode
+        vrep.simxSynchronous(vrep_bot.client_id, True)
+
+        # timetep 50 ms
+        dt = 0.05
+        runtime = 0
+
+        # start the simulation
+        if (vrep.simxStartSimulation(vrep_bot.client_id, vrep.simx_opmode_oneshot) == -1):
+            return
+
+        # collistion detection initialization
+        _, collision_handle = vrep.simxGetCollisionHandle(
+            vrep_bot.client_id, 'wall_collision', vrep.simx_opmode_blocking)
+        _, collision = vrep.simxReadCollision(
+            vrep_bot.client_id, collision_handle, vrep.simx_opmode_streaming)
+
+        now = datetime.now()
+
+        while not collision and datetime.now() - now < timedelta(seconds=settings.run_time):
+            # The first simulation step waits for a trigger before being executed
+            vrep.simxSynchronousTrigger(vrep_bot.client_id)
+            _, collision = vrep.simxReadCollision(
+                vrep_bot.client_id, collision_handle, vrep.simx_opmode_buffer)
+
+            vrep_bot.v_neuro_loop()
+            output = network.activate(vrep_bot.v_norm_sensor_activation)
+            scaled_output = np.array(
+                [scale(xi, -2.0, 2.0) for xi in output])
+
+            # set motor wheel speeds
+            vrep_bot.v_set_motors(*list(scaled_output))
+
+            # After this call, the first simulation step is finished
+            # Now we can safely read all  values
+            vrep.simxGetPingTime(vrep_bot.client_id)
+            runtime += dt
+
+            #  fitness_t at time stamp
+            (
+                fitness_t,
+                wheel_center,
+                straight_movements,
+                obstacles_distance
+            ) = f_t_obstacle_avoidance(
+                scaled_output, vrep_bot.v_norm_sensor_activation, 'vrep')
+
+            fitness_agg = np.append(fitness_agg, fitness_t)
+
+            # dump individuals data
+            if settings.debug:
+                with open(settings.path + str(vrep_bot.id) + '_simulation.txt', 'a') as f:
+                    f.write('{0!s},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}\n'.format(
+                        str(
+                            vrep_bot.id), output[0], output[1], scaled_output[0], scaled_output[1],
+                        np.array2string(
+                            vrep_bot.v_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
+                        np.array2string(
+                            vrep_bot.v_norm_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
+                        wheel_center, straight_movements, obstacles_distance, np.amax(
+                            vrep_bot.v_norm_sensor_activation), fitness_t))
+
+        # calculate the fitnesss
+        fitness = np.sum(fitness_agg)/settings.run_time
+
+        # Now send some data to V-REP in a non-blocking fashion:
+        vrep.simxAddStatusbarMessage(
+            vrep_bot.client_id, 'genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(
+                vrep_bot.id, fitness, runtime), vrep.simx_opmode_oneshot)
+
+        # Before closing the connection to V-REP, make sure that the last command sent out had time to arrive. You can guarantee this with (for example):
+        vrep.simxGetPingTime(vrep_bot.client_id)
+
+        if (vrep.simxStopSimulation(vrep_bot.client_id, settings.op_mode) == -1):
+            return
+
+        print('genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(
+            vrep_bot.id, fitness, runtime))
+
+        time.sleep(1)
+        genome.fitness = fitness
+        t += 1
+
+        if (t % 2 == 0):
+            print('Transfering.....:\n {0}'.format(genome))
+            f = eval_genome_hardware(thymio_bot, settings, genome, config)
+            print('Transfered genome: {} fitness on thymio: {}'.format(genome.key, f))
+
+
+def eval_genome_hardware(individual, settings, genome, config):
+
+    robot_m = get_marker_object(7)
+    while robot_m.realxy() is None:
+        # obtain goal marker postion
+        robot_m = get_marker_object(7)
+    init_position = np.array([0.19, 0.22])
+
+    # individual reset
+    individual.n_t_sensor_activation = np.array([])
+    individual.chromosome = genome
+    individual.id = genome.key
+    # simulation specific props
+    collision = False
+    scaled_output = np.array([])
+    fitness_agg = np.array([])
+    # neural network initialization
+    net = neat.nn.FeedForwardNetwork.create(genome, config)
+
+    # get robot marker
+    robot_m = get_marker_object(7)
+    if robot_m.realxy() is not None:
+        # update current position of the robot
+        robot_current_position = robot_m.realxy()[:2]
+
+    # timetep 50 ms
+    dt = 0.05
+    runtime = 0
+
+    # update position and orientation of the robot in vrep
+    position, orientation = transform_pos_angle(
+        robot_current_position, robot_m.orientation())
+    individual.v_set_pos_angle(position, orientation)
+
+    if (vrep.simxStartSimulation(individual.client_id, vrep.simx_opmode_oneshot) == -1):
+        print('Failed to start the simulation\n')
+        return
+
+    # collistion detection initialization
+    _, collision_handle = vrep.simxGetCollisionHandle(
+        individual.client_id, 'wall_collision', vrep.simx_opmode_blocking)
+    _, collision = vrep.simxReadCollision(
+        individual.client_id, collision_handle, vrep.simx_opmode_streaming)
+
+    now = datetime.now()
+
+    while not collision and datetime.now() - now < timedelta(seconds=settings.run_time):
+
+        # get robot marker
+        robot_m = get_marker_object(7)
+        if robot_m.realxy() is not None:
+            # update current position of the robot
+            robot_current_position = robot_m.realxy()[:2]
+
+        # update position and orientation of the robot in vrep
+        position, orientation = transform_pos_angle(
+            robot_current_position, robot_m.orientation())
+        individual.v_set_pos_angle(position, orientation)
+
+        _, collision = vrep.simxReadCollision(
+            individual.client_id, collision_handle, vrep.simx_opmode_buffer)
+        # read proximity sensors data
+        individual.t_read_prox()
+
+        # input data to the neural network
+        net_output = net.activate(individual.n_t_sensor_activation)
+        # normalize motor wheel wheel_speeds [0.0, 2.0] - robot
+        scaled_output = np.array([scale(xi, -200, 200)
+                                  for xi in net_output])
+        # set thymio wheel speeds
+        individual.t_set_motors(*list(scaled_output))
+
+        runtime += dt
+        #  fitness_t at time stamp
+        (
+            fitness_t,
+            wheel_center,
+            straight_movements,
+            obstacles_distance
+        ) = f_t_obstacle_avoidance(
+            scaled_output, individual.n_t_sensor_activation, 'thymio')
+
+        fitness_agg = np.append(fitness_agg, fitness_t)
+
+        # dump individuals data
+        if settings.debug:
+            with open(settings.path + str(individual.id) + '_hw_simulation.txt', 'a') as f:
+                f.write('{0!s},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12}\n'.format(
+                    individual.id, net_output[0], net_output[1], scaled_output[0], scaled_output[1],
+                    np.array2string(
+                        individual.t_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
+                    np.array2string(
+                        individual.n_t_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
+                    wheel_center, straight_movements, obstacles_distance, np.max(
+                        individual.n_t_sensor_activation), fitness_t, robot_current_position))
+
+    individual.t_stop()
+    # calculate the fitnesss
+    fitness = np.sum(fitness_agg)/settings.run_time
+
+    print('genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(
+        individual.id, fitness, runtime))
+
+    follow_path(individual, init_position,
+                get_marker_object, vrep, individual.client_id, log_time=settings.logtime_data)
+
+    if (vrep.simxStopSimulation(individual.client_id, settings.op_mode) == -1):
+        print('Failed to stop the simulation')
+        print('Program ended')
+        return
+
+    time.sleep(1)
+
+    return fitness
