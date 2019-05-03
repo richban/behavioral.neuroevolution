@@ -3,8 +3,7 @@ from evolution.eval_genomes import \
     eval_genomes_simulation, \
     eval_genomes_hardware, \
     post_eval_genome, \
-    eval_genome, \
-    eval_genomes_parallel
+    eval_genome
 from settings import Settings
 from argparse import ArgumentParser
 from evolution.simulation import Simulation
