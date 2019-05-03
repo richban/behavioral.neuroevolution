@@ -174,16 +174,21 @@ class Simulation(object):
         elif self.simulation_type == 'transferability':
             self.vrep_bot_scene = os.getcwd() + '/scenes/thymio_v_infrared.ttt'
             self.thymio_bot_scene = os.getcwd() + '/scenes/thymio_hw.ttt'
-
+            self.scenes = [self.vrep_bot_scene, self.thymio_bot_scene]
         else:
             self.vrep_scene = os.getcwd() + '/scenes/thymio_v_infrared.ttt'
 
-        if not self.genome_path:
+        if not self.genome_path and self.simulation_type != 'transferability':
             self.vrep_servers = [Popen(
                 ['{0} {1} -gREMOTEAPISERVERSERVICE_{2}_TRUE_TRUE {3}'
                     .format(self.settings.vrep_abspath, h, port, self.vrep_scene)],
                 shell=True, stdout=self.fnull) for port in self.ports]
-
+            time.sleep(5)
+        else:
+            self.vrep_servers = [Popen(
+                ['{0} {1} -gREMOTEAPISERVERSERVICE_{2}_TRUE_TRUE {3}'
+                    .format(self.settings.vrep_abspath, h, port, self.scenes[scene])],
+                shell=True, stdout=self.fnull) for scene, port in enumerate(self.ports)]
             time.sleep(5)
 
         self.clients = [vrep.simxStart(
@@ -331,7 +336,7 @@ class Simulation(object):
         try:
             self.winner = self.population.run(partial(self.eval_function,
                                                       self.vrep_bot,
-                                                      self.thymio_bot
+                                                      self.thymio_bot,
                                                       self.settings),
                                               self.settings.n_gen)
         except neat.CompleteExtinctionException() as ex:

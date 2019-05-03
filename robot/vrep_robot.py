@@ -78,6 +78,7 @@ class VrepRobot(object):
             return ''
 
     def v_reset_init(self):
+        self.id = None
         self.v_chromosome = None
         self.v_wheel_speeds = np.array([])
         self.v_sensor_activation = np.array([])

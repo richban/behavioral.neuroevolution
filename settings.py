@@ -5,7 +5,7 @@ import os
 
 
 class Settings:
-    def __init__(self, robot_type, save_data=True, debug=False, n_gen=30):
+    def __init__(self, robot_type, save_data=True, debug=False, n_gen=20):
         self.client_id = -1
         self.op_mode = vrep.simx_opmode_oneshot_wait
         self.path = './data/neat/' + datetime.now().strftime('%Y-%m-%d') + '/'

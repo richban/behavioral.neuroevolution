@@ -104,7 +104,7 @@ if __name__ == '__main__':
             kwargs.update({'config_file': args.config})
     elif args.simulation == 'transferability':
         kwargs.update({'simulation_type': 'transferability'})
-        kwargs.update({'eval_function': eval_genomes_hardware})
+        kwargs.update({'eval_function': eval_transferability})
         simulation = 'simulation_transferability'
     else:
         print('Something went really wrong!')

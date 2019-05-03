@@ -526,7 +526,7 @@ def eval_transferability(vrep_bot, thymio_bot, settings, genomes, config):
         if (vrep.simxStopSimulation(vrep_bot.client_id, settings.op_mode) == -1):
             return
 
-        print('genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(
+        print('vrep genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(
             vrep_bot.id, fitness, runtime))
 
         time.sleep(1)
@@ -534,9 +534,8 @@ def eval_transferability(vrep_bot, thymio_bot, settings, genomes, config):
         t += 1
 
         if (t % 2 == 0):
-            print('Transfering.....:\n {0}'.format(genome))
+            # print('Transfering.....:\n {0}'.format(genome))
             f = eval_genome_hardware(thymio_bot, settings, genome, config)
-            print('Transfered genome: {} fitness on thymio: {}'.format(genome.key, f))
 
 
 def eval_genome_hardware(individual, settings, genome, config):
@@ -639,7 +638,7 @@ def eval_genome_hardware(individual, settings, genome, config):
     # calculate the fitnesss
     fitness = np.sum(fitness_agg)/settings.run_time
 
-    print('genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(
+    print('thymio genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(
         individual.id, fitness, runtime))
 
     follow_path(individual, init_position,
