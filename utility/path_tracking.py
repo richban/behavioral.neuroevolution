@@ -279,7 +279,7 @@ def transform_pos_angle(position, orientation, scale=1):
 
 
 @timeit
-def follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=False, **kw):
+def follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=False, obstacles=None, **kw):
     try:
 
         # dummy way to avoid robot to be stucked
@@ -288,10 +288,31 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=F
         robot.t_stop()
 
         grid = np.full((880, 1190), 255)  # grid system in mm
-        # obstacle
-        for y in range(350, 840):
-            for x in range(550, 640):
-                grid[y, x] = 0
+        
+        if obstacles is not None:
+            # cast to mm
+            obstacles = zip([(obs[:2]*1000).astype(int) for obs in obstacles], (9, 10, 11))
+            for center, marker in obstacles:
+                if marker == 9:
+                    # 80 x 400
+                    for y in range(center[1]-250, center[1]+250):
+                        for x in range(center[0]-40, center[0]+40):
+                            grid[y, x] = 0
+                if marker == 10:
+                    # 40 x 230
+                    for y in range(center[1]-150, center[1]+150):
+                        for x in range(center[0]-20, center[0]+20):
+                            grid[y, x] = 0
+                if marker == 11:
+                    # 260 x 60
+                    for y in range(center[1]-40, center[1]+40):
+                        for x in range(center[0]-150, center[0]+150):
+                            grid[y, x] = 0
+        else:
+            # obstacle
+            for y in range(350, 840):
+                for x in range(550, 640):
+                    grid[y, x] = 0
         lad = 0.09  # look ahead distance in meters (m)
         wheel_axis = 0.11  # wheel axis distance in meters (m)
         wheel_radius = 0.02  # wheel radius in meters (m)
@@ -342,7 +363,7 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=F
         path_to_track = transform_points_from_image2real(newpath)
 
         # Send data to VREP
-        # send_path_4_drawing(newpath, 0.05, clientID)
+        send_path_4_drawing(newpath, 0.05, clientID)
 
         # transform GRID goal to real (x, y) coordinates
         goal_position = init_position

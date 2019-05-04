@@ -17,7 +17,7 @@ try:
 except ImportError as error:
     print(error.__class__.__name__ + ": " + 'DBus works only on linux!')
 from multiprocessing import current_process
-
+from vrep.control_env import get_object_handle, get_pose, set_pose
 
 def eval_genomes_hardware(individual, settings, genomes, config):
 
@@ -26,6 +26,16 @@ def eval_genomes_hardware(individual, settings, genomes, config):
         # obtain goal marker postion
         robot_m = get_marker_object(7)
     init_position = np.array([0.19, 0.22])
+
+    # Obstacle Marker Ids
+    obstacle_marker_ids = (9, 10, 11)
+    # Get the position of all the obstacles in reality
+    obstacles = [get_marker_object(obstacle).realxy() for obstacle in obstacle_marker_ids]
+    # Get all obstacle handlers from VREP
+    obstacle_handlers = [get_object_handle(settings.client_id, obstacle) for obstacle in ('obstacle', 'obstacle1', 'obstacle0')]
+    # Set the position of obstacles in vrep according the obstacles from reality
+    for obs, handler in zip(obstacles, obstacle_handlers):
+        set_pose(settings.client_id, handler, [obs[0], obs[1], 0.099999])
 
     for genome_id, genome in genomes:
         # individual reset
@@ -126,7 +136,7 @@ def eval_genomes_hardware(individual, settings, genomes, config):
         genome.fitness = fitness
 
         follow_path(individual, init_position,
-                    get_marker_object, vrep, settings.client_id, log_time=settings.logtime_data)
+                    get_marker_object, vrep, settings.client_id, obstacles=obstacles, log_time=settings.logtime_data)
 
         if (vrep.simxStopSimulation(settings.client_id, settings.op_mode) == -1):
             print('Failed to stop the simulation')
