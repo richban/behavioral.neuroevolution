@@ -7,7 +7,7 @@ import threading
 from datetime import datetime, timedelta
 from vision.tracker import get_marker_object
 from robot.vrep_robot import VrepRobot
-from utility.path_tracking import follow_path, transform_pos_angle
+from utility.path_tracking import follow_path, transform_pos_angle, create_grid
 from utility.util_functions import scale, euclidean_distance, \
     f_wheel_center, f_straight_movements, \
     f_obstacle_dist, scale, scale_thymio_sensors, \
@@ -19,6 +19,7 @@ except ImportError as error:
 from multiprocessing import current_process
 from vrep.control_env import get_object_handle, get_pose, set_pose
 
+
 def eval_genomes_hardware(individual, settings, genomes, config):
 
     robot_m = get_marker_object(7)
@@ -27,15 +28,25 @@ def eval_genomes_hardware(individual, settings, genomes, config):
         robot_m = get_marker_object(7)
     init_position = np.array([0.19, 0.22])
 
-    # Obstacle Marker Ids
-    obstacle_marker_ids = (9, 10, 11)
-    # Get the position of all the obstacles in reality
-    obstacles = [get_marker_object(obstacle).realxy() for obstacle in obstacle_marker_ids]
-    # Get all obstacle handlers from VREP
-    obstacle_handlers = [get_object_handle(settings.client_id, obstacle) for obstacle in ('obstacle', 'obstacle1', 'obstacle0')]
-    # Set the position of obstacles in vrep according the obstacles from reality
-    for obs, handler in zip(obstacles, obstacle_handlers):
-        set_pose(settings.client_id, handler, [obs[0], obs[1], 0.099999])
+    if settings.config_scene:
+        # Get the position of all the obstacles in reality
+        obstacles_pos = [get_marker_object(obstacle).realxy()
+                         for obstacle in settings.obstacle_markers]
+        # Get all obstacle handlers from VREP
+        obstacle_handlers = [get_object_handle(settings.client_id, obstacle) for obstacle in (
+            'obstacle', 'obstacle1', 'obstacle0')]
+        # Set the position of obstacles in vrep according the obstacles from reality
+        for obs, handler in zip(obstacles_pos, obstacle_handlers):
+            set_pose(settings.client_id, handler, [obs[0], obs[1], 0.099999])
+
+        # add markers position to obstacle_markers
+        for position, marker in zip(settings.obstacle_markers, obstacles_pos):
+            for _, value in marker.items():
+                value.update(center=(position[:2]*1000).astype(int))
+
+        obstacle_grid = create_grid(settings.obstacle_markers)
+    else:
+        obstacle_grid = None
 
     for genome_id, genome in genomes:
         # individual reset
@@ -136,7 +147,7 @@ def eval_genomes_hardware(individual, settings, genomes, config):
         genome.fitness = fitness
 
         follow_path(individual, init_position,
-                    get_marker_object, vrep, settings.client_id, obstacles=obstacles, log_time=settings.logtime_data)
+                    get_marker_object, vrep, settings.client_id, grid=obstacle_grid, log_time=settings.logtime_data)
 
         if (vrep.simxStopSimulation(settings.client_id, settings.op_mode) == -1):
             print('Failed to stop the simulation')
