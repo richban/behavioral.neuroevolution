@@ -383,5 +383,4 @@ TSWLatexianTemp*
 *.sta
 
 # custom
-/report/**/*
 .vscode/
