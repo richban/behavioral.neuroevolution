@@ -11,7 +11,8 @@ from utility.path_tracking import follow_path, transform_pos_angle, create_grid
 from utility.util_functions import scale, euclidean_distance, \
     f_wheel_center, f_straight_movements, \
     f_obstacle_dist, scale, scale_thymio_sensors, \
-    normalize_0_1, f_t_obstacle_avoidance, thymio_position
+    normalize_0_1, f_t_obstacle_avoidance, thymio_position, \
+    flatten_dict
 try:
     from robot.evolved_robot import EvolvedRobot
 except ImportError as error:
@@ -254,7 +255,7 @@ def eval_genomes_simulation(individual, settings, genomes, config):
 
             # dump individuals data
             if settings.debug:
-                with open(settings.path + str(individual.id) + '_simulation.txt', 'a') as f:
+                with open(settings.path + str(individual.id) + '_simulation.dat', 'a') as f:
                     f.write('{0!s},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}\n'.format(
                         str(
                             individual.id), output[0], output[1], scaled_output[0], scaled_output[1],
@@ -293,6 +294,18 @@ def eval_genomes_simulation(individual, settings, genomes, config):
 
         avg_wheel_speeds = np.mean(np.array(wheel_speeds), axis=0)
         avg_sensors_activation = np.mean(np.array(sensor_activations), axis=0)
+
+        behavioral_features = np.concatenate((
+            [individual.id],
+            avg_wheel_speeds,
+            avg_sensors_activation,
+            list(flatten_dict(areas_counter).values())
+        )
+        )
+
+        with open(settings.path + str(individual.id) + '_behavioral_features.dat', 'a') as b:
+            np.savetxt(b, (behavioral_features,), delimiter=',',
+                       fmt='%d,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%d,%1.3f,%d,%d,%1.3f,%d,%d,%1.3f,%d')
 
         time.sleep(1)
         genome.fitness = fitness
