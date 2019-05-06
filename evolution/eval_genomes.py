@@ -202,7 +202,6 @@ def eval_genomes_simulation(individual, settings, genomes, config):
 
         areas_counter = dict([(area, dict(count=0, percentage=0.0, total=0))
                               for area in areas_name])
-
         # Behavioral Features #1 and #2
         wheel_speeds = []
         sensor_activations = []
@@ -336,6 +335,7 @@ def eval_genome(client_id, settings, genome_id, genome, config):
     # timetep 50 ms
     dt = 0.05
     runtime = 0
+    steps = 0
 
     if (vrep.simxStartSimulation(client_id, vrep.simx_opmode_oneshot) == -1):
         return
@@ -346,6 +346,20 @@ def eval_genome(client_id, settings, genome_id, genome, config):
     _, collision = vrep.simxReadCollision(
         client_id, collision_handle, vrep.simx_opmode_streaming)
 
+    # areas detection initlaization
+    areas_name = ('area0', 'area1', 'area2')
+    areas_handle = [(area,) + vrep.simxGetCollisionHandle(
+        settings.client_id, area, vrep.simx_opmode_blocking) for area in areas_name]
+
+    _ = [(handle[0],) + vrep.simxReadCollision(
+        settings.client_id, handle[2], vrep.simx_opmode_streaming) for handle in areas_handle]
+
+    areas_counter = dict([(area, dict(count=0, percentage=0.0, total=0))
+                          for area in areas_name])
+    # Behavioral Features #1 and #2
+    wheel_speeds = []
+    sensor_activations = []
+
     now = datetime.now()
 
     while not collision and datetime.now() - now < timedelta(seconds=settings.run_time):
@@ -354,17 +368,32 @@ def eval_genome(client_id, settings, genome_id, genome, config):
         _, collision = vrep.simxReadCollision(
             client_id, collision_handle, vrep.simx_opmode_buffer)
 
+        # Behavioral Feature #3
+        areas = [(handle[0],) + vrep.simxReadCollision(
+            settings.client_id, handle[2], vrep.simx_opmode_streaming) for handle in areas_handle]
+
+        for area, _, detected in areas:
+            if detected:
+                areas_counter.get(area).update(
+                    count=areas_counter.get(area)['count']+1)
+
         individual.v_neuro_loop()
         # Net output [0, 1]
         output = network.activate(individual.v_norm_sensor_activation)
         # [-2, 2] wheel speed thymio
         scaled_output = np.array(
             [scale(xi, -2.0, 2.0) for xi in output])
+
+        # Collect behavioral feature data
+        wheel_speeds.append(output)
+        sensor_activations.append(
+            list(map(lambda x: 1 if x > 0.0 else 0, individual.v_norm_sensor_activation)))
         # set motor wheel speeds
         individual.v_set_motors(*list(scaled_output))
         # After this call, the first simulation step is finished
         vrep.simxGetPingTime(client_id)
         runtime += dt
+        steps += 1
 
         (
             fitness_t,
@@ -405,6 +434,29 @@ def eval_genome(client_id, settings, genome_id, genome, config):
 
     print('{} genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(
         str(t.getName()), individual.id, fitness, runtime))
+
+    # Compute and store behavioral featuers
+    total_steps_in_areas = sum(val['count']
+                               for _, val in areas_counter.items())
+    for _, value in areas_counter.items():
+        value.update(
+            percentage=value['count']/total_steps_in_areas,
+            total=total_steps_in_areas
+        )
+
+    avg_wheel_speeds = np.mean(np.array(wheel_speeds), axis=0)
+    avg_sensors_activation = np.mean(np.array(sensor_activations), axis=0)
+
+    behavioral_features = np.concatenate((
+        [individual.id],
+        avg_wheel_speeds,
+        avg_sensors_activation,
+        list(flatten_dict(areas_counter).values()))
+    )
+
+    with open(settings.path + str(individual.id) + '_behavioral_features.dat', 'a') as b:
+        np.savetxt(b, (behavioral_features,), delimiter=',',
+                   fmt='%d,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%d,%1.3f,%d,%d,%1.3f,%d,%d,%1.3f,%d')
 
     time.sleep(1)
     return fitness
