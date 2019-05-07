@@ -5,7 +5,7 @@ import os
 
 
 class Settings:
-    def __init__(self, robot_type, save_data=True, debug=False, n_gen=20, conf_scene=False):
+    def __init__(self, robot_type, save_data=True, debug=False, n_gen=20, conf_scene=True):
         self.client_id = -1
         self.op_mode = vrep.simx_opmode_oneshot_wait
         self.path = './data/neat/' + datetime.now().strftime('%Y-%m-%d') + '/'
@@ -22,9 +22,9 @@ class Settings:
         self.logtime_data = {}
         # Obstacle Markers IDs and dimensions in mm
         self.obstacle_markers = [
-            dict([(9, dict(dimensios=[400, 80]))]),
-            dict([(10, dict(dimensios=[200, 70]))]),
-            dict([(11, dict(dimensios=[40, 100]))]),
+            dict([(9, dict(dimensios=[80, 400]))]),
+            dict([(10, dict(dimensios=[40, 250]))]),
+            dict([(11, dict(dimensios=[60, 260]))]),
         ]
         self.config_scene = conf_scene
         self.grid = None
