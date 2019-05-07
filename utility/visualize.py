@@ -13,8 +13,8 @@ import graphviz
 import csv
 import os
 
-plotly.tools.set_credentials_file(username=os.environ['PLOTLY_USERNAME'],
-                                  api_key=os.environ['PLOTLY_API_KEY'])
+# plotly.tools.set_credentials_file(username=os.environ['PLOTLY_USERNAME'],
+#                                   api_key=os.environ['PLOTLY_API_KEY'])
 
 
 def plot_stats(statistics, ylog=False, view=False, filename='avg_fitness.svg'):
