@@ -22,9 +22,9 @@ class Settings:
         self.logtime_data = {}
         # Obstacle Markers IDs and dimensions in mm
         self.obstacle_markers = [
-            dict([(9, dict(dimensios=[80, 400]))]),
-            dict([(10, dict(dimensios=[40, 250]))]),
-            dict([(11, dict(dimensios=[60, 260]))]),
+            dict([(9, dict(dimension=[80, 400]))]),
+            dict([(10, dict(dimension=[40, 250]))]),
+            dict([(11, dict(dimension=[260, 60]))]),
         ]
         self.config_scene = conf_scene
         self.grid = None

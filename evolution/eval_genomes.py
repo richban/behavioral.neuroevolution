@@ -61,9 +61,6 @@ def eval_genomes_hardware(individual, settings, genomes, config):
         # neural network initialization
         net = neat.nn.FeedForwardNetwork.create(genome, config)
 
-        # Enable the synchronous mode
-        vrep.simxSynchronous(settings.client_id, True)
-
         # get robot marker
         robot_m = get_marker_object(7)
         if robot_m.realxy() is not None:
@@ -107,8 +104,6 @@ def eval_genomes_hardware(individual, settings, genomes, config):
         now = datetime.now()
 
         while not collision and datetime.now() - now < timedelta(seconds=settings.run_time):
-            # The first simulation step waits for a trigger before being executed
-            vrep.simxSynchronousTrigger(settings.client_id)
             # get robot marker
             robot_m = get_marker_object(7)
             if robot_m.realxy() is not None:
@@ -148,9 +143,6 @@ def eval_genomes_hardware(individual, settings, genomes, config):
             # set thymio wheel speeds
             individual.t_set_motors(*list(scaled_output))
 
-            # After this call, the first simulation step is finished
-            # Now we can safely read all  values
-            vrep.simxGetPingTime(settings.client_id)
             runtime += dt
             steps += 1
 
