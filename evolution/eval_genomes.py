@@ -32,7 +32,7 @@ def eval_genomes_hardware(individual, settings, genomes, config):
     if settings.config_scene:
         # Get the position of all the obstacles in reality
         obstacles_pos = [get_marker_object(obstacle).realxy()
-                         for obstacle in settings.obstacle_markers]
+                         for obstacle in (9, 10, 11)]
         # Get all obstacle handlers from VREP
         obstacle_handlers = [get_object_handle(settings.client_id, obstacle) for obstacle in (
             'obstacle', 'obstacle1', 'obstacle0')]
@@ -41,7 +41,7 @@ def eval_genomes_hardware(individual, settings, genomes, config):
             set_pose(settings.client_id, handler, [obs[0], obs[1], 0.099999])
 
         # add markers position to obstacle_markers
-        for position, marker in zip(settings.obstacle_markers, obstacles_pos):
+        for position, marker in zip(obstacles_pos, settings.obstacle_markers):
             for _, value in marker.items():
                 value.update(center=(position[:2]*1000).astype(int))
 
