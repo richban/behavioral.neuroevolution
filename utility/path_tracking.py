@@ -288,8 +288,8 @@ def create_grid(obstacles):
             offset = 50  # mm
             min_y = center[1] - (dimension[1]/2) + offset
             max_y = center[1] + (dimension[1]/2) + offset
-            min_x = center[0] - (dimension[1]/2) + offset
-            max_x = center[0] + (dimension[1]/2) + offset
+            min_x = center[0] - (dimension[0]/2) + offset
+            max_x = center[0] + (dimension[0]/2) + offset
 
             for y in range(min_y, max_y):
                 for x in range(min_x, max_x):
