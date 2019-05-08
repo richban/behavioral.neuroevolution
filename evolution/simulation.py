@@ -184,7 +184,8 @@ class Simulation(object):
                     .format(self.settings.vrep_abspath, h, port, self.vrep_scene)],
                 shell=True, stdout=self.fnull) for port in self.ports]
             time.sleep(5)
-        else:
+
+        if self.simulation_type == 'transferability':
             self.vrep_servers = [Popen(
                 ['{0} {1} -gREMOTEAPISERVERSERVICE_{2}_TRUE_TRUE {3}'
                     .format(self.settings.vrep_abspath, h, port, self.scenes[scene])],
@@ -363,7 +364,7 @@ class Simulation(object):
         return self.config, self.stats, self.winner
 
     @timeit
-    def simulation_genome(self, N=1):
+    def restore_genome(self, N=1):
         """restore genome and re-run simulation"""
 
         if N == 1:

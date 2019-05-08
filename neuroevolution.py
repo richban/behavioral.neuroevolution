@@ -69,7 +69,7 @@ if __name__ == '__main__':
 
         if args.restore_genome and not args.threaded:
             kwargs.update({'genome_path': args.restore_genome})
-            simulation = 'simulation_genome'
+            simulation = 'restore_genome'
 
         if args.restore_genome and args.post_eval:
             kwargs.update({'genome_path': args.restore_genome})
@@ -90,7 +90,7 @@ if __name__ == '__main__':
 
         if args.restore_genome:
             kwargs.update({'genome_path': args.restore_genome})
-            simulation = 'simulation_genome'
+            simulation = 'restore_genome'
 
         if args.restore_genome and args.post_eval:
             kwargs.update({'genome_path': args.restore_genome})
@@ -112,6 +112,6 @@ if __name__ == '__main__':
     sim = Simulation(settings, **kwargs)
     sim.start(simulation)
 
-    if simulation != 'simulation_genome' and simulation != 'post_eval' and settings.save_data:
+    if simulation != 'restore_genome' and simulation != 'post_eval' and settings.save_data:
         sim.log_statistics()
         sim.visualize_results()

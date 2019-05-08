@@ -356,9 +356,12 @@ def eval_genomes_simulation(individual, settings, genomes, config):
         )
         )
 
-        with open(settings.path + str(individual.id) + '_behavioral_features.dat', 'a') as b:
-            np.savetxt(b, (behavioral_features,), delimiter=',',
-                       fmt='%d,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%d,%1.3f,%d,%d,%1.3f,%d,%d,%1.3f,%d')
+        try:
+            with open(settings.path + str(individual.id) + '_behavioral_features.dat', 'a') as b:
+                np.savetxt(b, (behavioral_features,), delimiter=',',
+                           fmt='%d,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%d,%1.3f,%d,%d,%1.3f,%d,%d,%1.3f,%d')
+        except FileNotFoundError as error:
+            print('File not found {}'.format(error))
 
         time.sleep(1)
         genome.fitness = fitness
