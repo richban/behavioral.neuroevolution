@@ -47,7 +47,12 @@ def eval_genomes_hardware(individual, settings, genomes, config):
 
         obstacle_grid = create_grid(settings.obstacle_markers)
     else:
-        obstacle_grid = None
+        # add markers position to obstacle_markers
+        obstacles_pos = [[620, 590, 0], [880, 100, 0], [150, 430, 0]]
+        for position, marker in zip(obstacles_pos, settings.obstacle_markers):
+            for _, value in marker.items():
+                value.update(center=position[:2])
+        obstacle_grid = create_grid(settings.obstacle_markers)
 
     for genome_id, genome in genomes:
         # individual reset
@@ -195,9 +200,12 @@ def eval_genomes_hardware(individual, settings, genomes, config):
             list(flatten_dict(areas_counter).values()))
         )
 
-        with open(settings.path + str(individual.id) + '_behavioral_features.dat', 'a') as b:
-            np.savetxt(b, (behavioral_features,), delimiter=',',
-                       fmt='%d,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%d,%1.3f,%d,%d,%1.3f,%d,%d,%1.3f,%d')
+        try:
+            with open(settings.path + str(individual.id) + '_behavioral_features.dat', 'a') as b:
+                np.savetxt(b, (behavioral_features,), delimiter=',',
+                           fmt='%d,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%d,%1.3f,%d,%d,%1.3f,%d,%d,%1.3f,%d')
+        except FileNotFoundError as error:
+            print('File not found {}'.format(error))
 
         genome.fitness = fitness
 
@@ -352,8 +360,7 @@ def eval_genomes_simulation(individual, settings, genomes, config):
             [individual.id],
             avg_wheel_speeds,
             avg_sensors_activation,
-            list(flatten_dict(areas_counter).values())
-        )
+            list(flatten_dict(areas_counter).values()))
         )
 
         try:
