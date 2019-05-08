@@ -281,13 +281,32 @@ def transform_pos_angle(position, orientation, scale=1):
 def create_grid(obstacles):
     grid = np.full((880, 1190), 255)  # grid system in mm
 
+    for y in range(0, 880):
+        for x in range(0, 50):
+            grid[y, x] = 0
+
+    for y in range(0, 880):
+        for x in range(1140, 1190):
+            grid[y, x] = 0
+
+    for y in range(0, 50):
+        for x in range(0, 1190):
+            grid[y, x] = 0
+
+    for y in range(830, 880):
+        for x in range(0, 1190):
+            grid[y, x] = 0
+
     for obs in obstacles:
-        for _, values in obs.items():
+        for key, values in obs.items():
             dimension = values['dimension']
             center = values['center']
-            offset = 10
+            offset = 20
             min_y = center[1] - int((dimension[1]/2)) + offset
-            max_y = center[1] + int((dimension[1]/2)) + offset
+            if key == 9:
+                max_y = 880
+            else:
+                max_y = center[1] + int((dimension[1]/2)) + offset
             min_x = center[0] - int((dimension[0]/2)) + offset
             max_x = center[0] + int((dimension[0]/2)) + offset
 
