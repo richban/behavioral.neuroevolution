@@ -383,7 +383,7 @@ def follow_path(robot, init_position, get_marker_object, vrep, clientID, debug=F
         path_to_track = transform_points_from_image2real(newpath)
 
         # Send data to VREP
-        send_path_4_drawing(newpath, 0.05, clientID)
+        # send_path_4_drawing(newpath, 0.05, clientID)
 
         # transform GRID goal to real (x, y) coordinates
         goal_position = init_position
