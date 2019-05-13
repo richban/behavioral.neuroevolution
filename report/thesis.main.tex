@@ -1,7 +1,48 @@
 \def\OptimizaTikZ{2}
 
 % Configuration file
-\input{include/configuracioninicial}
+\input{include/configuration}
 
-\newcommand{\titulo}{Título del Trabajo Fin de Grado/Máster}
-\newcommand{\subtitulo}{Subtítulo del proyecto}
+\newcommand{\thesisTitle}{Evolutionary Robotics}
+\newcommand{\thesisSubtitle}{Beyond the transferability gap}
+
+\newcommand{\name}{Richard Banyi}
+\newcommand{\email}{riba@itu.dk}
+
+\newcommand{\supervisorOne}{Andres Faina}
+\newcommand{\supervisorSecond}{David Kadish}
+\newcommand{\departamentSupervisorOne}{Robotics, Evolution, and Art Lab}
+\newcommand{\departamentSupervisorSecond}{Robotics, Evolution, and Art Lab}
+
+\newcommand{\logoITU}{include/images/itu_logo}
+\newcommand{\programme}{Master of Science in Computer Science}
+
+\hypersetup{
+pdfauthor = {\name~(\email)},
+pdftitle = {\thesisTitle},
+}
+
+\begin{document}
+
+% \frontmatter
+
+\input{include/cover_page}
+
+\tableofcontents
+\listoffigures
+\listoftables
+% \lstlistoflistings
+
+\input{chapters/abstact}
+\input{chapters/introduction}
+\input{chapters/experimentalDesign}
+\input{chapters/resultsAndAnalysis}
+\input{chapters/conclusion}
+
+\mainmatter
+
+\nocite{*} % includes ALL documents in the bibliographic database whether or not cited in the text
+\bibliography{bibliography/bibliography}
+\bibliographystyle{apacite}
+
+\end{document}
