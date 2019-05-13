@@ -1,0 +1,64 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Official Author: Jose Manuel Requena Plens
+% Edited: Richard Banyi
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{titlepage}
+
+% Margins of this page modified
+\newgeometry{ignoreall,top=2cm,bottom=2cm}
+\newlength{\centeroffset}
+% Horizontal offset for the entire cover
+\setlength{\centeroffset}{-0.5\oddsidemargin}
+\addtolength{\centeroffset}{0.5\evensidemargin}
+\thispagestyle{empty}
+
+% Title and subtitle
+\noindent\hspace*{\centeroffset}\begin{minipage}{\textwidth}
+\centering
+\begin{spacing}{1.5}{\huge\bfseries \thesisTitle}\end{spacing}
+\noindent\rule[-1ex]{\textwidth}{3pt}\\[3.5ex] % Linea
+{\large\bfseries \thesisSubtitle\\[4cm]}
+\end{minipage}
+
+% Filling up to the central area
+\vspace{2.5cm}
+
+% Central zone. Author and Tutors
+\noindent\hspace*{\centeroffset}
+\begin{minipage}{\textwidth}
+\centering
+
+\textbf{Author}\\ {\name}\\[2.5ex]
+\textbf{Supervisors}\\
+{\normalsize \supervisorOne\\
+\ifx\departamentSupervisorOne\undefined \else \small\textit \departamentSupervisorOne\\ \fi
+\ifx\supervisorSecond\undefined \else \normalsize \supervisorSecond\\ \fi
+\ifx\departamentSupervisorSecond\undefined \else\small\textit \departamentSupervisorSecond\\[2cm] \fi
+}
+\end{minipage}
+
+% Filling up the area below
+\vspace*{\fill}
+
+\noindent\hspace*{\centeroffset}
+\begin{minipage}{\textwidth}
+\centering
+\noindent\hspace*{\centeroffset}
+\begin{center}
+{\includegraphics[width=3cm]{\logoITU}}\\
+{\raggedleft\programme}
+\end{center}
+\vspace*{2em}
+\centering
+\noindent\hspace*{\centeroffset}
+\\[1cm]
+Copenhagen, \Today
+\end{minipage}
+
+\end{titlepage}
+
+% From here, apply the margins established in initial configuration.tex
+\restoregeometry
+
+
