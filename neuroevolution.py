@@ -8,6 +8,7 @@ from evolution.eval_genomes import \
 from settings import Settings
 from argparse import ArgumentParser
 from evolution.simulation import Simulation
+from vision.tracker import Tracker
 import sys
 import os
 
@@ -87,6 +88,19 @@ if __name__ == '__main__':
     elif args.simulation == 'thymio':
         kwargs.update({'simulation_type': 'thymio'})
         kwargs.update({'eval_function': eval_genomes_hardware})
+        vision_thread = Tracker(mid=5,
+                                transform=None,
+                                mid_aux=0,
+                                video_source=-1,
+                                capture=False,
+                                show=True,
+                                debug=False,
+                                )
+
+        vision_thread.start()
+
+        while vision_thread.cornersDetected is not True:
+                time.sleep(2)
 
         if args.restore_genome:
             kwargs.update({'genome_path': args.restore_genome})

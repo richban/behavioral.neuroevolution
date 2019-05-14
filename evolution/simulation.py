@@ -149,7 +149,7 @@ class Simulation(object):
         self._init_network()
         self._init_agent()
         self._init_genome()
-        self._init_vision()
+        # self._init_vision()
 
     def _init_vrep(self):
         """initialize vrep simulator"""
