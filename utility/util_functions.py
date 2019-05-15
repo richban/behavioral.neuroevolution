@@ -110,3 +110,41 @@ def flatten_dict(d):
     items = [item for k, v in d.items() for item in expand(k, v)]
 
     return dict(items)
+
+
+def calc_behavioral_features(areas_counter, wheel_speeds, sensor_activations, f_path, genome_id):
+    # Compute and store behavioral featuers
+    total_steps_in_areas = sum(val['count']
+                               for _, val in areas_counter.items())
+    for _, value in areas_counter.items():
+        value.update(
+            percentage=value['count']/total_steps_in_areas,
+            total=total_steps_in_areas
+        )
+
+    avg_wheel_speeds = np.mean(np.array(wheel_speeds), axis=0)
+    avg_sensors_activation = np.mean(np.array(sensor_activations), axis=0)
+    avg_areas = list(flatten_dict(areas_counter).values())
+
+    features_file = np.concatenate(
+        (
+            [genome_id],
+            avg_wheel_speeds,
+            avg_sensors_activation,
+            avg_areas
+        )
+    )
+
+    behavioral_features = dict(avg_wheel_speeds=avg_wheel_speeds,
+                               avg_sensors_activation=avg_sensors_activation,
+                               areas=avg_areas
+                               )
+
+    try:
+        with open(f_path + 'behavioral_features.dat', 'a') as b:
+            np.savetxt(b, (features_file,), delimiter=',',
+                       fmt='%d,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%d,%1.3f,%d,%d,%1.3f,%d,%d,%1.3f,%d')
+    except FileNotFoundError as error:
+        print('File not found {}'.format(error))
+
+    return behavioral_features

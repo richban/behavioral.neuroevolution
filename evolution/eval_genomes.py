@@ -12,7 +12,7 @@ from utility.util_functions import scale, euclidean_distance, \
     f_wheel_center, f_straight_movements, \
     f_obstacle_dist, scale, scale_thymio_sensors, \
     normalize_0_1, f_t_obstacle_avoidance, thymio_position, \
-    flatten_dict
+    flatten_dict, calc_behavioral_features
 try:
     from robot.evolved_robot import EvolvedRobot
 except ImportError as error:
@@ -181,33 +181,16 @@ def eval_genomes_hardware(individual, settings, genomes, config):
         print('genome_id: {} fitness: {:.4f} runtime: {:.2f} s steps: {}'.format(
             individual.id, fitness, runtime, steps))
 
-        # Compute and store behavioral featuers
-        total_steps_in_areas = sum(val['count']
-                                   for _, val in areas_counter.items())
-        for _, value in areas_counter.items():
-            value.update(
-                percentage=value['count']/total_steps_in_areas,
-                total=total_steps_in_areas
-            )
-
-        avg_wheel_speeds = np.mean(np.array(wheel_speeds), axis=0)
-        avg_sensors_activation = np.mean(np.array(sensor_activations), axis=0)
-
-        behavioral_features = np.concatenate((
-            [individual.id],
-            avg_wheel_speeds,
-            avg_sensors_activation,
-            list(flatten_dict(areas_counter).values()))
+        behavioral_features = calc_behavioral_features(
+            areas_counter,
+            wheel_speeds,
+            sensor_activations,
+            settings.path,
+            genome.key
         )
 
-        try:
-            with open(settings.path + str(individual.id) + '_behavioral_features.dat', 'a') as b:
-                np.savetxt(b, (behavioral_features,), delimiter=',',
-                           fmt='%d,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%d,%1.3f,%d,%d,%1.3f,%d,%d,%1.3f,%d')
-        except FileNotFoundError as error:
-            print('File not found {}'.format(error))
-
         genome.fitness = fitness
+        genome.features = behavioral_features
 
         follow_path(individual, init_position,
                     get_marker_object, vrep, settings.client_id, grid=obstacle_grid, log_time=settings.logtime_data)
@@ -344,34 +327,17 @@ def eval_genomes_simulation(individual, settings, genomes, config):
         print('genome_id: {} fitness: {:.4f} runtime: {:.2f} s steps: {}'.format(
             individual.id, fitness, runtime, steps))
 
-        # Compute and store behavioral featuers
-        total_steps_in_areas = sum(val['count']
-                                   for _, val in areas_counter.items())
-        for _, value in areas_counter.items():
-            value.update(
-                percentage=value['count']/total_steps_in_areas,
-                total=total_steps_in_areas
-            )
-
-        avg_wheel_speeds = np.mean(np.array(wheel_speeds), axis=0)
-        avg_sensors_activation = np.mean(np.array(sensor_activations), axis=0)
-
-        behavioral_features = np.concatenate((
-            [individual.id],
-            avg_wheel_speeds,
-            avg_sensors_activation,
-            list(flatten_dict(areas_counter).values()))
+        behavioral_features = calc_behavioral_features(
+            areas_counter,
+            wheel_speeds,
+            sensor_activations,
+            settings.path,
+            genome.key
         )
-
-        try:
-            with open(settings.path + str(individual.id) + '_behavioral_features.dat', 'a') as b:
-                np.savetxt(b, (behavioral_features,), delimiter=',',
-                           fmt='%d,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%d,%1.3f,%d,%d,%1.3f,%d,%d,%1.3f,%d')
-        except FileNotFoundError as error:
-            print('File not found {}'.format(error))
 
         time.sleep(1)
         genome.fitness = fitness
+        genome.features = behavioral_features
 
 
 def eval_genome(client_id, settings, genome_id, genome, config):

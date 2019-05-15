@@ -21,12 +21,12 @@ Pillow = "*"
 jupyter = "*"
 pyyaml = "*"
 pandas = "*"
-seaborn = "*"
-dbus-python = "*"
-pygobject = "*"
-pycairo = "*"
+dbus-python = {version = "*",sys_platform = "!= 'darwin'"}
+pygobject = {version = "*",sys_platform = "!= 'darwin'"}
+pycairo = {version = "*",sys_platform = "!= 'darwin'"}
 plotly = "*"
 ipywebrtc = "*"
+deap = "*"
 
 [requires]
 python_version = "3.7"
