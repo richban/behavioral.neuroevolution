@@ -256,7 +256,7 @@ class Tracker(threading.Thread):
         self.cap.set(4, 1080)  # Height
         # turn the autofocus off; not supported by all cameras
         self.cap.set(37, 1)
-        self.cap.set(cv2.CAP_PROP_FPS, 15)
+        self.cap.set(cv2.CAP_PROP_FPS, 20)
         self.cap.read()
 
     def stop(self):
@@ -296,7 +296,7 @@ class Tracker(threading.Thread):
             cv2.imwrite('undist.jpg', undist)
             cv2.imwrite('thresh.jpg', thresh)
 
-        cv2.imshow('blackandwhite', thresh)
+        # cv2.imshow('blackandwhite', thresh)
         contours, hierarchy = self.segmentation(thresh)
 
         markers = self.find_markers(contours, hierarchy, 13, self.transform)

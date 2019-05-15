@@ -24,7 +24,7 @@ pdftitle = {\thesisTitle},
 
 \begin{document}
 
-% \frontmatter
+\frontmatter
 
 \input{include/cover_page}
 
@@ -33,13 +33,14 @@ pdftitle = {\thesisTitle},
 \listoftables
 % \lstlistoflistings
 
+\mainmatter
+
 \input{chapters/abstact}
 \input{chapters/introduction}
 \input{chapters/experimentalDesign}
 \input{chapters/resultsAndAnalysis}
 \input{chapters/conclusion}
 
-\mainmatter
 
 \nocite{*} % includes ALL documents in the bibliographic database whether or not cited in the text
 \bibliography{bibliography/bibliography}
