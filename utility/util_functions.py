@@ -148,3 +148,35 @@ def calc_behavioral_features(areas_counter, wheel_speeds, sensor_activations, f_
         print('File not found {}'.format(error))
 
     return behavioral_features
+
+
+def save_debug_data(f_path,
+                    genome_id,
+                    sensor_activation,
+                    norm_sensor_activation,
+                    net_output,
+                    scaled_output,
+                    wheel_center,
+                    straight_movements,
+                    obstacles_distance,
+                    fitness_t,
+                    sim_type,
+                    robot_current_position=None
+                    ):
+
+    if sim_type == 'VREP':
+        name = '_vrep_simulation.dat'
+    elif sim_type == 'THYMIO':
+        name = '_thymio_simulation.dat'
+    else:
+        name = '_simulation.dat'
+
+    with open(f_path + str(genome_id) + name, 'a') as f:
+        f.write('{0!s},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12}\n'.format(
+            genome_id, net_output[0], net_output[1], scaled_output[0], scaled_output[1],
+            np.array2string(
+                sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
+            np.array2string(
+                norm_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
+            wheel_center, straight_movements, obstacles_distance, np.max(
+                norm_sensor_activation), fitness_t, robot_current_position))

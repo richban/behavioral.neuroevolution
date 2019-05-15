@@ -12,7 +12,7 @@ from utility.util_functions import scale, euclidean_distance, \
     f_wheel_center, f_straight_movements, \
     f_obstacle_dist, scale, scale_thymio_sensors, \
     normalize_0_1, f_t_obstacle_avoidance, thymio_position, \
-    flatten_dict, calc_behavioral_features
+    flatten_dict, calc_behavioral_features, save_debug_data
 try:
     from robot.evolved_robot import EvolvedRobot
 except ImportError as error:
@@ -164,15 +164,20 @@ def eval_genomes_hardware(individual, settings, genomes, config):
 
             # dump individuals data
             if settings.debug:
-                with open(settings.path + str(individual.id) + '_hw_simulation.txt', 'a') as f:
-                    f.write('{0!s},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12}\n'.format(
-                        individual.id, net_output[0], net_output[1], scaled_output[0], scaled_output[1],
-                        np.array2string(
-                            individual.t_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
-                        np.array2string(
-                            individual.n_t_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
-                        wheel_center, straight_movements, obstacles_distance, np.max(
-                            individual.n_t_sensor_activation), fitness_t, robot_current_position))
+                save_debug_data(
+                    settings.path,
+                    genome_id,
+                    individual.t_sensor_activation,
+                    individual.n_t_sensor_activation,
+                    net_output,
+                    scaled_output,
+                    wheel_center,
+                    straight_movements,
+                    obstacles_distance,
+                    fitness_t,
+                    'THYMIO',
+                    robot_current_position
+                )
 
         individual.t_stop()
         # calculate the fitnesss
@@ -269,12 +274,12 @@ def eval_genomes_simulation(individual, settings, genomes, config):
                         count=areas_counter.get(area)['count']+1)
 
             individual.v_neuro_loop()
-            output = network.activate(individual.v_norm_sensor_activation)
+            net_output = network.activate(individual.v_norm_sensor_activation)
             scaled_output = np.array(
-                [scale(xi, -2.0, 2.0) for xi in output])
+                [scale(xi, -2.0, 2.0) for xi in net_output])
 
             # Collect behavioral feature data
-            wheel_speeds.append(output)
+            wheel_speeds.append(net_output)
             sensor_activations.append(
                 list(map(lambda x: 1 if x > 0.0 else 0, individual.v_norm_sensor_activation)))
 
@@ -299,16 +304,20 @@ def eval_genomes_simulation(individual, settings, genomes, config):
 
             # dump individuals data
             if settings.debug:
-                with open(settings.path + str(individual.id) + '_simulation.dat', 'a') as f:
-                    f.write('{0!s},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}\n'.format(
-                        str(
-                            individual.id), output[0], output[1], scaled_output[0], scaled_output[1],
-                        np.array2string(
-                            individual.v_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
-                        np.array2string(
-                            individual.v_norm_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
-                        wheel_center, straight_movements, obstacles_distance, np.amax(
-                            individual.v_norm_sensor_activation), fitness_t))
+                save_debug_data(
+                    settings.path,
+                    genome_id,
+                    individual.v_sensor_activation,
+                    individual.v_norm_sensor_activation,
+                    net_output,
+                    scaled_output,
+                    wheel_center,
+                    straight_movements,
+                    obstacles_distance,
+                    fitness_t,
+                    'VREP',
+                    None
+                )
 
         # calculate the fitnesss
         fitness = np.sum(fitness_agg)/settings.run_time
@@ -409,13 +418,13 @@ def eval_genome(client_id, settings, genome_id, genome, config):
 
         individual.v_neuro_loop()
         # Net output [0, 1]
-        output = network.activate(individual.v_norm_sensor_activation)
+        net_output = network.activate(individual.v_norm_sensor_activation)
         # [-2, 2] wheel speed thymio
         scaled_output = np.array(
-            [scale(xi, -2.0, 2.0) for xi in output])
+            [scale(xi, -2.0, 2.0) for xi in net_output])
 
         # Collect behavioral feature data
-        wheel_speeds.append(output)
+        wheel_speeds.append(net_output)
         sensor_activations.append(
             list(map(lambda x: 1 if x > 0.0 else 0, individual.v_norm_sensor_activation)))
         # set motor wheel speeds
@@ -437,16 +446,20 @@ def eval_genome(client_id, settings, genome_id, genome, config):
 
         # dump individuals data
         if settings.debug:
-            with open(settings.path + str(individual.id) + '_simulation.txt', 'a') as f:
-                f.write('{0!s},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}\n'.format(
-                    individual.id, output[0], output[1], scaled_output[0], scaled_output[1],
-                    np.array2string(
-                        individual.v_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
-                    np.array2string(
-                        individual.v_norm_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
-                    wheel_center, straight_movements, obstacles_distance, np.amax(
-                        individual.v_norm_sensor_activation), fitness_t,
-                ))
+            save_debug_data(
+                settings.path,
+                genome_id,
+                individual.v_sensor_activation,
+                individual.v_norm_sensor_activation,
+                net_output,
+                scaled_output,
+                wheel_center,
+                straight_movements,
+                obstacles_distance,
+                fitness_t,
+                'VREP',
+                None
+            )
 
     # calculate the fitnesss
     fitness = np.sum(fitness_agg)/settings.run_time
@@ -465,28 +478,13 @@ def eval_genome(client_id, settings, genome_id, genome, config):
     print('{} genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(
         str(t.getName()), individual.id, fitness, runtime))
 
-    # Compute and store behavioral featuers
-    total_steps_in_areas = sum(val['count']
-                               for _, val in areas_counter.items())
-    for _, value in areas_counter.items():
-        value.update(
-            percentage=value['count']/total_steps_in_areas,
-            total=total_steps_in_areas
-        )
-
-    avg_wheel_speeds = np.mean(np.array(wheel_speeds), axis=0)
-    avg_sensors_activation = np.mean(np.array(sensor_activations), axis=0)
-
-    behavioral_features = np.concatenate((
-        [individual.id],
-        avg_wheel_speeds,
-        avg_sensors_activation,
-        list(flatten_dict(areas_counter).values()))
+    _ = calc_behavioral_features(
+        areas_counter,
+        wheel_speeds,
+        sensor_activations,
+        settings.path,
+        genome.key
     )
-
-    with open(settings.path + str(individual.id) + '_behavioral_features.dat', 'a') as b:
-        np.savetxt(b, (behavioral_features,), delimiter=',',
-                   fmt='%d,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%d,%1.3f,%d,%d,%1.3f,%d,%d,%1.3f,%d')
 
     time.sleep(1)
     return fitness
