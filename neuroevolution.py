@@ -55,7 +55,7 @@ if __name__ == '__main__':
                         help='Log fitness, inputs, etc.')
     parser.add_argument('-multiobjective', type=bool, default=False,
                         help='Multiobjective optimization')
-    parser.add_argument('-layers', type=int, default=1,
+    parser.add_argument('-n_layers', type=int, default=1,
                         help='Number of hidden layers in the NN architecture.')
     parser.add_argument('-neurons', type=int, default=5,
                         help='Number of neurons in each hiddner layer.')
@@ -78,8 +78,8 @@ if __name__ == '__main__':
         if args.multiobjective:
             kwargs.update({'eval_function': eval_moea_simulation})
             simulation = 'simulation_multiobjective'
-            if args.layers:
-                kwargs.update({'layers': args.layers})
+            if args.n_layers:
+                kwargs.update({'n_layers': args.n_layers})
             if args.neurons:
                 kwargs.update({'neurons': args.neurons})
 

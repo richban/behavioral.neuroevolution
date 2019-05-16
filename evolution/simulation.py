@@ -14,6 +14,7 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.initializers import normal
 from keras.utils import plot_model
+from deap import base, creator, tools, algorithms
 import numpy as np
 import vrep.vrep as vrep
 import neat
@@ -145,10 +146,10 @@ class Simulation(object):
                  threaded=False,
                  checkpoint=None,
                  genome_path=None,
-                 headless=False
+                 headless=False,
                  multiobjective=False,
                  n_layers=1,
-                 input_dim=8,
+                 input_dim=7,
                  neurons=5
                  ):
 
@@ -443,9 +444,10 @@ class Simulation(object):
                        fitness=creator.FitnessMax, model=None)
 
         toolbox = base.Toolbox()
+        history = tools.History()
         toolbox.register("individual", init_individual,
                          creator.Individual, model=model)
-         # register the crossover operator
+        # register the crossover operator
         toolbox.register('mate', mate_individuals)
         # register the mutation operator
         toolbox.register('mutate', mutate_individual, indpb=0.5)
@@ -454,7 +456,7 @@ class Simulation(object):
             self.eval_function, self.individual, self.settings, model))
         # register NSGA-II multiobjective optimization algorithm
         toolbox.register("select", tools.selNSGA2)
-         # instantiate the population
+        # instantiate the population
         toolbox.register('population', tools.initRepeat,
                          list, toolbox.individual)
         # maintain stats of the evolution
@@ -524,10 +526,8 @@ class Simulation(object):
 
         return pop, hof, logbook, best_inds, best_inds_fitness
 
-
-
-  @timeit
-   def restore_genome(self, N=1):
+    @timeit
+    def restore_genome(self, N=1):
         """restore genome and re-run simulation"""
 
         if N == 1:
