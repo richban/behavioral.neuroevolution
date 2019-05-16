@@ -4,7 +4,8 @@ from evolution.eval_genomes import \
     eval_genomes_hardware, \
     post_eval_genome, \
     eval_genome, \
-    eval_transferability
+    eval_transferability, \
+    eval_moea_simulation
 from settings import Settings
 from argparse import ArgumentParser
 from evolution.simulation import Simulation
@@ -52,6 +53,12 @@ if __name__ == '__main__':
                         help='Run postevaluation on the genome')
     parser.add_argument('-debug', type=bool, default=False,
                         help='Log fitness, inputs, etc.')
+    parser.add_argument('-multiobjective', type=bool, default=False,
+                        help='Multiobjective optimization')
+    parser.add_argument('-layers', type=int, default=1,
+                        help='Number of hidden layers in the NN architecture.')
+    parser.add_argument('-neurons', type=int, default=5,
+                        help='Number of neurons in each hiddner layer.')
 
     args = parser.parse_args()
     kwargs = {'config_file': config}
@@ -67,6 +74,14 @@ if __name__ == '__main__':
             simulation = 'simulation_threaded'
         else:
             kwargs.update({'eval_function': eval_genomes_simulation})
+
+        if args.multiobjective:
+            kwargs.update({'eval_function': eval_moea_simulation})
+            simulation = 'simulation_multiobjective'
+            if args.layers:
+                kwargs.update({'layers': args.layers})
+            if args.neurons:
+                kwargs.update({'neurons': args.neurons})
 
         if args.restore_genome and not args.threaded:
             kwargs.update({'genome_path': args.restore_genome})
@@ -85,6 +100,7 @@ if __name__ == '__main__':
 
         if args.headless:
             kwargs.update({'headless': args.headless})
+
     elif args.simulation == 'thymio':
         kwargs.update({'simulation_type': 'thymio'})
         kwargs.update({'eval_function': eval_genomes_hardware})
