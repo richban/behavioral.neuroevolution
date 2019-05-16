@@ -877,7 +877,7 @@ def eval_moea_simulation(individual, settings, model, genome):
                     count=areas_counter.get(area)['count']+1)
 
         individual.v_neuro_loop()
-        net_output = model.predict((individual.v_norm_sensor_activation).reshape((7,)))[0]
+        net_output = model.predict((individual.v_norm_sensor_activation).reshape((1,7)))[0]
         scaled_output = np.array(
             [scale(xi, -2.0, 2.0) for xi in net_output])
 
@@ -944,7 +944,7 @@ def eval_moea_simulation(individual, settings, model, genome):
         wheel_speeds,
         sensor_activations,
         settings.path,
-        genome.key
+        individual.id
     )
 
     print(behavioral_features)
