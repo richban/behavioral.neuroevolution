@@ -10,6 +10,11 @@ from evolution.eval_genomes import \
 from subprocess import Popen
 from functools import partial
 from neat import ParallelEvaluator
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.initializers import normal
+from keras.utils import plot_model
+import numpy as np
 import vrep.vrep as vrep
 import neat
 import pickle
@@ -132,8 +137,21 @@ class ThreadedEvolution(object):
 
 class Simulation(object):
 
-    def __init__(self, settings, config_file, eval_function,
-                 simulation_type, threaded=False, checkpoint=None, genome_path=None, headless=False):
+    def __init__(self,
+                 settings,
+                 config_file,
+                 eval_function,
+                 simulation_type,
+                 threaded=False,
+                 checkpoint=None,
+                 genome_path=None,
+                 headless=False
+                 multiobjective=False,
+                 n_layers=1,
+                 input_dim=8,
+                 neurons=5
+                 ):
+
         self.config_file = config_file
         self.threaded = threaded
         self.settings = settings
@@ -145,6 +163,10 @@ class Simulation(object):
         self.genome_path = genome_path
         self.headless = headless
         self.vrep_scene = None
+        self.multiobjective = multiobjective
+        self.n_layers = n_layers
+        self.input_dim = input_dim
+        self.neurons = neurons
         self._init_vrep()
         self._init_network()
         self._init_agent()
@@ -304,6 +326,34 @@ class Simulation(object):
         # kill vrep server instances
         _ = [server.kill() for server in self.vrep_servers]
 
+    def build_model(self, n_layers, input_dim, neurons, activation='sigmoid', initializer=None):
+        if isinstance(neurons, list):
+            assert len(neurons) == n_layers
+        else:
+            neurons = [neurons] * n_layers
+
+        if initializer is None:
+            # Uses normal initializer
+            initializer = normal(mean=0, stddev=0.1, seed=13)
+
+        model = Sequential()
+
+        # Adds first hidden layer with input_dim parameter
+        model.add(Dense(units=neurons[0],
+                        input_shape=(input_dim,),
+                        activation=activation,
+                        kernel_initializer=initializer,
+                        name='hidden_layer'))
+
+        # Adds output layer
+        model.add(Dense(units=2, activation=activation,
+                        kernel_initializer=initializer, name='net_output'))
+
+        # Compiles the model
+        model.compile(loss='mse', optimizer='Adam', metrics=['mse'])
+
+        return model
+
     @timeit
     def start(self, simulation):
         default = None
@@ -363,8 +413,36 @@ class Simulation(object):
         self.stop()
         return self.config, self.stats, self.winner
 
-    @timeit
-    def restore_genome(self, N=1):
+    def simulation_multiobjective(self):
+        """Multiobjective optmization"""
+        model = self.build_model(self.n_layers, self.input_dim, self.neurons)
+        # Creating the appropriate type of the problem
+        creator.create("FitnessMax", base.Fitness, weights=(1.0, 1.0))
+        creator.create("Individual", list,
+                       fitness=creator.FitnessMax, model=None)
+
+        def initIndividual(cls, model):
+            weights = [np.random.permutation(w.flat).reshape(
+                w.shape) for w in model.get_weights()]
+            return cls(weights)
+
+        toolbox = base.Toolbox()
+        toolbox.register("individual", initIndividual,
+                         creator.Individual, model=model)
+
+         # register the crossover operator
+        toolbox.register('mate', tools.cxTwoPoint)
+        # register the mutation operator
+        toolbox.register('mutate', tools.mutFlipBit, indpb=settings.MUTPB)
+        # register the evaluation function
+        toolbox.register('evaluate', partial(
+            self.eval_function, self.individual, self.settings, model))
+        # register NSGA-II multiobjective optimization algorithm
+        toolbox.register("select", tools.selNSGA2)
+
+
+  @timeit
+   def restore_genome(self, N=1):
         """restore genome and re-run simulation"""
 
         if N == 1:

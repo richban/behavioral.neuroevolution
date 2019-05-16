@@ -88,6 +88,8 @@ if __name__ == '__main__':
     elif args.simulation == 'thymio':
         kwargs.update({'simulation_type': 'thymio'})
         kwargs.update({'eval_function': eval_genomes_hardware})
+
+        # Vision has to be started from the main thread
         vision_thread = Tracker(mid=5,
                                 transform=None,
                                 mid_aux=0,
@@ -100,7 +102,7 @@ if __name__ == '__main__':
         vision_thread.start()
 
         while vision_thread.cornersDetected is not True:
-                time.sleep(2)
+            time.sleep(2)
 
         if args.restore_genome:
             kwargs.update({'genome_path': args.restore_genome})
@@ -116,6 +118,10 @@ if __name__ == '__main__':
 
         if args.config:
             kwargs.update({'config_file': args.config})
+
+        if args.headless:
+            kwargs.update({'headless': args.headless})
+
     elif args.simulation == 'transferability':
         kwargs.update({'simulation_type': 'transferability'})
         kwargs.update({'eval_function': eval_transferability})

@@ -27,6 +27,9 @@ pycairo = {version = "*",sys_platform = "!= 'darwin'"}
 plotly = "*"
 ipywebrtc = "*"
 deap = "*"
+keras = "*"
+tensorflow = "*"
+pydot = "*"
 
 [requires]
 python_version = "3.7"
