@@ -528,6 +528,114 @@ class Simulation(object):
 
         return pop, hof, logbook, best_inds, best_inds_fitness
 
+    def simulation_multiobjective_2(self):
+        """Multiobjective optmization 2"""
+        model = self.build_model(self.n_layers, self.input_dim, self.neurons)
+
+        def init_individual(cls, model):
+            ind = cls(np.concatenate(
+                (
+                    model.get_weights()[0].flatten(),
+                    model.get_weights()[2].flatten()
+                )
+            ).tolist())
+
+            ind.shape_1 = model.get_weights()[0].shape
+            ind.shape_2 = model.get_weights()[2].shape
+            ind.features = None
+            ind.weights = None
+
+            return ind
+
+        # Creating the appropriate type of the problem
+        creator.create("FitnessMax", base.Fitness, weights=(1.0, 1.0))
+        creator.create("Individual", list,
+                       fitness=creator.FitnessMax, model=None)
+
+        toolbox = base.Toolbox()
+        history = tools.History()
+
+        toolbox.register("individual", init_individual,
+                         creator.Individual, model=model)
+        # register the crossover operator
+        toolbox.register('mate', tools.cxTwoPoint)
+        # register the mutation operator
+        toolbox.register('mutate', tools.mutFlipBit, indpb=0.5)
+        # register the evaluation function
+        toolbox.register('evaluate', partial(
+            self.eval_function, self.individual, self.settings, model))
+        # register NSGA-II multiobjective optimization algorithm
+        toolbox.register("select", tools.selNSGA2)
+        # instantiate the population
+        toolbox.register('population', tools.initRepeat,
+                         list, toolbox.individual)
+        # maintain stats of the evolution
+        stats = tools.Statistics(lambda ind: ind.fitness.values)
+        stats.register('avg', np.mean)
+        stats.register('std', np.std)
+        stats.register('min', np.min)
+        stats.register('max', np.max)
+
+        logbook = tools.Logbook()
+        logbook.header = "gen", "evals", "std", "min", "avg", "max"
+
+        # create an initial population of N individuals
+        pop = toolbox.population(n=self.settings.pop)
+        history.update(pop)
+
+        # object that contain the best individuals
+        hof = tools.ParetoFront()
+
+        # Evaluate the individuals with an invalid fitness
+        invalid_ind = [ind for ind in pop if not ind.fitness.valid]
+        fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
+
+        for ind, fit in zip(invalid_ind, fitnesses):
+            ind.fitness.values = fit
+
+        # This is just to assign the crowding distance to the individuals
+        # no actual selection is done
+        pop = toolbox.select(pop, len(pop))
+        record = stats.compile(pop)
+        logbook.record(gen=0, evals=len(invalid_ind), **record)
+        print(logbook.stream)
+        hof.update(pop)
+
+        best_inds, best_inds_fitness = [], []
+
+        # Begin the generational process
+        for gen in range(1, self.settings.n_gen+1):
+            # Vary the population
+            offspring = tools.selTournamentDCD(pop, len(pop))
+            offspring = [toolbox.clone(ind) for ind in offspring]
+
+            for ind1, ind2 in zip(offspring[::2], offspring[1::2]):
+                if random.random() <= self.settings.CXPB:
+                    toolbox.mate(ind1, ind2)
+
+                toolbox.mutate(ind1)
+                toolbox.mutate(ind2)
+                del ind1.fitness.values, ind2.fitness.values
+
+            # Evaluate the individuals with an invalid fitness
+            invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+            fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
+            for ind, fit in zip(invalid_ind, fitnesses):
+                ind.fitness.values = fit
+
+            # add the best individual for each generation
+            best_ind = tools.selBest(pop, 1)[0]
+            best_inds.append(best_ind)
+            best_inds_fitness.append(best_ind.fitness.values)
+
+            # Select the next generation population
+            pop = toolbox.select(pop + offspring, len(offspring))
+            record = stats.compile(pop)
+            logbook.record(gen=gen, evals=len(invalid_ind), **record)
+            hof.update(pop)
+
+        return pop, hof, logbook, best_inds, best_inds_fitness
+
     @timeit
     def restore_genome(self, N=1):
         """restore genome and re-run simulation"""

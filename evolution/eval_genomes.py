@@ -5,6 +5,7 @@ import uuid
 import numpy as np
 import vrep.vrep as vrep
 import threading
+import pickle
 from datetime import datetime, timedelta
 from vision.tracker import get_marker_object
 from robot.vrep_robot import VrepRobot
@@ -831,7 +832,19 @@ def eval_moea_simulation(individual, settings, model, genome):
     fitness_agg = np.array([], ndmin=2)
 
     # update neural network weights
-    model.set_weights(genome)
+    if True:
+        weights = [
+            np.array(genome[:35]).reshape(genome.shape_1),
+            model.get_weights()[1],
+            np.array(genome[-10:]).reshape(genome.shape_2),
+            model.get_weights()[3]
+        ]
+
+        model.set_weights(weights)
+    else:
+        model.set_weights(genome)
+
+    genome.weights = model.get_weights()
 
     # Enable the synchronous mode
     vrep.simxSynchronous(settings.client_id, True)
@@ -953,6 +966,11 @@ def eval_moea_simulation(individual, settings, model, genome):
         settings.path,
         individual.id
     )
+
+    genome.features = behavioral_features
+
+    with open(settings.path + str(individual.id) + "genome_.pkl", "wb") as ind_file:
+        pickle.dump(genome, ind_file)
 
     time.sleep(1)
 

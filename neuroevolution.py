@@ -77,7 +77,7 @@ if __name__ == '__main__':
 
         if args.multiobjective:
             kwargs.update({'eval_function': eval_moea_simulation})
-            simulation = 'simulation_multiobjective'
+            simulation = 'simulation_multiobjective_2'
             if args.n_layers:
                 kwargs.update({'n_layers': args.n_layers})
             if args.neurons:
