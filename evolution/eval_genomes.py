@@ -195,6 +195,9 @@ def eval_genomes_hardware(individual, settings, genomes, config):
             genome.key
         )
 
+        if settings.debug:
+            print(behavioral_features)
+
         genome.fitness = fitness
         genome.features = behavioral_features
 
@@ -344,6 +347,9 @@ def eval_genomes_simulation(individual, settings, genomes, config):
             settings.path,
             genome.key
         )
+
+        if settings.debug:
+            print(behavioral_features)
 
         time.sleep(1)
         genome.fitness = fitness
@@ -813,7 +819,7 @@ def eval_genome_hardware(individual, settings, genome, config):
 
 def eval_moea_simulation(individual, settings, model, genome):
 
-    id = uuid.uuid1()
+    id = uuid.uuid1().int
     # reset the individual
     individual.v_reset_init()
     individual.chromosome = genome
