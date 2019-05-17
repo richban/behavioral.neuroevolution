@@ -116,9 +116,15 @@ def calc_behavioral_features(areas_counter, wheel_speeds, sensor_activations, f_
     # Compute and store behavioral featuers
     total_steps_in_areas = sum(val['count']
                                for _, val in areas_counter.items())
+
     for _, value in areas_counter.items():
+        try:
+            p = value['count']/total_steps_in_areas
+        except (ZeroDivisionError, ValueError):
+            print(areas_counter)
+            p = 0.0
         value.update(
-            percentage=value['count']/total_steps_in_areas,
+            percentage=p,
             total=total_steps_in_areas
         )
 

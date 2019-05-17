@@ -351,7 +351,8 @@ class Simulation(object):
                         kernel_initializer=initializer, name='net_output'))
 
         # Compiles the model
-        model.compile(loss='mse', optimizer='Adam', metrics=['mse'])
+        model.compile(loss='mean_squared_error', optimizer='Adam',
+                      metrics=['mean_squared_error'])
 
         return model
 
@@ -445,6 +446,7 @@ class Simulation(object):
 
         toolbox = base.Toolbox()
         history = tools.History()
+
         toolbox.register("individual", init_individual,
                          creator.Individual, model=model)
         # register the crossover operator
@@ -470,7 +472,7 @@ class Simulation(object):
         logbook.header = "gen", "evals", "std", "min", "avg", "max"
 
         # create an initial population of N individuals
-        pop = toolbox.population(n=20)
+        pop = toolbox.population(n=self.settings.pop)
         history.update(pop)
 
         # object that contain the best individuals
@@ -500,7 +502,7 @@ class Simulation(object):
             offspring = [toolbox.clone(ind) for ind in offspring]
 
             for ind1, ind2 in zip(offspring[::2], offspring[1::2]):
-                if random.random() <= 0.9:
+                if random.random() <= self.settings.CXPB:
                     toolbox.mate(ind1, ind2)
 
                 toolbox.mutate(ind1)
