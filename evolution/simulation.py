@@ -3,6 +3,7 @@ from robot.vrep_robot import VrepRobot
 from vision.tracker import Tracker
 from settings import Settings
 from utility.util_functions import vrep_ports, timeit
+from utility.visualize import plot_single_run
 from evolution.eval_genomes import \
     eval_genomes_simulation, \
     eval_genomes_hardware, \
@@ -23,6 +24,7 @@ import warnings
 import os
 import time
 import sys
+import random
 try:
     from robot.evolved_robot import EvolvedRobot
 except ImportError as error:
@@ -201,12 +203,12 @@ class Simulation(object):
         else:
             self.vrep_scene = os.getcwd() + '/scenes/thymio_v_infrared.ttt'
 
-        if not self.genome_path and self.simulation_type != 'transferability':
-            self.vrep_servers = [Popen(
-                ['{0} {1} -gREMOTEAPISERVERSERVICE_{2}_TRUE_TRUE {3}'
-                    .format(self.settings.vrep_abspath, h, port, self.vrep_scene)],
-                shell=True, stdout=self.fnull) for port in self.ports]
-            time.sleep(5)
+        # if not self.genome_path and self.simulation_type != 'transferability':
+        #     self.vrep_servers = [Popen(
+        #         ['{0} {1} -gREMOTEAPISERVERSERVICE_{2}_TRUE_TRUE {3}'
+        #             .format(self.settings.vrep_abspath, h, port, self.vrep_scene)],
+        #         shell=True, stdout=self.fnull) for port in self.ports]
+        #     time.sleep(5)
 
         if self.simulation_type == 'transferability':
             self.vrep_servers = [Popen(
@@ -224,7 +226,8 @@ class Simulation(object):
             5) for port in self.ports]
 
         if not all(c >= 0 for c in self.clients):
-            sys.exit('Some clients were not correctly initialized!')
+            pass
+            # sys.exit('Some clients were not correctly initialized!')
 
         if len(self.clients) == 1:
             self.settings.client_id = self.clients[0]
@@ -233,27 +236,28 @@ class Simulation(object):
 
     def _init_network(self):
         """initialize the neural network"""
-        # load the confifuration file
-        self.config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
-                                  neat.DefaultSpeciesSet, neat.DefaultStagnation,
-                                  self.config_file)
-        if self.settings.save_data:
-            self.config.save(self.settings.path + 'config.ini')
+        if not self.multiobjective:
+            # load the confifuration file
+            self.config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
+                                      neat.DefaultSpeciesSet, neat.DefaultStagnation,
+                                      self.config_file)
+            if self.settings.save_data:
+                self.config.save(self.settings.path + 'config.ini')
 
-        if self.checkpoint:
-            # restore population from a checkpoint
-            self.restored_population = neat.Checkpointer.restore_checkpoint(
-                self.checkpoint)
-            self.population = self.restored_population
-        else:
-            # initialize the network and population
-            self.population = neat.Population(self.config)
-        # Add a stdout reporter to show progress in the terminal.
-        self.stats = neat.StatisticsReporter()
-        self.population.add_reporter(neat.StdOutReporter(True))
-        self.population.add_reporter(self.stats)
-        self.population.add_reporter(neat.Checkpointer(1))
-        self.network_initialized = True
+            if self.checkpoint:
+                # restore population from a checkpoint
+                self.restored_population = neat.Checkpointer.restore_checkpoint(
+                    self.checkpoint)
+                self.population = self.restored_population
+            else:
+                # initialize the network and population
+                self.population = neat.Population(self.config)
+            # Add a stdout reporter to show progress in the terminal.
+            self.stats = neat.StatisticsReporter()
+            self.population.add_reporter(neat.StdOutReporter(True))
+            self.population.add_reporter(self.stats)
+            self.population.add_reporter(neat.Checkpointer(1))
+            self.network_initialized = True
 
     def _init_agent(self):
         if self.simulation_type == 'vrep':
@@ -416,27 +420,47 @@ class Simulation(object):
         return self.config, self.stats, self.winner
 
     def simulation_multiobjective(self):
-        """Multiobjective optmization"""
+        """Multiobjective optmization. Genome is represented as
+        ndarrays of connections weights for each layer in the NN.
+        e.g [
+                2d_array(layer_1), 
+                1d_array(bias_hidden_layer), 
+                2d_array(layer2), 
+                1d_array(bias_output_layer)
+            ]
+        """
+
         model = self.build_model(self.n_layers, self.input_dim, self.neurons)
 
         def init_individual(cls, model):
-            weights = [np.random.permutation(w.flat).reshape(
-                w.shape) for w in model.get_weights()]
-            return cls(weights)
+            ind = cls([np.random.permutation(w.flat).reshape(
+                w.shape) for w in model.get_weights()])
+
+            ind.shape_1 = model.get_weights()[0].shape
+            ind.shape_2 = model.get_weights()[2].shape
+            ind.features = None
+            ind.weights = None
+            ind.id = None
+
+            return ind
 
         def mutate_individual(individual, indpb):
             for i, weight in enumerate(individual):
-                w, = tools.mutFlipBit(weight.flatten(), indpb=indpb)
-                individual[i] = w.reshape(weight.shape)
+                w, = tools.mutFlipBit(weight.flatten().tolist(), indpb=indpb)
+                individual[i] = np.array(w).reshape(weight.shape)
             return individual
 
         def mate_individuals(ind1, ind2):
             for i, (w1, w2) in enumerate(zip(ind1, ind2)):
-                cx1, cx2 = tools.cxTwoPoint(w1.flatten(), w2.flatten())
-                ind1[i], ind2[i] = cx1.reshape(w1.shape), cx2.reshape(w2.shape)
+                cx1, cx2 = tools.cxTwoPoint(
+                    w1.flatten().tolist(), w2.flatten().tolist())
+                ind1[i], ind2[i] = np.array(cx1).reshape(
+                    w1.shape), np.array(cx2).reshape(w2.shape)
             return ind1, ind2
 
         def eq(ind1, ind2):
+            """Required for the HallOfFame and ParetoFront. Comparison of the 2
+            layers. Bias layer is ommited"""
             return np.array_equal(ind1[0], ind2[0]) and np.array_equal(ind1[2], ind2[2])
 
         # Creating the appropriate type of the problem
@@ -471,6 +495,10 @@ class Simulation(object):
         logbook = tools.Logbook()
         logbook.header = "gen", "evals", "std", "min", "avg", "max"
 
+        # Decorate the variation operators
+        # toolbox.decorate("mate", history.decorator)
+        # toolbox.decorate("mutate", history.decorator)
+
         # create an initial population of N individuals
         pop = toolbox.population(n=self.settings.pop)
         history.update(pop)
@@ -480,8 +508,14 @@ class Simulation(object):
 
         # Evaluate the individuals with an invalid fitness
         invalid_ind = [ind for ind in pop if not ind.fitness.valid]
-        fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
 
+        # Assigng ids to individuals
+        UNIQ_ID = 1
+        for ind in invalid_ind:
+            ind.id = UNIQ_ID
+            UNIQ_ID += 1
+
+        fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
         for ind, fit in zip(invalid_ind, fitnesses):
             ind.fitness.values = fit
 
@@ -493,7 +527,7 @@ class Simulation(object):
         print(logbook.stream)
         hof.update(pop)
 
-        best_inds, best_inds_fitness = [], []
+        best_inds, best_inds_fitness = np.array([]), np.array([])
 
         # Begin the generational process
         for gen in range(1, self.settings.n_gen+1):
@@ -511,25 +545,61 @@ class Simulation(object):
 
             # Evaluate the individuals with an invalid fitness
             invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+
+            # Assigng ids to individuals
+            for ind in invalid_ind:
+                ind.id = UNIQ_ID
+                UNIQ_ID += 1
+
+            # Calculate the fitness & assigned it
             fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
             for ind, fit in zip(invalid_ind, fitnesses):
                 ind.fitness.values = fit
 
             # add the best individual for each generation
             best_ind = tools.selBest(pop, 1)[0]
-            best_inds.append(best_ind)
-            best_inds_fitness.append(best_ind.fitness.values)
+            best_inds = np.append(best_inds, best_ind)
+            best_inds_fitness = np.append(
+                best_inds_fitness, best_ind.fitness.values)
 
             # Select the next generation population
             pop = toolbox.select(pop + offspring, len(offspring))
             record = stats.compile(pop)
             logbook.record(gen=gen, evals=len(invalid_ind), **record)
+            print(logbook.stream)
             hof.update(pop)
+
+        # log Statistics
+        with open(self.settings.path + 'ea_fitness.dat', 'w') as s:
+            s.write(logbook.__str__())
+
+        # best individuals each generation
+        with open(self.settings.path + 'best_genomes.pkl', 'wb') as fp:
+            pickle.dump(best_inds, fp)
+
+        # Evolution records as a chronological list of dictionaries
+        gen = logbook.select('gen')
+        fit_mins = logbook.select('min')
+        fit_avgs = logbook.select('avg')
+        fit_maxs = logbook.select('max')
+
+        plot_single_run(
+            gen,
+            fit_mins,
+            fit_avgs,
+            fit_maxs,
+            ratio=0.35,
+            save=self.settings.path + 'evolved-obstacle.pdf')
 
         return pop, hof, logbook, best_inds, best_inds_fitness
 
     def simulation_multiobjective_2(self):
-        """Multiobjective optmization 2"""
+        """Multiobjective optmization 2. Genome is represented as
+        ndarrays of connections weights for each layer in the NN.
+        Weights are concatenated into a single list of floating points.
+        The weights than are reshaped and adjusted in the eval_function in
+        order to update the model weights correctly.
+        """
         model = self.build_model(self.n_layers, self.input_dim, self.neurons)
 
         def init_individual(cls, model):

@@ -1,17 +1,18 @@
 from __future__ import print_function
 
+import os
+import csv
+import graphviz
+import numpy as np
+import plotly.graph_objs as go
+import plotly
+import plotly.plotly as py
+import matplotlib.pyplot as plt
+import matplotlib.pylab as pylab
 import copy
 import warnings
-
-import matplotlib.pylab as pylab
-import matplotlib.pyplot as plt
-import plotly.plotly as py
-import plotly
-import plotly.graph_objs as go
-import numpy as np
-import graphviz
-import csv
-import os
+import matplotlib as mpl
+mpl.use('TkAgg')
 
 # plotly.tools.set_credentials_file(username=os.environ['PLOTLY_USERNAME'],
 #                                   api_key=os.environ['PLOTLY_API_KEY'])
@@ -415,3 +416,37 @@ def plot_single_run_scatter(scatter, dt, title):
     fig = go.Figure(data=data+l, layout=layout)
 
     return py.iplot(fig, filename='single-run-scater-line-plot', layout=layout)
+
+
+def _set_plot_params(title, ratio):
+    # Optionally fix the aspect ratio
+    if ratio:
+        plt.figure(figsize=plt.figaspect(ratio))
+
+    mpl.style.use('seaborn-dark-palette')
+
+    if title:
+        plt.title(title)
+
+
+def _save_or_show(save):
+    if save:
+        plt.savefig(save)
+    else:
+        plt.show()
+
+    exit()
+
+
+def plot_single_run(gen, fit_mins, fit_avgs, fit_maxs, title=None, ratio=None, save=None):
+    _set_plot_params(title, ratio)
+
+    line1 = plt.plot(gen, fit_mins, 'C1:', label="Minimum Fitness")
+    line2 = plt.plot(gen, fit_avgs, "C2-", label="Average Fitness")
+    line3 = plt.plot(gen, fit_maxs, "C3:", label="Max Fitness")
+
+    lns = line1 + line2 + line3
+    labs = [l.get_label() for l in lns]
+    plt.legend(lns, labs, loc="lower right")
+
+    _save_or_show(save)

@@ -820,11 +820,10 @@ def eval_genome_hardware(individual, settings, genome, config):
 
 def eval_moea_simulation(individual, settings, model, genome):
 
-    id = uuid.uuid1().int
     # reset the individual
     individual.v_reset_init()
     individual.chromosome = genome
-    individual.id = id
+    individual.id = genome.id
 
     # evaluation specific props
     collision = False
@@ -832,7 +831,7 @@ def eval_moea_simulation(individual, settings, model, genome):
     fitness_agg = np.array([], ndmin=2)
 
     # update neural network weights
-    if True:
+    if False:
         weights = [
             np.array(genome[:35]).reshape(genome.shape_1),
             model.get_weights()[1],
@@ -969,9 +968,10 @@ def eval_moea_simulation(individual, settings, model, genome):
 
     genome.features = behavioral_features
 
-    with open(settings.path + str(individual.id) + "genome_.pkl", "wb") as ind_file:
+    with open(settings.path + 'deap_inds/' + str(individual.id) + "_genome_.pkl", "wb") as ind_file:
         pickle.dump(genome, ind_file)
+    model.save(settings.path + 'keras_models/' + str(individual.id) + '_model.h5')
 
     time.sleep(1)
 
-    return fitness, sum(wheel_speeds)
+    return (fitness, 2.0, )

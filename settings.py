@@ -20,7 +20,7 @@ class Settings:
         self.base_path = './data/neat/'
         self.vrep_abspath = '~/Developer/vrep-edu/vrep.app/Contents/MacOS/vrep'
         self.logtime_data = {}
-        self.pop = 3
+        self.pop = 4
         self.CXPB = 0.3
         # Obstacle Markers IDs and dimensions in mm
         self.obstacle_markers = [
@@ -37,3 +37,9 @@ class Settings:
         if self.save_data:
             if not os.path.exists(self.path):
                 os.makedirs(self.path)
+
+            if not os.path.exists(self.path+'deap_inds/'):
+                os.makedirs(self.path+'deap_inds/')
+
+            if not os.path.exists(self.path+'keras_models/'):
+                os.makedirs(self.path+'keras_models/')

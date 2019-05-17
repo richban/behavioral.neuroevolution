@@ -77,7 +77,7 @@ if __name__ == '__main__':
 
         if args.multiobjective:
             kwargs.update({'eval_function': eval_moea_simulation})
-            simulation = 'simulation_multiobjective_2'
+            simulation = 'simulation_multiobjective'
             if args.n_layers:
                 kwargs.update({'n_layers': args.n_layers})
             if args.neurons:
@@ -148,6 +148,12 @@ if __name__ == '__main__':
     sim = Simulation(settings, **kwargs)
     sim.start(simulation)
 
-    if simulation != 'restore_genome' and simulation != 'post_eval' and settings.save_data:
+    if (
+        simulation != 'restore_genome' and
+        simulation != 'post_eval' and
+        simulation != 'simulation_multiobjective' and
+        simulation != 'simulation_multiobjective_2' and
+        settings.save_data
+    ):
         sim.log_statistics()
         sim.visualize_results()
