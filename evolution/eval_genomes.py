@@ -194,7 +194,8 @@ def eval_genomes_hardware(individual, settings, genomes, config):
             wheel_speeds,
             sensor_activations,
             settings.path,
-            genome.key
+            genome.key,
+            'THYMIO'
         )
 
         if settings.debug:
@@ -203,8 +204,15 @@ def eval_genomes_hardware(individual, settings, genomes, config):
         genome.fitness = fitness
         genome.features = behavioral_features
 
-        follow_path(individual, init_position,
-                    get_marker_object, vrep, settings.client_id, grid=obstacle_grid, log_time=settings.logtime_data)
+        follow_path(
+            individual,
+            init_position,
+            get_marker_object,
+            vrep,
+            settings.client_id,
+            grid=obstacle_grid,
+            log_time=settings.logtime_data
+        )
 
         if (vrep.simxStopSimulation(settings.client_id, settings.op_mode) == -1):
             print('Failed to stop the simulation')
@@ -348,7 +356,8 @@ def eval_genomes_simulation(individual, settings, genomes, config):
             wheel_speeds,
             sensor_activations,
             settings.path,
-            genome.key
+            genome.key,
+            'VREP'
         )
 
         if settings.debug:
@@ -493,7 +502,8 @@ def eval_genome(client_id, settings, genome_id, genome, config):
         wheel_speeds,
         sensor_activations,
         settings.path,
-        genome.key
+        genome.key,
+        'VREP'
     )
 
     time.sleep(1)
@@ -653,9 +663,9 @@ def eval_transferability(vrep_bot, thymio_bot, settings, genomes, config):
                 vrep_bot.client_id, collision_handle, vrep.simx_opmode_buffer)
 
             vrep_bot.v_neuro_loop()
-            output = network.activate(vrep_bot.v_norm_sensor_activation)
+            net_output = network.activate(vrep_bot.v_norm_sensor_activation)
             scaled_output = np.array(
-                [scale(xi, -2.0, 2.0) for xi in output])
+                [scale(xi, -2.0, 2.0) for xi in net_output])
 
             # set motor wheel speeds
             vrep_bot.v_set_motors(*list(scaled_output))
@@ -681,8 +691,8 @@ def eval_transferability(vrep_bot, thymio_bot, settings, genomes, config):
                 save_debug_data(
                     settings.path,
                     genome_id,
-                    individual.v_sensor_activation,
-                    individual.v_norm_sensor_activation,
+                    vrep_bot.v_sensor_activation,
+                    vrep_bot.v_norm_sensor_activation,
                     net_output,
                     scaled_output,
                     wheel_center,
@@ -719,7 +729,7 @@ def eval_transferability(vrep_bot, thymio_bot, settings, genomes, config):
             f = eval_genome_hardware(thymio_bot, settings, genome, config)
 
 
-def eval_genome_hardware(individual, settings, genome, config):
+def eval_genome_hardware(individual, settings, genome, model=None, config=None):
     """Evaluation function for a single genome encoded with NEAT."""
 
     robot_m = get_marker_object(7)
@@ -727,6 +737,31 @@ def eval_genome_hardware(individual, settings, genome, config):
         # obtain goal marker postion
         robot_m = get_marker_object(7)
     init_position = np.array([0.19, 0.22])
+
+    if settings.config_scene:
+            # Get the position of all the obstacles in reality
+        obstacles_pos = [get_marker_object(obstacle).realxy()
+                         for obstacle in (9, 10, 11)]
+        # Get all obstacle handlers from VREP
+        obstacle_handlers = [get_object_handle(settings.client_id, obstacle) for obstacle in (
+            'obstacle', 'obstacle1', 'obstacle0')]
+        # Set the position of obstacles in vrep according the obstacles from reality
+        for obs, handler in zip(obstacles_pos, obstacle_handlers):
+            set_pose(settings.client_id, handler, [obs[0], obs[1], 0.099999])
+
+        # add markers position to obstacle_markers
+        for position, marker in zip(obstacles_pos, settings.obstacle_markers):
+            for _, value in marker.items():
+                value.update(center=(position[:2]*1000).astype(int))
+
+        obstacle_grid = create_grid(settings.obstacle_markers)
+    else:
+        # add markers position to obstacle_markers
+        obstacles_pos = [[620, 590, 0], [880, 100, 0], [150, 430, 0]]
+        for position, marker in zip(obstacles_pos, settings.obstacle_markers):
+            for _, value in marker.items():
+                value.update(center=position[:2])
+        obstacle_grid = create_grid(settings.obstacle_markers)
 
     # individual reset
     individual.n_t_sensor_activation = np.array([])
@@ -736,8 +771,27 @@ def eval_genome_hardware(individual, settings, genome, config):
     collision = False
     scaled_output = np.array([])
     fitness_agg = np.array([])
+
     # neural network initialization
-    net = neat.nn.FeedForwardNetwork.create(genome, config)
+    network = None
+
+    if type(genome).__name__ == 'Individual':
+        if False:
+            weights = [
+                np.array(genome[:35]).reshape(genome.shape_1),
+                model.get_weights()[1],
+                np.array(genome[-10:]).reshape(genome.shape_2),
+                model.get_weights()[3]
+            ]
+
+            model.set_weights(weights)
+        else:
+            model.set_weights(genome)
+
+        network = model
+
+    if type(genome).__name__ == 'DefaultGenome':
+        network = neat.nn.FeedForwardNetwork.create(genome, config)
 
     # get robot marker
     robot_m = get_marker_object(7)
@@ -748,6 +802,7 @@ def eval_genome_hardware(individual, settings, genome, config):
     # timetep 50 ms
     dt = 0.05
     runtime = 0
+    steps = 0
 
     # update position and orientation of the robot in vrep
     position, orientation = transform_pos_angle(
@@ -763,6 +818,20 @@ def eval_genome_hardware(individual, settings, genome, config):
         individual.client_id, 'wall_collision', vrep.simx_opmode_blocking)
     _, collision = vrep.simxReadCollision(
         individual.client_id, collision_handle, vrep.simx_opmode_streaming)
+
+    # areas detection initlaization
+    areas_name = ('area0', 'area1', 'area2')
+    areas_handle = [(area,) + vrep.simxGetCollisionHandle(
+        settings.client_id, area, vrep.simx_opmode_blocking) for area in areas_name]
+
+    _ = [(handle[0],) + vrep.simxReadCollision(
+        settings.client_id, handle[2], vrep.simx_opmode_streaming) for handle in areas_handle]
+
+    areas_counter = dict([(area, dict(count=0, percentage=0.0, total=0))
+                            for area in areas_name])
+    # Behavioral Features #1 and #2
+    wheel_speeds = []
+    sensor_activations = []
 
     now = datetime.now()
 
@@ -781,18 +850,40 @@ def eval_genome_hardware(individual, settings, genome, config):
 
         _, collision = vrep.simxReadCollision(
             individual.client_id, collision_handle, vrep.simx_opmode_buffer)
+
+        # Behavioral Feature #3
+        areas = [(handle[0],) + vrep.simxReadCollision(
+            settings.client_id, handle[2], vrep.simx_opmode_streaming) for handle in areas_handle]
+
+        for area, _, detected in areas:
+            if detected:
+                areas_counter.get(area).update(
+                    count=areas_counter.get(area)['count']+1)
+        
         # read proximity sensors data
         individual.t_read_prox()
-
+        
         # input data to the neural network
-        net_output = net.activate(individual.n_t_sensor_activation)
+        if type(network).__name__ == 'FeedForwardNetwork':
+            net_output = network.activate(individual.n_t_sensor_activation)
+        
+        if type(network).__name__ == 'Sequential':
+            net_output = network.predict((individual.n_t_sensor_activation).reshape((1, 7)))[0]
+
         # normalize motor wheel wheel_speeds [0.0, 2.0] - robot
         scaled_output = np.array([scale(xi, -200, 200)
                                   for xi in net_output])
+
+        # Collect behavioral feature data
+        wheel_speeds.append(net_output)
+        sensor_activations.append(
+            list(map(lambda x: 1 if x > 0.0 else 0, individual.n_t_sensor_activation)))
+       
         # set thymio wheel speeds
         individual.t_set_motors(*list(scaled_output))
 
         runtime += dt
+        steps += 1
         #  fitness_t at time stamp
         (
             fitness_t,
@@ -825,11 +916,30 @@ def eval_genome_hardware(individual, settings, genome, config):
     # calculate the fitnesss
     fitness = np.sum(fitness_agg)/settings.run_time
 
-    print('thymio genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(
+    print('Transfered to thymio genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(
         individual.id, fitness, runtime))
 
-    follow_path(individual, init_position,
-                get_marker_object, vrep, individual.client_id, log_time=settings.logtime_data)
+    behavioral_features = calc_behavioral_features(
+        areas_counter,
+        wheel_speeds,
+        sensor_activations,
+        settings.path,
+        genome.key,
+        'THYMIO'
+    )
+
+    if settings.debug:
+        print(behavioral_features)
+
+    follow_path(
+        individual,
+        init_position,
+        get_marker_object,
+        vrep,
+        individual.client_id,
+        grid=obstacle_grid,
+        log_time=settings.logtime_data
+    )
 
     if (vrep.simxStopSimulation(individual.client_id, settings.op_mode) == -1):
         print('Failed to stop the simulation')
@@ -838,7 +948,7 @@ def eval_genome_hardware(individual, settings, genome, config):
 
     time.sleep(1)
 
-    return fitness
+    return (fitness, behavioral_features)
 
 
 def eval_moea_simulation(individual, settings, model, genome):
@@ -848,7 +958,7 @@ def eval_moea_simulation(individual, settings, model, genome):
        :model: Keras model Feedforward NN
        :genome: weights of the NN encoded that are being optimized
 
-       :return: (fitness, transferability) 
+       :return: (fitness, transferability)
        
        fitness - task dependent fitness value V * (1 - sqr(delta v)) * (1 - max(S_activation))
        transferability - measure the distance betweeen simulation and real behavior
@@ -857,7 +967,7 @@ def eval_moea_simulation(individual, settings, model, genome):
     # reset the individual
     individual.v_reset_init()
     individual.chromosome = genome
-    individual.id = genome.id
+    individual.id = genome.key
 
     # evaluation specific props
     collision = False
@@ -997,7 +1107,8 @@ def eval_moea_simulation(individual, settings, model, genome):
         wheel_speeds,
         sensor_activations,
         settings.path,
-        individual.id
+        individual.id,
+        'VREP'
     )
 
     genome.features = behavioral_features

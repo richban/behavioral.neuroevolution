@@ -112,7 +112,12 @@ def flatten_dict(d):
     return dict(items)
 
 
-def calc_behavioral_features(areas_counter, wheel_speeds, sensor_activations, f_path, genome_id):
+def calc_behavioral_features(areas_counter,
+                             wheel_speeds,
+                             sensor_activations,
+                             f_path,
+                             genome_id,
+                             simulation='UNDEFINED'):
     # Compute and store behavioral featuers
     total_steps_in_areas = sum(val['count']
                                for _, val in areas_counter.items())
@@ -135,6 +140,7 @@ def calc_behavioral_features(areas_counter, wheel_speeds, sensor_activations, f_
     features_file = np.concatenate(
         (
             [genome_id],
+            [simulation],
             avg_wheel_speeds,
             avg_sensors_activation,
             avg_areas
@@ -149,7 +155,7 @@ def calc_behavioral_features(areas_counter, wheel_speeds, sensor_activations, f_
     try:
         with open(f_path + 'behavioral_features.dat', 'a') as b:
             np.savetxt(b, (features_file,), delimiter=',',
-                       fmt='%d,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%d,%1.3f,%d,%d,%1.3f,%d,%d,%1.3f,%d')
+                       fmt='%d,%s,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%d,%1.3f,%d,%d,%1.3f,%d,%d,%1.3f,%d')
     except FileNotFoundError as error:
         print('File not found {}'.format(error))
 
@@ -193,4 +199,4 @@ def save_fitness_moea(pop, gen, path):
         fitness, transferability = ind.fitness.values
         with open(path + 'fitness.dat', 'a') as f:
             f.write('{0},{1},{2},{3}\n'.format(
-                gen, ind.id, fitness, transferability))
+                gen, ind.key, fitness, transferability))

@@ -7,7 +7,8 @@ from utility.visualize import plot_single_run
 from evolution.eval_genomes import \
     eval_genomes_simulation, \
     eval_genomes_hardware, \
-    eval_genome
+    eval_genome, \
+    eval_genome_hardware
 from subprocess import Popen
 from functools import partial
 from neat import ParallelEvaluator
@@ -440,7 +441,7 @@ class Simulation(object):
             ind.shape_2 = model.get_weights()[2].shape
             ind.features = None
             ind.weights = None
-            ind.id = None
+            ind.key = None
 
             return ind
 
@@ -512,7 +513,7 @@ class Simulation(object):
         # Assigng ids to individuals
         UNIQ_ID = 1
         for ind in invalid_ind:
-            ind.id = UNIQ_ID
+            ind.key = UNIQ_ID
             UNIQ_ID += 1
 
         fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
@@ -544,21 +545,25 @@ class Simulation(object):
 
                 toolbox.mutate(ind1)
                 toolbox.mutate(ind2)
-                del ind1.fitness.values, ind1.features, ind1.id, ind1.weights
-                del ind2.fitness.values, ind2.features, ind2.id, ind2.weights
+                del ind1.fitness.values, ind1.features, ind1.key, ind1.weights
+                del ind2.fitness.values, ind2.features, ind2.key, ind2.weights
 
             # Evaluate the individuals with an invalid fitness
             invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
 
             # Assigng ids to individuals
             for ind in invalid_ind:
-                ind.id = UNIQ_ID
+                ind.key = UNIQ_ID
                 UNIQ_ID += 1
 
             # Calculate the fitness & assigned it
             fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
             for ind, fit in zip(invalid_ind, fitnesses):
                 ind.fitness.values = fit
+
+            # transfer top 2 individuals
+            transfered = [eval_genome_hardware(
+                self.thymio_bot, self.settings, genome, model) for genome in tools.selBest(pop, 2)]
 
             # save the fitness of the population
             save_fitness_moea(invalid_ind, gen, self.settings.path)
@@ -585,7 +590,7 @@ class Simulation(object):
             pickle.dump(best_inds, fp)
 
         # save the best individual
-        with open(self.settings.path + 'winner_{0}.pkl'.format(hof[0].id), 'wb') as winner:
+        with open(self.settings.path + 'winner_{0}.pkl'.format(hof[0].key), 'wb') as winner:
             pickle.dump(hof[0], winner)
 
         # Evolution records as a chronological list of dictionaries
