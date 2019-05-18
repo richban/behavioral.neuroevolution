@@ -743,11 +743,11 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None):
         obstacles_pos = [get_marker_object(obstacle).realxy()
                          for obstacle in (9, 10, 11)]
         # Get all obstacle handlers from VREP
-        obstacle_handlers = [get_object_handle(settings.client_id, obstacle) for obstacle in (
+        obstacle_handlers = [get_object_handle(individual.client_id, obstacle) for obstacle in (
             'obstacle', 'obstacle1', 'obstacle0')]
         # Set the position of obstacles in vrep according the obstacles from reality
         for obs, handler in zip(obstacles_pos, obstacle_handlers):
-            set_pose(settings.client_id, handler, [obs[0], obs[1], 0.099999])
+            set_pose(individual.client_id, handler, [obs[0], obs[1], 0.099999])
 
         # add markers position to obstacle_markers
         for position, marker in zip(obstacles_pos, settings.obstacle_markers):
@@ -822,10 +822,10 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None):
     # areas detection initlaization
     areas_name = ('area0', 'area1', 'area2')
     areas_handle = [(area,) + vrep.simxGetCollisionHandle(
-        settings.client_id, area, vrep.simx_opmode_blocking) for area in areas_name]
+        individual.client_id, area, vrep.simx_opmode_blocking) for area in areas_name]
 
     _ = [(handle[0],) + vrep.simxReadCollision(
-        settings.client_id, handle[2], vrep.simx_opmode_streaming) for handle in areas_handle]
+        individual.client_id, handle[2], vrep.simx_opmode_streaming) for handle in areas_handle]
 
     areas_counter = dict([(area, dict(count=0, percentage=0.0, total=0))
                             for area in areas_name])
@@ -853,7 +853,7 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None):
 
         # Behavioral Feature #3
         areas = [(handle[0],) + vrep.simxReadCollision(
-            settings.client_id, handle[2], vrep.simx_opmode_streaming) for handle in areas_handle]
+            individual.client_id, handle[2], vrep.simx_opmode_streaming) for handle in areas_handle]
 
         for area, _, detected in areas:
             if detected:
@@ -990,7 +990,7 @@ def eval_moea_simulation(individual, settings, model, genome):
     genome.weights = model.get_weights()
 
     # Enable the synchronous mode
-    vrep.simxSynchronous(settings.client_id, True)
+    vrep.simxSynchronous(individual.client_id, True)
 
     # timetep 50 ms
     dt = 0.05
@@ -998,22 +998,22 @@ def eval_moea_simulation(individual, settings, model, genome):
     steps = 0
 
     # start the simulation
-    if (vrep.simxStartSimulation(settings.client_id, vrep.simx_opmode_oneshot) == -1):
+    if (vrep.simxStartSimulation(individual.client_id, vrep.simx_opmode_oneshot) == -1):
         return
 
     # collistion detection initialization
     _, collision_handle = vrep.simxGetCollisionHandle(
-        settings.client_id, 'wall_collision', vrep.simx_opmode_blocking)
+        individual.client_id, 'wall_collision', vrep.simx_opmode_blocking)
     _, collision = vrep.simxReadCollision(
-        settings.client_id, collision_handle, vrep.simx_opmode_streaming)
+        individual.client_id, collision_handle, vrep.simx_opmode_streaming)
 
     # areas detection initlaization
     areas_name = ('area0', 'area1', 'area2')
     areas_handle = [(area,) + vrep.simxGetCollisionHandle(
-        settings.client_id, area, vrep.simx_opmode_blocking) for area in areas_name]
+        individual.client_id, area, vrep.simx_opmode_blocking) for area in areas_name]
 
     _ = [(handle[0],) + vrep.simxReadCollision(
-        settings.client_id, handle[2], vrep.simx_opmode_streaming) for handle in areas_handle]
+        individual.client_id, handle[2], vrep.simx_opmode_streaming) for handle in areas_handle]
 
     areas_counter = dict([(area, dict(count=0, percentage=0.0, total=0))
                           for area in areas_name])
@@ -1025,13 +1025,13 @@ def eval_moea_simulation(individual, settings, model, genome):
 
     while not collision and datetime.now() - now < timedelta(seconds=settings.run_time):
         # The first simulation step waits for a trigger before being executed
-        vrep.simxSynchronousTrigger(settings.client_id)
+        vrep.simxSynchronousTrigger(individual.client_id)
         _, collision = vrep.simxReadCollision(
-            settings.client_id, collision_handle, vrep.simx_opmode_buffer)
+            individual.client_id, collision_handle, vrep.simx_opmode_buffer)
 
         # Behavioral Feature #3
         areas = [(handle[0],) + vrep.simxReadCollision(
-            settings.client_id, handle[2], vrep.simx_opmode_streaming) for handle in areas_handle]
+            individual.client_id, handle[2], vrep.simx_opmode_streaming) for handle in areas_handle]
 
         for area, _, detected in areas:
             if detected:
@@ -1054,7 +1054,7 @@ def eval_moea_simulation(individual, settings, model, genome):
 
         # After this call, the first simulation step is finished
         # Now we can safely read all  values
-        vrep.simxGetPingTime(settings.client_id)
+        vrep.simxGetPingTime(individual.client_id)
         runtime += dt
         steps += 1
         #  fitness_t at time stamp
@@ -1090,13 +1090,13 @@ def eval_moea_simulation(individual, settings, model, genome):
 
     # Now send some data to V-REP in a non-blocking fashion:
     vrep.simxAddStatusbarMessage(
-        settings.client_id, 'genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(
+        individual.client_id, 'genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(
             individual.id, fitness, runtime), vrep.simx_opmode_oneshot)
 
     # Before closing the connection to V-REP, make sure that the last command sent out had time to arrive. You can guarantee this with (for example):
-    vrep.simxGetPingTime(settings.client_id)
+    vrep.simxGetPingTime(individual.client_id)
 
-    if (vrep.simxStopSimulation(settings.client_id, settings.op_mode) == -1):
+    if (vrep.simxStopSimulation(individual.client_id, settings.op_mode) == -1):
         return
 
     print('genome_id: {} fitness: {:.4f} runtime: {:.2f} s steps: {}'.format(
