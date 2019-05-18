@@ -2,7 +2,7 @@ import utility.visualize as visualize
 from robot.vrep_robot import VrepRobot
 from vision.tracker import Tracker
 from settings import Settings
-from utility.util_functions import vrep_ports, timeit
+from utility.util_functions import vrep_ports, timeit, save_fitness_moea
 from utility.visualize import plot_single_run
 from evolution.eval_genomes import \
     eval_genomes_simulation, \
@@ -423,9 +423,9 @@ class Simulation(object):
         """Multiobjective optmization. Genome is represented as
         ndarrays of connections weights for each layer in the NN.
         e.g [
-                2d_array(layer_1), 
-                1d_array(bias_hidden_layer), 
-                2d_array(layer2), 
+                2d_array(layer_1),
+                1d_array(bias_hidden_layer),
+                2d_array(layer2),
                 1d_array(bias_output_layer)
             ]
         """
@@ -519,6 +519,9 @@ class Simulation(object):
         for ind, fit in zip(invalid_ind, fitnesses):
             ind.fitness.values = fit
 
+        # save the fitness of the initial population
+        save_fitness_moea(invalid_ind, 0, self.settings.path)
+
         # This is just to assign the crowding distance to the individuals
         # no actual selection is done
         pop = toolbox.select(pop, len(pop))
@@ -531,7 +534,7 @@ class Simulation(object):
 
         # Begin the generational process
         for gen in range(1, self.settings.n_gen+1):
-            # Vary the population
+            # Vary the population & crete the offspring
             offspring = tools.selTournamentDCD(pop, len(pop))
             offspring = [toolbox.clone(ind) for ind in offspring]
 
@@ -541,7 +544,8 @@ class Simulation(object):
 
                 toolbox.mutate(ind1)
                 toolbox.mutate(ind2)
-                del ind1.fitness.values, ind2.fitness.values
+                del ind1.fitness.values, ind1.features, ind1.id, ind1.weights
+                del ind2.fitness.values, ind2.features, ind2.id, ind2.weights
 
             # Evaluate the individuals with an invalid fitness
             invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
@@ -555,6 +559,9 @@ class Simulation(object):
             fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
             for ind, fit in zip(invalid_ind, fitnesses):
                 ind.fitness.values = fit
+
+            # save the fitness of the population
+            save_fitness_moea(invalid_ind, gen, self.settings.path)
 
             # add the best individual for each generation
             best_ind = tools.selBest(pop, 1)[0]
@@ -576,6 +583,10 @@ class Simulation(object):
         # best individuals each generation
         with open(self.settings.path + 'best_genomes.pkl', 'wb') as fp:
             pickle.dump(best_inds, fp)
+
+        # save the best individual
+        with open(self.settings.path + 'winner_{0}.pkl'.format(hof[0].id), 'wb') as winner:
+            pickle.dump(hof[0], winner)
 
         # Evolution records as a chronological list of dictionaries
         gen = logbook.select('gen')

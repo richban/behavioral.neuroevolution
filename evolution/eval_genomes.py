@@ -24,6 +24,7 @@ from vrep.control_env import get_object_handle, get_pose, set_pose
 
 
 def eval_genomes_hardware(individual, settings, genomes, config):
+    """Evaluation function to evaluate NEAT genomes on Thymio robot"""
 
     robot_m = get_marker_object(7)
     while robot_m.realxy() is None:
@@ -214,6 +215,7 @@ def eval_genomes_hardware(individual, settings, genomes, config):
 
 
 def eval_genomes_simulation(individual, settings, genomes, config):
+    """Evaluation function to evaluate NEAT genomes in VREP simulator"""
     for genome_id, genome in genomes:
 
         # reset the individual
@@ -358,7 +360,7 @@ def eval_genomes_simulation(individual, settings, genomes, config):
 
 
 def eval_genome(client_id, settings, genome_id, genome, config):
-
+    """Evaluation function to evaluate a single NEAT genome in VREP simulator"""
     t = threading.currentThread()
     kw = {'v_chromosome': genome}
 
@@ -499,6 +501,13 @@ def eval_genome(client_id, settings, genome_id, genome, config):
 
 
 def post_eval_genome(individual, settings, genome, config):
+    """Post evaluation of controllers using NEAT.
+       Only used for testing controllers evolved using NEAT.
+
+       :individual: `VrepRobot` or `EvolvedRobot` (Thymio)
+       :genome: controller
+       :config: NN configuration
+    """
 
     print('Postevaluation of {0} started!'.format(type(individual).__name__))
 
@@ -597,6 +606,10 @@ def post_eval_genome(individual, settings, genome, config):
 
 
 def eval_transferability(vrep_bot, thymio_bot, settings, genomes, config):
+    """Evaluation function to evaluate NEAT genomes in VREP simulator
+       and THYMIO. The evaluated genome in VREP is transfered to THYMIO for
+       further evaluation.
+    """
 
     t = 0
     for genome_id, genome in genomes:
@@ -703,6 +716,7 @@ def eval_transferability(vrep_bot, thymio_bot, settings, genomes, config):
 
 
 def eval_genome_hardware(individual, settings, genome, config):
+    """Evaluation function for a single genome encoded with NEAT."""
 
     robot_m = get_marker_object(7)
     while robot_m.realxy() is None:
@@ -819,6 +833,17 @@ def eval_genome_hardware(individual, settings, genome, config):
 
 
 def eval_moea_simulation(individual, settings, model, genome):
+    """Evaluation function for multiobjective optimization NSGA-II.
+       :individual: robotic controller (VREP)
+       :settings: simulation specific settings
+       :model: Keras model Feedforward NN
+       :genome: weights of the NN encoded that are being optimized
+
+       :return: (fitness, transferability) 
+       
+       fitness - task dependent fitness value V * (1 - sqr(delta v)) * (1 - max(S_activation))
+       transferability - measure the distance betweeen simulation and real behavior
+    """
 
     # reset the individual
     individual.v_reset_init()
@@ -968,8 +993,10 @@ def eval_moea_simulation(individual, settings, model, genome):
 
     genome.features = behavioral_features
 
+    # Save Deap Individual
     with open(settings.path + 'deap_inds/' + str(individual.id) + "_genome_.pkl", "wb") as ind_file:
         pickle.dump(genome, ind_file)
+    # Save the neural network model
     model.save(settings.path + 'keras_models/' + str(individual.id) + '_model.h5')
 
     time.sleep(1)

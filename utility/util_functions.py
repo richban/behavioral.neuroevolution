@@ -186,3 +186,11 @@ def save_debug_data(f_path,
                 norm_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
             wheel_center, straight_movements, obstacles_distance, np.max(
                 norm_sensor_activation), fitness_t, robot_current_position))
+
+
+def save_fitness_moea(pop, gen, path):
+    for ind in pop:
+        fitness, transferability = ind.fitness.values
+        with open(path + 'fitness.dat', 'a') as f:
+            f.write('{0},{1},{2},{3}\n'.format(
+                gen, ind.id, fitness, transferability))
