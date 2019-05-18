@@ -156,6 +156,7 @@ if __name__ == '__main__':
 
         if args.multiobjective:
             kwargs.update({'eval_function': eval_moea_simulation})
+            kwargs.update({'simulation_type': 'transferability'})
             simulation = 'simulation_multiobjective'
 
             if args.n_layers:
