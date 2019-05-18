@@ -678,16 +678,20 @@ def eval_transferability(vrep_bot, thymio_bot, settings, genomes, config):
 
             # dump individuals data
             if settings.debug:
-                with open(settings.path + str(vrep_bot.id) + '_simulation.txt', 'a') as f:
-                    f.write('{0!s},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}\n'.format(
-                        str(
-                            vrep_bot.id), output[0], output[1], scaled_output[0], scaled_output[1],
-                        np.array2string(
-                            vrep_bot.v_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
-                        np.array2string(
-                            vrep_bot.v_norm_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
-                        wheel_center, straight_movements, obstacles_distance, np.amax(
-                            vrep_bot.v_norm_sensor_activation), fitness_t))
+                save_debug_data(
+                    settings.path,
+                    genome_id,
+                    individual.v_sensor_activation,
+                    individual.v_norm_sensor_activation,
+                    net_output,
+                    scaled_output,
+                    wheel_center,
+                    straight_movements,
+                    obstacles_distance,
+                    fitness_t,
+                    'VREP',
+                    None
+                )
 
         # calculate the fitnesss
         fitness = np.sum(fitness_agg)/settings.run_time
@@ -800,17 +804,22 @@ def eval_genome_hardware(individual, settings, genome, config):
 
         fitness_agg = np.append(fitness_agg, fitness_t)
 
-        # dump individuals data
+        # dump individual data
         if settings.debug:
-            with open(settings.path + str(individual.id) + '_hw_simulation.txt', 'a') as f:
-                f.write('{0!s},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12}\n'.format(
-                    individual.id, net_output[0], net_output[1], scaled_output[0], scaled_output[1],
-                    np.array2string(
-                        individual.t_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
-                    np.array2string(
-                        individual.n_t_sensor_activation, precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
-                    wheel_center, straight_movements, obstacles_distance, np.max(
-                        individual.n_t_sensor_activation), fitness_t, robot_current_position))
+            save_debug_data(
+                settings.path,
+                individual.id,
+                individual.t_sensor_activation,
+                individual.n_t_sensor_activation,
+                net_output,
+                scaled_output,
+                wheel_center,
+                straight_movements,
+                obstacles_distance,
+                fitness_t,
+                'THYMIO',
+                robot_current_position
+            )
 
     individual.t_stop()
     # calculate the fitnesss
