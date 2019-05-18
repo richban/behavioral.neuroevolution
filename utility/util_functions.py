@@ -154,8 +154,7 @@ def calc_behavioral_features(areas_counter,
 
     try:
         with open(f_path + 'behavioral_features.dat', 'a') as b:
-            np.savetxt(b, (features_file,), delimiter=',',
-                       fmt='%d,%s,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%1.3f,%d,%1.3f,%d,%d,%1.3f,%d,%d,%1.3f,%d')
+            np.savetxt(b, (features_file,), delimiter=',', fmt='%s')
     except FileNotFoundError as error:
         print('File not found {}'.format(error))
 
