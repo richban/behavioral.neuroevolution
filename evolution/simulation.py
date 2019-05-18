@@ -478,8 +478,12 @@ class Simulation(object):
         # register the mutation operator
         toolbox.register('mutate', mutate_individual, indpb=0.5)
         # register the evaluation function
-        toolbox.register('evaluate', partial(
-            self.eval_function, self.individual, self.settings, model))
+        if self.simulation_type == 'transferability':
+            toolbox.register('evaluate', partial(
+                self.eval_function, self.vrep_bot, self.settings, model))
+        else:
+            toolbox.register('evaluate', partial(
+                self.eval_function, self.individual, self.settings, model))
         # register NSGA-II multiobjective optimization algorithm
         toolbox.register("select", tools.selNSGA2)
         # instantiate the population
