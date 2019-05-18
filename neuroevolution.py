@@ -139,9 +139,34 @@ if __name__ == '__main__':
             kwargs.update({'headless': args.headless})
 
     elif args.simulation == 'transferability':
-        kwargs.update({'simulation_type': 'transferability'})
-        kwargs.update({'eval_function': eval_transferability})
-        simulation = 'simulation_transferability'
+        # Vision has to be started from the main thread
+        vision_thread = Tracker(mid=5,
+                                transform=None,
+                                mid_aux=0,
+                                video_source=-1,
+                                capture=False,
+                                show=False,
+                                debug=False,
+                                )
+
+        vision_thread.start()
+
+        while vision_thread.cornersDetected is not True:
+            time.sleep(2)
+
+        if args.multiobjective:
+            kwargs.update({'eval_function': eval_moea_simulation})
+            simulation = 'simulation_multiobjective'
+
+            if args.n_layers:
+                kwargs.update({'n_layers': args.n_layers})
+
+            if args.neurons:
+                kwargs.update({'neurons': args.neurons})
+        else:
+            kwargs.update({'simulation_type': 'transferability'})
+            kwargs.update({'eval_function': eval_transferability})
+            simulation = 'simulation_transferability'
     else:
         print('Something went really wrong!')
 

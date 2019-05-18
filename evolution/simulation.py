@@ -204,12 +204,12 @@ class Simulation(object):
         else:
             self.vrep_scene = os.getcwd() + '/scenes/thymio_v_infrared.ttt'
 
-        # if not self.genome_path and self.simulation_type != 'transferability':
-        #     self.vrep_servers = [Popen(
-        #         ['{0} {1} -gREMOTEAPISERVERSERVICE_{2}_TRUE_TRUE {3}'
-        #             .format(self.settings.vrep_abspath, h, port, self.vrep_scene)],
-        #         shell=True, stdout=self.fnull) for port in self.ports]
-        #     time.sleep(5)
+        if not self.genome_path and self.simulation_type != 'transferability':
+            self.vrep_servers = [Popen(
+                ['{0} {1} -gREMOTEAPISERVERSERVICE_{2}_TRUE_TRUE {3}'
+                    .format(self.settings.vrep_abspath, h, port, self.vrep_scene)],
+                shell=True, stdout=self.fnull) for port in self.ports]
+            time.sleep(5)
 
         if self.simulation_type == 'transferability':
             self.vrep_servers = [Popen(
@@ -236,29 +236,28 @@ class Simulation(object):
         self.client_initialized = True
 
     def _init_network(self):
-        """initialize the neural network"""
-        if not self.multiobjective:
-            # load the confifuration file
-            self.config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
-                                      neat.DefaultSpeciesSet, neat.DefaultStagnation,
-                                      self.config_file)
-            if self.settings.save_data:
-                self.config.save(self.settings.path + 'config.ini')
+        """initialize NEAT"""
+        # load the confifuration file
+        self.config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
+                                  neat.DefaultSpeciesSet, neat.DefaultStagnation,
+                                  self.config_file)
+        if self.settings.save_data and not self.multiobjective:
+            self.config.save(self.settings.path + 'config.ini')
 
-            if self.checkpoint:
-                # restore population from a checkpoint
-                self.restored_population = neat.Checkpointer.restore_checkpoint(
-                    self.checkpoint)
-                self.population = self.restored_population
-            else:
-                # initialize the network and population
-                self.population = neat.Population(self.config)
-            # Add a stdout reporter to show progress in the terminal.
-            self.stats = neat.StatisticsReporter()
-            self.population.add_reporter(neat.StdOutReporter(True))
-            self.population.add_reporter(self.stats)
-            self.population.add_reporter(neat.Checkpointer(1))
-            self.network_initialized = True
+        if self.checkpoint:
+            # restore population from a checkpoint
+            self.restored_population = neat.Checkpointer.restore_checkpoint(
+                self.checkpoint)
+            self.population = self.restored_population
+        else:
+            # initialize the network and population
+            self.population = neat.Population(self.config)
+        # Add a stdout reporter to show progress in the terminal.
+        self.stats = neat.StatisticsReporter()
+        self.population.add_reporter(neat.StdOutReporter(True))
+        self.population.add_reporter(self.stats)
+        self.population.add_reporter(neat.Checkpointer(1))
+        self.network_initialized = True
 
     def _init_agent(self):
         if self.simulation_type == 'vrep':
@@ -562,8 +561,10 @@ class Simulation(object):
                 ind.fitness.values = fit
 
             # transfer top 2 individuals
-            transfered = [eval_genome_hardware(
-                self.thymio_bot, self.settings, genome, model) for genome in tools.selBest(pop, 2)]
+            if self.simulation_type == 'transferability':
+                transfered = [eval_genome_hardware(
+                    self.thymio_bot, self.settings, genome, model) for genome in tools.selBest(pop, 2)]
+                print(transfered)
 
             # save the fitness of the population
             save_fitness_moea(invalid_ind, gen, self.settings.path)
