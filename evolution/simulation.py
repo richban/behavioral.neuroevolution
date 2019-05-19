@@ -227,8 +227,7 @@ class Simulation(object):
             5) for port in self.ports]
 
         if not all(c >= 0 for c in self.clients):
-            pass
-            # sys.exit('Some clients were not correctly initialized!')
+            sys.exit('Some clients were not correctly initialized!')
 
         if len(self.clients) == 1:
             self.settings.client_id = self.clients[0]
