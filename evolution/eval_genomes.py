@@ -929,8 +929,9 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None):
         'THYMIO'
     )
 
-    if settings.debug:
-        print(behavioral_features)
+    genome.features = behavioral_features
+    genome.task_fitness = fitness
+    genome.evaluation = 'THYMIO'
 
     follow_path(
         individual,
@@ -949,7 +950,7 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None):
 
     time.sleep(1)
 
-    return (fitness, behavioral_features)
+    return fitness
 
 
 def eval_moea_simulation(individual, settings, model, genome):
@@ -1114,6 +1115,8 @@ def eval_moea_simulation(individual, settings, model, genome):
     )
 
     genome.features = behavioral_features
+    genome.task_fitness = fitness
+    genome.evaluation = 'VREP'
 
     # Save Deap Individual
     with open(settings.path + 'deap_inds/' + str(individual.id) + "_genome_.pkl", "wb") as ind_file:
@@ -1123,4 +1126,4 @@ def eval_moea_simulation(individual, settings, model, genome):
 
     time.sleep(1)
 
-    return (fitness, 2.0, )
+    return fitness

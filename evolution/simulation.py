@@ -2,7 +2,7 @@ import utility.visualize as visualize
 from robot.vrep_robot import VrepRobot
 from vision.tracker import Tracker
 from settings import Settings
-from utility.util_functions import vrep_ports, timeit, save_fitness_moea
+from utility.util_functions import vrep_ports, timeit, save_fitness_moea, euclidean_distance
 from utility.visualize import plot_single_run
 from evolution.eval_genomes import \
     eval_genomes_simulation, \
@@ -171,6 +171,7 @@ class Simulation(object):
         self.n_layers = n_layers
         self.input_dim = input_dim
         self.neurons = neurons
+        self.disparity = Disparity()
         self._init_vrep()
         self._init_network()
         self._init_agent()
@@ -458,6 +459,10 @@ class Simulation(object):
             ind.weights_shape =  [tuple(weights.shape) for weights in model.get_weights()]
             ind.features = None
             ind.weights = None
+            ind.str_disparity = None
+            ind.diversity = None
+            ind.task_fitness = None
+            ind.evaluation = None
             ind.key = None
 
             return ind
@@ -518,6 +523,8 @@ class Simulation(object):
 
         logbook = tools.Logbook()
         logbook.header = "gen", "evals", "std", "min", "avg", "max"
+        
+        best_inds, best_inds_fitness, transfered = np.array([]), np.array([]), np.array([])
 
         # Decorate the variation operators
         # toolbox.decorate("mate", history.decorator)
@@ -531,6 +538,7 @@ class Simulation(object):
         # hof = tools.ParetoFront(eq)
         hof = tools.ParetoFront()
 
+
         # Evaluate the individuals with an invalid fitness
         invalid_ind = [ind for ind in pop if not ind.fitness.valid]
 
@@ -540,9 +548,22 @@ class Simulation(object):
             ind.key = UNIQ_ID
             UNIQ_ID += 1
 
+        # take the first individual c0 and evaluate in simulation
+        c0 = toolbox.clone(invalid_ind[0])
+        _ = toolbox.evaluate(c0)
+        # clone the evaluated indvidual c0
+        controller_0 = toolbox.clone(c0)
+        # transfer controller c0 to thymio
+        # _ = toolbox.evaluate(controller_0)
+        # Add the controller c0 to the transfered controllers set
+        self.disparity.add(controller_0, c0)
+        # compute the surrogate model
+        self.disparity.comptute(c0)
+
         fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
         for ind, fit in zip(invalid_ind, fitnesses):
-            ind.fitness.values = fit
+            diversity = self.disparity.diversity(ind)
+            ind.fitness.values = (fit, self.disparity.disparity_value, diversity)
 
         # save the fitness of the initial population
         save_fitness_moea(invalid_ind, 0, self.settings.path)
@@ -555,7 +576,6 @@ class Simulation(object):
         print(logbook.stream)
         hof.update(pop)
 
-        best_inds, best_inds_fitness = np.array([]), np.array([])
 
         # Begin the generational process
         for gen in range(1, self.settings.n_gen+1):
@@ -569,8 +589,16 @@ class Simulation(object):
 
                 toolbox.mutate(ind1)
                 toolbox.mutate(ind2)
-                del ind1.fitness.values, ind1.features, ind1.key, ind1.weights
-                del ind2.fitness.values, ind2.features, ind2.key, ind2.weights
+                
+                del ind1.fitness.values, \
+                    ind1.features, ind1.key, \
+                    ind1.weights, ind1.task_fitness, \ 
+                    ind1.evaluation, ind1.diversity
+                
+                del ind2.fitness.values, \ 
+                    ind2.features, ind2.key, \ 
+                    ind2.weights, ind2.task_fitness, \ 
+                    ind2.evaluation, ind2.diversity
 
             # Evaluate the individuals with an invalid fitness
             invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
@@ -583,7 +611,8 @@ class Simulation(object):
             # Calculate the fitness & assigned it
             fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
             for ind, fit in zip(invalid_ind, fitnesses):
-                ind.fitness.values = fit
+                diversity = self.disparity.diversity(ind)
+                ind.fitness.values = (fit, self.disparity.disparity_value, diversity)
 
             # transfer top 2 individuals
             if self.simulation_type == 'transferability':
@@ -700,3 +729,29 @@ class Simulation(object):
 
         visualize.draw_net(self.config, self.winner, view=False, node_names=node_names,
                            filename=self.settings.path+'winner-feedforward-enabled-pruned.gv', show_disabled=False, prune_unused=False)
+
+
+class Disparity(object):
+
+    def __init__(self):
+        self.transfered_set = []
+        self.disparity_value = 0.0
+    
+    def add(self, transfer_controller, controller):
+        transfer_controller.str_disparity = euclidean_distance(transfer_controller.features, controller.features)
+
+        # transfer_controller.str_disparity = euclidean_distance(np.array([0.992, 0.027, 0.4, 0.2, 0.0, 0.4, 0.1, 0.9, 0.,0.1, 0.3, 0.6]), controller.features)
+        # transfer_controller.features = np.array([0.992, 0.027, 0.4, 0.2, 0.0, 0.4, 0.1, 0.9, 0.,0.1, 0.3, 0.6])
+        
+        self.transfered_set.append(transfer_controller)
+
+    def comptute(self, controller):
+        numerator = sum([(ind.str_disparity) * np.power(euclidean_distance(ind.features, controller.features), -2) for ind in self.transfered_set])
+        denominator = sum([np.power(euclidean_distance(ind.features, controller.features), -2) for ind in self.transfered_set])
+        
+        self.disparity_value =  numerator / denominator
+
+    def diversity(self, controller):
+        diversity = min([euclidean_distance(t.features, controller.features) for t in self.transfered_set])
+        controller.diversity = diversity
+        return diversity

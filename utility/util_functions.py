@@ -146,11 +146,19 @@ def calc_behavioral_features(areas_counter,
             avg_areas
         )
     )
+    # return avg_left, avg_right, s1-s8, area0_percentage, area1_percentage, area2_percentage
+    features = np.delete(np.concatenate(
+        (
+            avg_wheel_speeds,
+            avg_sensors_activation,
+            avg_areas
+        )
+    ), [9, 11, 12, 14, 15, 17])
 
-    behavioral_features = dict(avg_wheel_speeds=avg_wheel_speeds,
-                               avg_sensors_activation=avg_sensors_activation,
-                               areas=avg_areas
-                               )
+    _ = dict(avg_wheel_speeds=avg_wheel_speeds,
+             avg_sensors_activation=avg_sensors_activation,
+             areas=avg_areas
+             )
 
     try:
         with open(f_path + 'behavioral_features.dat', 'a') as b:
@@ -158,7 +166,7 @@ def calc_behavioral_features(areas_counter,
     except FileNotFoundError as error:
         print('File not found {}'.format(error))
 
-    return behavioral_features
+    return features
 
 
 def save_debug_data(f_path,
