@@ -419,24 +419,43 @@ class Simulation(object):
         return self.config, self.stats, self.winner
 
     def simulation_multiobjective(self):
-        """Multiobjective optmization. Genome is represented as
-        ndarrays of connections weights for each layer in the NN.
-        e.g [
+        """Multiobjective optmization 2. Genome is represented as
+        an (concatenated) array of connections weights for each layer in the NN.
+        Weights are concatenated into a single list of floating points.
+        The weights than are reshaped and adjusted in the eval_function in
+        order to update the model weights correctly.
+        """
+        model = self.build_model(self.n_layers, self.input_dim, self.neurons)
+
+        def init_individual_ndim(cls, model):
+            """
+            Genome is represented as
+            ndarrays of connections weights for each layer in the NN.
+            [
                 2d_array(layer_1),
                 1d_array(bias_hidden_layer),
                 2d_array(layer2),
                 1d_array(bias_output_layer)
             ]
-        """
-
-        model = self.build_model(self.n_layers, self.input_dim, self.neurons)
-
-        def init_individual(cls, model):
+            """
             ind = cls([np.random.permutation(w.flat).reshape(
                 w.shape) for w in model.get_weights()])
 
-            ind.shape_1 = model.get_weights()[0].shape
-            ind.shape_2 = model.get_weights()[2].shape
+            ind.weights_shape =  [tuple(weights.shape) for weights in model.get_weights()]
+            ind.features = None
+            ind.weights = None
+            ind.key = None
+
+            return ind
+
+        def init_individual(cls, model):
+            """Concatenated weights of the Keras model
+            Weights are concatenated into a single list of floating points.
+            The weights than are reshaped and adjusted in the eval_function in
+            order to update the model weights correctly.
+            """
+            ind = cls(np.concatenate(tuple(weight.flatten() for weight in model.get_weights())).tolist())
+            ind.weights_shape =  [tuple(weights.shape) for weights in model.get_weights()]
             ind.features = None
             ind.weights = None
             ind.key = None
@@ -444,12 +463,14 @@ class Simulation(object):
             return ind
 
         def mutate_individual(individual, indpb):
+            """Mutation for the init_individual_ndim individual"""
             for i, weight in enumerate(individual):
                 w, = tools.mutFlipBit(weight.flatten().tolist(), indpb=indpb)
                 individual[i] = np.array(w).reshape(weight.shape)
             return individual
 
         def mate_individuals(ind1, ind2):
+            """Crossover for the init_individual_ndim individual"""
             for i, (w1, w2) in enumerate(zip(ind1, ind2)):
                 cx1, cx2 = tools.cxTwoPoint(
                     w1.flatten().tolist(), w2.flatten().tolist())
@@ -459,7 +480,7 @@ class Simulation(object):
 
         def eq(ind1, ind2):
             """Required for the HallOfFame and ParetoFront. Comparison of the 2
-            layers. Bias layer is ommited"""
+            layers. Bias layer is ommited. For the init_individual_ndim individual."""
             return np.array_equal(ind1[0], ind2[0]) and np.array_equal(ind1[2], ind2[2])
 
         # Creating the appropriate type of the problem
@@ -473,9 +494,9 @@ class Simulation(object):
         toolbox.register("individual", init_individual,
                          creator.Individual, model=model)
         # register the crossover operator
-        toolbox.register('mate', mate_individuals)
+        toolbox.register('mate', tools.cxTwoPoint)
         # register the mutation operator
-        toolbox.register('mutate', mutate_individual, indpb=0.5)
+        toolbox.register('mutate', tools.mutFlipBit, indpb=0.5)
         # register the evaluation function
         if self.simulation_type == 'transferability':
             toolbox.register('evaluate', partial(
@@ -507,7 +528,8 @@ class Simulation(object):
         history.update(pop)
 
         # object that contain the best individuals
-        hof = tools.ParetoFront(eq)
+        # hof = tools.ParetoFront(eq)
+        hof = tools.ParetoFront()
 
         # Evaluate the individuals with an invalid fitness
         invalid_ind = [ind for ind in pop if not ind.fitness.valid]
@@ -610,119 +632,6 @@ class Simulation(object):
             fit_maxs,
             ratio=0.35,
             save=self.settings.path + 'evolved-obstacle.pdf')
-
-        return pop, hof, logbook, best_inds, best_inds_fitness
-
-    def simulation_multiobjective_2(self):
-        """Multiobjective optmization 2. Genome is represented as
-        ndarrays of connections weights for each layer in the NN.
-        Weights are concatenated into a single list of floating points.
-        The weights than are reshaped and adjusted in the eval_function in
-        order to update the model weights correctly.
-        """
-        model = self.build_model(self.n_layers, self.input_dim, self.neurons)
-
-        def init_individual(cls, model):
-            ind = cls(np.concatenate(
-                (
-                    model.get_weights()[0].flatten(),
-                    model.get_weights()[2].flatten()
-                )
-            ).tolist())
-
-            ind.shape_1 = model.get_weights()[0].shape
-            ind.shape_2 = model.get_weights()[2].shape
-            ind.features = None
-            ind.weights = None
-
-            return ind
-
-        # Creating the appropriate type of the problem
-        creator.create("FitnessMax", base.Fitness, weights=(1.0, 1.0))
-        creator.create("Individual", list,
-                       fitness=creator.FitnessMax, model=None)
-
-        toolbox = base.Toolbox()
-        history = tools.History()
-
-        toolbox.register("individual", init_individual,
-                         creator.Individual, model=model)
-        # register the crossover operator
-        toolbox.register('mate', tools.cxTwoPoint)
-        # register the mutation operator
-        toolbox.register('mutate', tools.mutFlipBit, indpb=0.5)
-        # register the evaluation function
-        toolbox.register('evaluate', partial(
-            self.eval_function, self.individual, self.settings, model))
-        # register NSGA-II multiobjective optimization algorithm
-        toolbox.register("select", tools.selNSGA2)
-        # instantiate the population
-        toolbox.register('population', tools.initRepeat,
-                         list, toolbox.individual)
-        # maintain stats of the evolution
-        stats = tools.Statistics(lambda ind: ind.fitness.values)
-        stats.register('avg', np.mean)
-        stats.register('std', np.std)
-        stats.register('min', np.min)
-        stats.register('max', np.max)
-
-        logbook = tools.Logbook()
-        logbook.header = "gen", "evals", "std", "min", "avg", "max"
-
-        # create an initial population of N individuals
-        pop = toolbox.population(n=self.settings.pop)
-        history.update(pop)
-
-        # object that contain the best individuals
-        hof = tools.ParetoFront()
-
-        # Evaluate the individuals with an invalid fitness
-        invalid_ind = [ind for ind in pop if not ind.fitness.valid]
-        fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
-
-        for ind, fit in zip(invalid_ind, fitnesses):
-            ind.fitness.values = fit
-
-        # This is just to assign the crowding distance to the individuals
-        # no actual selection is done
-        pop = toolbox.select(pop, len(pop))
-        record = stats.compile(pop)
-        logbook.record(gen=0, evals=len(invalid_ind), **record)
-        print(logbook.stream)
-        hof.update(pop)
-
-        best_inds, best_inds_fitness = [], []
-
-        # Begin the generational process
-        for gen in range(1, self.settings.n_gen+1):
-            # Vary the population
-            offspring = tools.selTournamentDCD(pop, len(pop))
-            offspring = [toolbox.clone(ind) for ind in offspring]
-
-            for ind1, ind2 in zip(offspring[::2], offspring[1::2]):
-                if random.random() <= self.settings.CXPB:
-                    toolbox.mate(ind1, ind2)
-
-                toolbox.mutate(ind1)
-                toolbox.mutate(ind2)
-                del ind1.fitness.values, ind2.fitness.values
-
-            # Evaluate the individuals with an invalid fitness
-            invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
-            fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
-            for ind, fit in zip(invalid_ind, fitnesses):
-                ind.fitness.values = fit
-
-            # add the best individual for each generation
-            best_ind = tools.selBest(pop, 1)[0]
-            best_inds.append(best_ind)
-            best_inds_fitness.append(best_ind.fitness.values)
-
-            # Select the next generation population
-            pop = toolbox.select(pop + offspring, len(offspring))
-            record = stats.compile(pop)
-            logbook.record(gen=gen, evals=len(invalid_ind), **record)
-            hof.update(pop)
 
         return pop, hof, logbook, best_inds, best_inds_fitness
 

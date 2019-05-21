@@ -975,12 +975,13 @@ def eval_moea_simulation(individual, settings, model, genome):
     fitness_agg = np.array([], ndmin=2)
 
     # update neural network weights
-    if False:
+    if True:
+        # TODO the sizeing is hardcoded.
         weights = [
-            np.array(genome[:35]).reshape(genome.shape_1),
-            model.get_weights()[1],
-            np.array(genome[-10:]).reshape(genome.shape_2),
-            model.get_weights()[3]
+            np.array(genome[:35]).reshape(genome.weights_shape[0]),
+            np.array(genome[35:40]).reshape(genome.weights_shape[1]),
+            np.array(genome[40:50]).reshape(genome.weights_shape[2]),
+            np.array(genome[-2:]).reshape(genome.weights_shape[3]),
         ]
 
         model.set_weights(weights)
