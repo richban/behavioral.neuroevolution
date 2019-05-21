@@ -37,7 +37,7 @@ def sensors_offset(distance, minDetection, noDetection):
 
 
 def f_wheel_center(wheels, min, max):
-    return normalize((((wheels[0]) + (wheels[1])) / 2), min, max)
+    return normalize((np.abs((wheels[0]) + (wheels[1])) / 2), min, max)
 
 
 def f_straight_movements(wheels, min, max):
@@ -80,11 +80,11 @@ def timeit(method):
 def f_t_obstacle_avoidance(wheels, sensors, simulation):
 
     if simulation == 'thymio':
-        wheel_center = f_wheel_center(wheels, -200, 200)
+        wheel_center = f_wheel_center(wheels, 0, 200)
         straight_movements = f_straight_movements(wheels, 0, 400)
         obstacles_distance = f_obstacle_dist(sensors)
     elif simulation == 'vrep':
-        wheel_center = f_wheel_center(wheels, -2.0, 2.0)
+        wheel_center = f_wheel_center(wheels, 0.0, 2.0)
         straight_movements = f_straight_movements(wheels, 0.0, 4.0)
         obstacles_distance = f_obstacle_dist(sensors)
 

@@ -776,12 +776,13 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None):
     network = None
 
     if type(genome).__name__ == 'Individual':
-        if False:
+        if True:
+            # TODO the sizeing is hardcoded.
             weights = [
-                np.array(genome[:35]).reshape(genome.shape_1),
-                model.get_weights()[1],
-                np.array(genome[-10:]).reshape(genome.shape_2),
-                model.get_weights()[3]
+                np.array(genome[:35]).reshape(genome.weights_shape[0]),
+                np.array(genome[35:40]).reshape(genome.weights_shape[1]),
+                np.array(genome[40:50]).reshape(genome.weights_shape[2]),
+                np.array(genome[-2:]).reshape(genome.weights_shape[3]),
             ]
 
             model.set_weights(weights)
