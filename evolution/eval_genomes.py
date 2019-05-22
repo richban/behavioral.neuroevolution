@@ -833,6 +833,7 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None):
     # Behavioral Features #1 and #2
     wheel_speeds = []
     sensor_activations = []
+    position = []
 
     now = datetime.now()
 
@@ -843,6 +844,8 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None):
         if robot_m.realxy() is not None:
             # update current position of the robot
             robot_current_position = robot_m.realxy()[:2]
+
+        position.append(robot_current_position)
 
         # update position and orientation of the robot in vrep
         position, orientation = transform_pos_angle(
@@ -920,18 +923,30 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None):
     print('Transfered to thymio genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(
         individual.id, fitness, runtime))
 
+    if type(genome).__name__ == 'Individual':
+        generation = genome.gen
+    else:
+        generation = -1
+
     behavioral_features = calc_behavioral_features(
         areas_counter,
         wheel_speeds,
         sensor_activations,
         settings.path,
         genome.key,
+        generation,
         'THYMIO'
     )
 
-    genome.features = behavioral_features
-    genome.task_fitness = fitness
-    genome.evaluation = 'THYMIO'
+    if type(genome).__name__ == 'Individual':
+        genome.features = behavioral_features
+        genome.task_fitness = fitness
+        genome.position = position
+        genome.evaluation = 'THYMIO'
+
+    if type(genome).__name__ == 'DefaultGenome':
+        genome.features = behavioral_features
+        genome.fitness = fitness
 
     follow_path(
         individual,
@@ -1023,6 +1038,7 @@ def eval_moea_simulation(individual, settings, model, genome):
     # Behavioral Features #1 and #2
     wheel_speeds = []
     sensor_activations = []
+    position = []
 
     now = datetime.now()
 
@@ -1031,6 +1047,9 @@ def eval_moea_simulation(individual, settings, model, genome):
         vrep.simxSynchronousTrigger(individual.client_id)
         _, collision = vrep.simxReadCollision(
             individual.client_id, collision_handle, vrep.simx_opmode_buffer)
+
+        # get vrep robot current position
+        position.append(individual.v_get_position())
 
         # Behavioral Feature #3
         areas = [(handle[0],) + vrep.simxReadCollision(
@@ -1111,16 +1130,15 @@ def eval_moea_simulation(individual, settings, model, genome):
         sensor_activations,
         settings.path,
         individual.id,
+        genome.gen,
         'VREP'
     )
 
     genome.features = behavioral_features
     genome.task_fitness = fitness
+    genome.position = position
     genome.evaluation = 'VREP'
 
-    # Save Deap Individual
-    with open(settings.path + 'deap_inds/' + str(individual.id) + "_genome_.pkl", "wb") as ind_file:
-        pickle.dump(genome, ind_file)
     # Save the neural network model
     model.save(settings.path + 'keras_models/' + str(individual.id) + '_model.h5')
 

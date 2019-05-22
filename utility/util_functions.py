@@ -117,6 +117,7 @@ def calc_behavioral_features(areas_counter,
                              sensor_activations,
                              f_path,
                              genome_id,
+                             gen,
                              simulation='UNDEFINED'):
     # Compute and store behavioral featuers
     total_steps_in_areas = sum(val['count']
@@ -139,6 +140,7 @@ def calc_behavioral_features(areas_counter,
 
     features_file = np.concatenate(
         (
+            [gen],
             [genome_id],
             [simulation],
             avg_wheel_speeds,
@@ -153,7 +155,7 @@ def calc_behavioral_features(areas_counter,
             avg_sensors_activation,
             avg_areas
         )
-    ), [9, 11, 12, 14, 15, 17])
+    ), [9, 11, 12, 13, 15, 17])
 
     _ = dict(avg_wheel_speeds=avg_wheel_speeds,
              avg_sensors_activation=avg_sensors_activation,
@@ -203,7 +205,7 @@ def save_debug_data(f_path,
 
 def save_fitness_moea(pop, gen, path):
     for ind in pop:
-        fitness, transferability = ind.fitness.values
+        (fitness, disparity, diversity) = ind.fitness.values
         with open(path + 'fitness.dat', 'a') as f:
-            f.write('{0},{1},{2},{3}\n'.format(
-                gen, ind.key, fitness, transferability))
+            f.write('{0},{1},{2},{3},{4}\n'.format(
+                gen, ind.key, fitness, disparity, diversity))

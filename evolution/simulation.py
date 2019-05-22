@@ -205,12 +205,12 @@ class Simulation(object):
         else:
             self.vrep_scene = os.getcwd() + '/scenes/thymio_v_infrared.ttt'
 
-        if not self.genome_path and self.simulation_type != 'transferability':
-            self.vrep_servers = [Popen(
-                ['{0} {1} -gREMOTEAPISERVERSERVICE_{2}_TRUE_TRUE {3}'
-                    .format(self.settings.vrep_abspath, h, port, self.vrep_scene)],
-                shell=True, stdout=self.fnull) for port in self.ports]
-            time.sleep(5)
+        # if not self.genome_path and self.simulation_type != 'transferability':
+        #     self.vrep_servers = [Popen(
+        #         ['{0} {1} -gREMOTEAPISERVERSERVICE_{2}_TRUE_TRUE {3}'
+        #             .format(self.settings.vrep_abspath, h, port, self.vrep_scene)],
+        #         shell=True, stdout=self.fnull) for port in self.ports]
+        #     time.sleep(5)
 
         if self.simulation_type == 'transferability':
             self.vrep_servers = [Popen(
@@ -463,6 +463,8 @@ class Simulation(object):
             ind.diversity = None
             ind.task_fitness = None
             ind.evaluation = None
+            ind.position = None
+            ind.gen = None
             ind.key = None
 
             return ind
@@ -489,7 +491,7 @@ class Simulation(object):
             return np.array_equal(ind1[0], ind2[0]) and np.array_equal(ind1[2], ind2[2])
 
         # Creating the appropriate type of the problem
-        creator.create("FitnessMax", base.Fitness, weights=(1.0, 1.0))
+        creator.create("FitnessMax", base.Fitness, weights=(1.0, -1.0, 1.0))
         creator.create("Individual", list,
                        fitness=creator.FitnessMax, model=None)
 
@@ -546,6 +548,7 @@ class Simulation(object):
         UNIQ_ID = 1
         for ind in invalid_ind:
             ind.key = UNIQ_ID
+            ind.gen = 0
             UNIQ_ID += 1
 
         # take the first individual c0 and evaluate in simulation
@@ -553,8 +556,9 @@ class Simulation(object):
         _ = toolbox.evaluate(c0)
         # clone the evaluated indvidual c0
         controller_0 = toolbox.clone(c0)
+        del controller_0.features, controller_0.task_fitness, controller_0.evaluation
         # transfer controller c0 to thymio
-        # _ = toolbox.evaluate(controller_0)
+        _ = eval_genome_hardware(self.thymio_bot, self.settings, controller_0, model)
         # Add the controller c0 to the transfered controllers set
         self.disparity.add(controller_0, c0)
         # compute the surrogate model
@@ -564,6 +568,9 @@ class Simulation(object):
         for ind, fit in zip(invalid_ind, fitnesses):
             diversity = self.disparity.diversity(ind)
             ind.fitness.values = (fit, self.disparity.disparity_value, diversity)
+            # Save Deap Individual
+            with open(self.settings.path + 'deap_inds/' + str(ind.key) + "_genome_.pkl", "wb") as ind_file:
+                pickle.dump(ind, ind_file)
 
         # save the fitness of the initial population
         save_fitness_moea(invalid_ind, 0, self.settings.path)
@@ -590,15 +597,19 @@ class Simulation(object):
                 toolbox.mutate(ind1)
                 toolbox.mutate(ind2)
                 
-                del ind1.fitness.values, \
-                    ind1.features, ind1.key, \
-                    ind1.weights, ind1.task_fitness, \ 
+                del (
+                    ind1.fitness.values,
+                    ind1.features, ind1.key,
+                    ind1.weights, ind1.task_fitness,
                     ind1.evaluation, ind1.diversity
+                )
                 
-                del ind2.fitness.values, \ 
-                    ind2.features, ind2.key, \ 
-                    ind2.weights, ind2.task_fitness, \ 
+                del (
+                    ind2.fitness.values,
+                    ind2.features, ind2.key,
+                    ind2.weights, ind2.task_fitness,
                     ind2.evaluation, ind2.diversity
+                )
 
             # Evaluate the individuals with an invalid fitness
             invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
@@ -606,6 +617,7 @@ class Simulation(object):
             # Assigng ids to individuals
             for ind in invalid_ind:
                 ind.key = UNIQ_ID
+                ind.gen = gen
                 UNIQ_ID += 1
 
             # Calculate the fitness & assigned it
@@ -613,12 +625,25 @@ class Simulation(object):
             for ind, fit in zip(invalid_ind, fitnesses):
                 diversity = self.disparity.diversity(ind)
                 ind.fitness.values = (fit, self.disparity.disparity_value, diversity)
+                # Save Deap Individual
+                with open(self.settings.path + 'deap_inds/' + str(ind.key) + "_genome_.pkl", "wb") as ind_file:
+                    pickle.dump(ind, ind_file)
 
             # transfer top 2 individuals
             if self.simulation_type == 'transferability':
-                transfered = [eval_genome_hardware(
-                    self.thymio_bot, self.settings, genome, model) for genome in tools.selBest(pop, 2)]
-                print(transfered)
+                # filter controllers that we transfer to thymio
+                transfer_simulation = list(filter(lambda x: x.diversity > self.settings.STR, invalid_ind))
+                # clone simulation controllers 
+                transfered_controllers = list(map(lambda x: toolbox.clone(x), transfer_simulation))
+                
+                for sim, trans in zip(transfer_simulation, transfered_controllers):
+                    del trans.features, trans.task_fitness, trans.diversity, trans.evaluation
+                    # evaluation on the thymio
+                    _ = eval_genome_hardware(self.thymio_bot, self.settings, trans, model)
+                    # add the controller to the transfered_set and compute D*(controller)
+                    self.disparity.add(trans, sim)
+                    # update surrogate Model
+                    self.disparity.comptute(trans)
 
             # save the fitness of the population
             save_fitness_moea(invalid_ind, gen, self.settings.path)
@@ -635,6 +660,10 @@ class Simulation(object):
             logbook.record(gen=gen, evals=len(invalid_ind), **record)
             print(logbook.stream)
             hof.update(pop)
+
+
+        # dump transfered genemos
+        self.disparity.dump(self.settings.path)
 
         # log Statistics
         with open(self.settings.path + 'ea_fitness.dat', 'w') as s:
@@ -737,21 +766,27 @@ class Disparity(object):
         self.transfered_set = []
         self.disparity_value = 0.0
     
-    def add(self, transfer_controller, controller):
-        transfer_controller.str_disparity = euclidean_distance(transfer_controller.features, controller.features)
+    def add(self, transfer_controller, controller_sim):
+        transfer_controller.str_disparity = euclidean_distance(transfer_controller.features, controller_sim.features)
 
-        # transfer_controller.str_disparity = euclidean_distance(np.array([0.992, 0.027, 0.4, 0.2, 0.0, 0.4, 0.1, 0.9, 0.,0.1, 0.3, 0.6]), controller.features)
+        # transfer_controller.str_disparity = euclidean_distance(np.array([0.992, 0.027, 0.4, 0.2, 0.0, 0.4, 0.1, 0.9, 0.,0.1, 0.3, 0.6]), controller_sim.features)
         # transfer_controller.features = np.array([0.992, 0.027, 0.4, 0.2, 0.0, 0.4, 0.1, 0.9, 0.,0.1, 0.3, 0.6])
         
         self.transfered_set.append(transfer_controller)
 
     def comptute(self, controller):
-        numerator = sum([(ind.str_disparity) * np.power(euclidean_distance(ind.features, controller.features), -2) for ind in self.transfered_set])
-        denominator = sum([np.power(euclidean_distance(ind.features, controller.features), -2) for ind in self.transfered_set])
+        numerator = np.sum([(ind.str_disparity) * np.power(euclidean_distance(ind.features, controller.features), -2) for ind in self.transfered_set])
+        denominator = np.sum([np.power(euclidean_distance(ind.features, controller.features), -2) for ind in self.transfered_set])
         
         self.disparity_value =  numerator / denominator
 
     def diversity(self, controller):
-        diversity = min([euclidean_distance(t.features, controller.features) for t in self.transfered_set])
+        diversity = np.amin([euclidean_distance(t.features, controller.features) for t in self.transfered_set])
         controller.diversity = diversity
         return diversity
+
+    def dump(self, path):
+        """dump transfered controllers"""
+        for ind in self.transfered_set:
+            with open(path + 'deap_inds/' + str(ind.key) + "_transformed_genome_.pkl", "wb") as ind_file:
+                pickle.dump(ind, ind_file)
