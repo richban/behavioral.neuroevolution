@@ -205,12 +205,12 @@ class Simulation(object):
         else:
             self.vrep_scene = os.getcwd() + '/scenes/thymio_v_infrared.ttt'
 
-        # if not self.genome_path and self.simulation_type != 'transferability':
-        #     self.vrep_servers = [Popen(
-        #         ['{0} {1} -gREMOTEAPISERVERSERVICE_{2}_TRUE_TRUE {3}'
-        #             .format(self.settings.vrep_abspath, h, port, self.vrep_scene)],
-        #         shell=True, stdout=self.fnull) for port in self.ports]
-        #     time.sleep(5)
+        if not self.genome_path and self.simulation_type != 'transferability':
+            self.vrep_servers = [Popen(
+                ['{0} {1} -gREMOTEAPISERVERSERVICE_{2}_TRUE_TRUE {3}'
+                    .format(self.settings.vrep_abspath, h, port, self.vrep_scene)],
+                shell=True, stdout=self.fnull) for port in self.ports]
+            time.sleep(5)
 
         if self.simulation_type == 'transferability':
             self.vrep_servers = [Popen(
