@@ -44,6 +44,23 @@ NEAT encode networks with direct encoding schemes. The genome contains a list of
 
 As mentioned before, the problem with optimization in simulations is that, the simulated agent and the environment are both abstract representations of the physical world. Even if accurate models are build and effective controllers are evolved, evolution might exploit certain properties of the simulation that are different or not present at all in reality. In this manner solutions with high fitness value might have completely different behaviors in reality. This disparity between simulation and reality is defined as the \emph{reality gap}.
 
+In ER, there are three main types of approachces to address this issue:
+
+\begin{enumerate}
+    \item Reality-bazed optimization approaches where the optimization takes place, fully or partly, on the physical robot.
+    \item Simulation-based optimization approaches with an entire optimization process in simulation.
+    \item Robot-in-the-loop simulation-based optimiza- tion approaches, that fully optimize solutions in simulation, but 		  also allow few transfer experiments during the process.
+\end{enumerate}
+
+\subsection{Reality-based optimization}
+
+Since the reality gap results from discrepancy between reality and simulation, some works attempt to deal with this problem by running the entire optimization process directly on the physical robot. In \cite{floreano1998evolutionary} experiments have been conducted on small miniature mobile robot Khepera \cite{mondada1999development} to solve a navigation task. The optimization took more than 60 hours with about 8000 evaluations on the physical robot for single run. Within a similiar approach, Jacobsen has explored the issue on automated reality-based optimization, furthemore the building and reconfiguration of test environments. Experiment on a navigation task took around 48 hours with 30 evaluations during the optimization process. As one can see, this optimization procedure are very time-consuming.
+
+\subsection{Simulation-based optimization}
+
+As a consequence of highly time-consuming optimization procedures on a physical robot, some researches attempt to deal with the reality gap problem by building accurate models with advanced simulation environments. However simulation models also introduce trade offs between accuracy and computational cost. Likewise they add to much overhead to be effectively used in experiments, as we have discoved later. As have been pointed out in \cite{mouret201720}, even more advanced and accurate models led to reality gap issues. Thus some techniques have been developed in order to evolve effective controllers in simulations that are less accurate but still robust enough to trasfer well onto the real robot. Among the simulation-based optimization the most formalized is Jakobi's approach \cite{jakobi1995noise}, in which a simulation model has to assimilate noise from real world. For instance, this approach has been successfully aplied to a wondering and obstacle-avoidance task for an octopod robot.
+
+\subsection{Robot-in-the-loop simulation-based optimization}
 
 
 \section{The Transferability Approach}
