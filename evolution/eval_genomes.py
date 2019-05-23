@@ -189,12 +189,15 @@ def eval_genomes_hardware(individual, settings, genomes, config):
         print('genome_id: {} fitness: {:.4f} runtime: {:.2f} s steps: {}'.format(
             individual.id, fitness, runtime, steps))
 
+        generation = -1
+
         behavioral_features = calc_behavioral_features(
             areas_counter,
             wheel_speeds,
             sensor_activations,
             settings.path,
             genome.key,
+            generation,
             'THYMIO'
         )
 
