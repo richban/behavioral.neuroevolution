@@ -767,7 +767,7 @@ class Disparity(object):
         self.disparity_value = 0.0
     
     def add(self, transfer_controller, controller_sim):
-        transfer_controller.str_disparity = euclidean_distance(transfer_controller.features, controller_sim.features)
+        transfer_controller.str_disparity = euclidean_distance(transfer_controller.position, controller_sim.position)
 
         # transfer_controller.str_disparity = euclidean_distance(np.array([0.992, 0.027, 0.4, 0.2, 0.0, 0.4, 0.1, 0.9, 0.,0.1, 0.3, 0.6]), controller_sim.features)
         # transfer_controller.features = np.array([0.992, 0.027, 0.4, 0.2, 0.0, 0.4, 0.1, 0.9, 0.,0.1, 0.3, 0.6])
