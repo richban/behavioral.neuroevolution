@@ -30,6 +30,7 @@ deap = "*"
 keras = "*"
 tensorflow = "*"
 pydot = "*"
+schedule = "*"
 
 [requires]
 python_version = "3.7"

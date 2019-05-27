@@ -63,7 +63,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
     kwargs = {'config_file': config}
     simulation = 'simulation'
-    settings = Settings(thymio, args.save_data, args.debug, args.generations)
+
+    settings = Settings(thymio, args.save_data, args.debug,
+                        args.generations, args.multiobjective)
 
     if args.simulation == 'vrep':
         kwargs.update({'simulation_type': 'vrep'})

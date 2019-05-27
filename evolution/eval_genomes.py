@@ -21,9 +21,10 @@ except ImportError as error:
     print(error.__class__.__name__ + ": " + 'DBus works only on linux!')
 from multiprocessing import current_process
 from vrep.control_env import get_object_handle, get_pose, set_pose
+import schedule
 
 
-def eval_genomes_hardware(individual, settings, genomes, config):
+def eval_genomes_hardware(individual, settings, genomes, config, generation):
     """Evaluation function to evaluate NEAT genomes on Thymio robot"""
 
     robot_m = get_marker_object(7)
@@ -189,8 +190,6 @@ def eval_genomes_hardware(individual, settings, genomes, config):
         print('genome_id: {} fitness: {:.4f} runtime: {:.2f} s steps: {}'.format(
             individual.id, fitness, runtime, steps))
 
-        generation = -1
-
         behavioral_features = calc_behavioral_features(
             areas_counter,
             wheel_speeds,
@@ -225,10 +224,19 @@ def eval_genomes_hardware(individual, settings, genomes, config):
         time.sleep(1)
 
 
-def eval_genomes_simulation(individual, settings, genomes, config):
+def eval_genomes_simulation(individual, settings, genomes, config, generation):
     """Evaluation function to evaluate NEAT genomes in VREP simulator"""
-    for genome_id, genome in genomes:
+    
+    
+    def sample_job_every_2s(individual, position):
+        print(individual.v_get_position())
+        position.append(individual.v_get_position())
 
+    
+    for genome_id, genome in genomes:
+        
+        position = []
+        schedule.every(2).seconds.do(sample_job_every_2s, individual, position)
         # reset the individual
         individual.v_reset_init()
         individual.chromosome = genome
@@ -275,8 +283,10 @@ def eval_genomes_simulation(individual, settings, genomes, config):
         sensor_activations = []
 
         now = datetime.now()
-
+        
         while not collision and datetime.now() - now < timedelta(seconds=settings.run_time):
+            schedule.run_pending()
+
             # The first simulation step waits for a trigger before being executed
             vrep.simxSynchronousTrigger(settings.client_id)
             _, collision = vrep.simxReadCollision(
@@ -334,7 +344,7 @@ def eval_genomes_simulation(individual, settings, genomes, config):
                     obstacles_distance,
                     fitness_t,
                     'VREP',
-                    None
+                    position[-1]
                 )
 
         # calculate the fitnesss
@@ -360,6 +370,7 @@ def eval_genomes_simulation(individual, settings, genomes, config):
             sensor_activations,
             settings.path,
             genome.key,
+            generation,
             'VREP'
         )
 
@@ -732,7 +743,7 @@ def eval_transferability(vrep_bot, thymio_bot, settings, genomes, config):
             f = eval_genome_hardware(thymio_bot, settings, genome, config)
 
 
-def eval_genome_hardware(individual, settings, genome, model=None, config=None):
+def eval_genome_hardware(individual, settings, genome, model=None, config=None, generation=None):
     """Evaluation function for a single genome encoded with NEAT."""
 
     robot_m = get_marker_object(7)
@@ -770,11 +781,21 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None):
     individual.n_t_sensor_activation = np.array([])
     individual.chromosome = genome
     individual.id = genome.key
+
     # simulation specific props
+    position = []
+    schedule.every(2).seconds.do(sample_job_every_2s, individual, position)
+    
     collision = False
     scaled_output = np.array([])
     fitness_agg = np.array([])
-
+    
+    dt = 0.05
+    runtime = 0
+    steps = 0
+    # Behavioral Features #1 and #2
+    wheel_speeds = []
+    sensor_activations = []
     # neural network initialization
     network = None
 
@@ -803,15 +824,10 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None):
         # update current position of the robot
         robot_current_position = robot_m.realxy()[:2]
 
-    # timetep 50 ms
-    dt = 0.05
-    runtime = 0
-    steps = 0
-
     # update position and orientation of the robot in vrep
-    position, orientation = transform_pos_angle(
+    pos, orientation = transform_pos_angle(
         robot_current_position, robot_m.orientation())
-    individual.v_set_pos_angle(position, orientation)
+    individual.v_set_pos_angle(pos, orientation)
 
     if (vrep.simxStartSimulation(individual.client_id, vrep.simx_opmode_oneshot) == -1):
         print('Failed to start the simulation\n')
@@ -833,27 +849,24 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None):
 
     areas_counter = dict([(area, dict(count=0, percentage=0.0, total=0))
                             for area in areas_name])
-    # Behavioral Features #1 and #2
-    wheel_speeds = []
-    sensor_activations = []
-    position = []
+
 
     now = datetime.now()
 
     while not collision and datetime.now() - now < timedelta(seconds=settings.run_time):
-
+        schedule.run_pending()
         # get robot marker
         robot_m = get_marker_object(7)
         if robot_m.realxy() is not None:
             # update current position of the robot
             robot_current_position = robot_m.realxy()[:2]
 
-        position.append(robot_current_position)
+        # position.append(robot_current_position)
 
         # update position and orientation of the robot in vrep
-        position, orientation = transform_pos_angle(
+        pos, orientation = transform_pos_angle(
             robot_current_position, robot_m.orientation())
-        individual.v_set_pos_angle(position, orientation)
+        individual.v_set_pos_angle(pos, orientation)
 
         _, collision = vrep.simxReadCollision(
             individual.client_id, collision_handle, vrep.simx_opmode_buffer)
@@ -928,9 +941,7 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None):
 
     if type(genome).__name__ == 'Individual':
         generation = genome.gen
-    else:
-        generation = -1
-
+    
     behavioral_features = calc_behavioral_features(
         areas_counter,
         wheel_speeds,
@@ -989,10 +1000,22 @@ def eval_moea_simulation(individual, settings, model, genome):
     individual.chromosome = genome
     individual.id = genome.key
 
+    # Behavioral Features #1 and #2
+    wheel_speeds = []
+    sensor_activations = []
+
+    position = []
+    schedule.every(2).seconds.do(sample_job_every_2s, individual, position)
+
     # evaluation specific props
     collision = False
     scaled_output = np.array([], ndmin=2)
     fitness_agg = np.array([], ndmin=2)
+
+    # timetep 50 ms
+    dt = 0.05
+    runtime = 0
+    steps = 0
 
     # update neural network weights
     if True:
@@ -1012,11 +1035,6 @@ def eval_moea_simulation(individual, settings, model, genome):
 
     # Enable the synchronous mode
     vrep.simxSynchronous(individual.client_id, True)
-
-    # timetep 50 ms
-    dt = 0.05
-    runtime = 0
-    steps = 0
 
     # start the simulation
     if (vrep.simxStartSimulation(individual.client_id, vrep.simx_opmode_oneshot) == -1):
@@ -1038,21 +1056,19 @@ def eval_moea_simulation(individual, settings, model, genome):
 
     areas_counter = dict([(area, dict(count=0, percentage=0.0, total=0))
                           for area in areas_name])
-    # Behavioral Features #1 and #2
-    wheel_speeds = []
-    sensor_activations = []
-    position = []
 
     now = datetime.now()
-
+    
     while not collision and datetime.now() - now < timedelta(seconds=settings.run_time):
+        schedule.run_pending()
+
         # The first simulation step waits for a trigger before being executed
         vrep.simxSynchronousTrigger(individual.client_id)
         _, collision = vrep.simxReadCollision(
             individual.client_id, collision_handle, vrep.simx_opmode_buffer)
 
         # get vrep robot current position
-        position.append(individual.v_get_position())
+        # position.append(individual.v_get_position())
 
         # Behavioral Feature #3
         areas = [(handle[0],) + vrep.simxReadCollision(
@@ -1107,7 +1123,7 @@ def eval_moea_simulation(individual, settings, model, genome):
                 obstacles_distance,
                 fitness_t,
                 'VREP',
-                None
+                position[-1]
             )
 
     # calculate the fitnesss
@@ -1148,3 +1164,15 @@ def eval_moea_simulation(individual, settings, model, genome):
     time.sleep(1)
 
     return fitness
+
+
+def sample_job_every_2s(individual, position):
+
+    if type(individual).__name__ == 'EvolvedRobot':
+        # get robot marker
+        robot_m = get_marker_object(7)
+        if robot_m.realxy() is not None:
+            position.append(robot_m.realxy()[:2])            
+    
+    if type(individual).__name__ == 'VrepRobot':
+        position.append(individual.v_get_position())
