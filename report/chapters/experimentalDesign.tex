@@ -1,3 +1,82 @@
 \chapter{Experimental Design}
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+\section{Robots}
+
+One of the key component of our experiments is the physical robot. The main role that the robot system plays in our experimental setting is a black box to be programmed in order to create a concrete physical manifestation of the evolved robot control policies. In this case, the robot is not built, but rather a well functioning preassembled robot that serves as a supporting component. For our purposes, we focused on preexisting robotic platform, which comes with robot controller and programming environment, namely \emph{Thymio}.
+
+\subsection{Thymio}
+
+\emph{Thymio} \cite{mondada2017thymio} is a small robot produced by Mobsya\footnote{\url{http://www.mobsya.org/}} for educational purposes. It has 5 proximity sensors in front, 2 proximity sensors on the back as well as 2 grounds sensors. Thymio is also equipped with a temperature sensor, various buttons for interaction, visual sensors etc. A detailed overview of all the components can be seen in figure \ref{fig:thymio}. For this experiments purposes, we use the new \emph{Wireless Thymio}, which enables us to control the robot with a wireless dongle.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=1.0\linewidth]{include/images/thymio.PNG}
+  \caption{\label{fig:thymio}Components of Thymio}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=1.0\linewidth]{include/images/thymio.PNG}
+  \caption{\label{fig:real_thymio}Thymio II model with attached powerbank}
+\end{minipage}
+\end{figure}
+
+Thymio robot supports autonomous charging, between 4 and 5 hours of autonomy. In order to evaluate a single evaluation run without any intervetion, we placed a powerbank on top of the thymio. The main characteristics of the Thymio robot is summed up in this table:
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|c|L{0.8\textwidth}|}
+\hline
+Characteristics & \multicolumn{1}{c|}{Values} \\ \hline
+\texttt{Length} & 112 mm \\
+\texttt{Width} & 117 mm \\
+\texttt{Height} & 53 mm \\
+\texttt{Weight} & 250 g \\
+\texttt{Max. speed} & 0.2 m/s \\
+\texttt{IR Sensors} & front.prox.horizontal.[0-4], back.prox.horizontal.[5-6], prox.ground.[0-1]; Proximity sensor response values between range 0-4500;  \\
+\texttt{Battery} & Li-Po Battery: 3.7 V, 1'500 mAh, chargeable through microUSB port; Autonomy between 4 and 5 hours \\ \texttt{Powerbank} & 5'500 mAh, chargeable through microUSB port; Autonomy around 23 hours \\ \hline
+
+\end{tabular}
+\caption{The main characteristics of the Thymio II model}
+\label{tabla_parametros}
+\end{table}
+\FloatBarrier
+
+\subsection{Aseba}
+
+Thymio can be programmed with \emph{Aseba} \cite{retornaz2013seamless}, which is a set of tools that enables to program the robot within several programming environments, namely \emph{Visual, Blockly, Text, Scratch} programming. Aseba is shipped with a command-line utility tool called \emph{asebamedulla}, that allows accessing an Aseba network through \emph{D-BUS}\footnote{\url{https://www.freedesktop.org/wiki/Software/dbus/}}. This enables to program Aseba-enabled devices, the Thymio robot, using third-party languages. Since our preferred language is Python, the python CLI\footnote{\url{https://github.com/aseba-community/aseba/blob/master/examples/clients/python-dbus/aseba.py}} was chosen, which is a thin wrapper around asebamedulla dbus interface.
+
+D-Bus is the main IPC system used in Linux: processes expose objects with a declared interface whose methods can be called from other processes. This is implemented by sending messages over D-Bus itself. The Aseba environment provides a D-Bus interface via the asebamedulla utility, which is in charge of transmitting to the robot hardware. The abstraction is in the form of a network of Thymio robots and processes listening on D-Bus, the so-called \emph{AsebaNetwork}.
+
+The goal of the Aseba D-Bus integration is not to be an alternative to any of the Aseba languages used to program the robots locally. Indeed, it is meant to provide integration with another system, on which not only the D-Bus deamon and asebamedulla are running, but also the programs utilizing the D-Bus interface, which are never transferred in any manner to the Thymio hardware. This, in turn, means that the thymio is continuously connected to the machine on which the Python script, in our case, is running.
+
+The API consists ultimately in the interfaces that asebamedulla provides over D-Bus. Through this interface, we can retrieve information about the network, read and write variables, or send events.
+
+\begin{lstlisting}[style=C-color, caption={The API that asebamedulla provides over D-Bus},label={Asebamedulla API}]
+
+interface ch.epfl.mobots.EventFilter {
+    method Void ListenEvent(UInt16 eventId)
+    method Void ListenEventName(String eventName)
+    method Void IgnoreEvent(UInt16 eventId)
+    method Void IgnoreEventName(String eventName)
+    signal Event(UInt16 id, String name, Array<SInt16> payloadData)
+}
+
+interface ch.epfl.mobots.AsebaNetwork {
+    method Void LoadScripts(String fileName)
+    method Array<String> GetNodesList()
+    method Array<String> GetVariablesList(String nodeName)
+    method Void SetVariable(String nodeName, String variableName, Array<SInt16> variableData)
+    method Array<SInt16> GetVariable(String nodeName, String variableName)
+    method Void SendEvent(UInt16 eventId, Array<SInt16> payloadData)
+    method Void SendEventName(String eventName, Array<SInt16> payloadData)
+    method ObjectPath CreateEventFilter()
+}
+\end{lstlisting}
+
+The \emph{AsebaNetwork} interface allows working with all of the nodes (robots) in the same network. There are methods to retrieve a list of the connected nodes ( \emph{GetNodesList} ) and to broadcast a global event, like \emph{SendEvent}. Global events are events that aseba nodes exchange within the aseba network. On the other hand, events that are internal to the node are called \emph{local events}. \emph{SetVariable} and \emph{GetVariable}, which write and read respectively native variables of the Aseba scripting language.
+
+Asebamedulla exposes the interface \emph{EventFilter} which allows managing events. An application that wants to listen to events have register events with \emph{ListenEventName} or \emph{ListenEvent} be notified when an event occurs. The application can receive these events through the \emph{Event} signal, these events correspond to the global events of the Aseba language.
