@@ -5,7 +5,7 @@ import os
 
 
 class Settings:
-    def __init__(self, robot_type, save_data=True, debug=False, n_gen=20, multiobjective, conf_scene=True):
+    def __init__(self, robot_type, save_data=True, debug=False, n_gen=20, multiobjective=False, conf_scene=True):
         self.client_id = -1
         self.op_mode = vrep.simx_opmode_oneshot_wait
         self.path = './data/neat/' + datetime.now().strftime('%Y-%m-%d') + '/'
@@ -20,7 +20,7 @@ class Settings:
         self.base_path = './data/neat/'
         self.vrep_abspath = '~/Developer/vrep-edu/vrep.app/Contents/MacOS/vrep'
         self.logtime_data = {}
-        self.pop = 20
+        self.pop = 5
         self.CXPB = 0.3
         self.STR = 0.5
         self.multiobjective = multiobjective
