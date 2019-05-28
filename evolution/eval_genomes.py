@@ -784,7 +784,7 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None, 
 
     # simulation specific props
     thymio_position = []
-    schedule.every(2).seconds.do(thymio_get_position_every_2s, individual, thymio_position)
+    schedule.every(2).seconds.do(thymio_get_position_every_2s, thymio_position)
     
     collision = False
     scaled_output = np.array([])
@@ -935,6 +935,8 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None, 
     individual.t_stop()
     # calculate the fitnesss
     fitness = np.sum(fitness_agg)/settings.run_time
+    
+    schedule.clear()
 
     print('Transfered to thymio genome_id: {} fitness: {:.4f} runtime: {:.2f} s steps: {}'.format(
         individual.id, fitness, runtime, steps))
@@ -1133,6 +1135,7 @@ def eval_moea_simulation(individual, settings, model, genome):
     # calculate the fitnesss
     fitness = np.sum(fitness_agg)/settings.run_time
 
+    schedule.clear()
     # Now send some data to V-REP in a non-blocking fashion:
     vrep.simxAddStatusbarMessage(
         individual.client_id, 'genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(
@@ -1165,6 +1168,7 @@ def eval_moea_simulation(individual, settings, model, genome):
     genome.position = vrep_position
     genome.evaluation = 'VREP'
 
+
     # Save the neural network model
     model.save(settings.path + 'keras_models/' + str(individual.id) + '_model.h5')
 
@@ -1173,7 +1177,7 @@ def eval_moea_simulation(individual, settings, model, genome):
     return fitness
 
 
-def thymio_get_position_every_2s(individual, position):
+def thymio_get_position_every_2s(position):
     robot_m = get_marker_object(7)
     if robot_m.realxy() is not None:
         position.append(robot_m.realxy()[:2])            

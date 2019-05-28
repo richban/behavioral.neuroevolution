@@ -556,7 +556,12 @@ class Simulation(object):
         _ = toolbox.evaluate(c0)
         # clone the evaluated indvidual c0
         controller_0 = toolbox.clone(c0)
-        del controller_0.features, controller_0.task_fitness, controller_0.evaluation
+        del (
+            controller_0.features,
+            controller_0.task_fitness,
+            controller_0.evaluation,
+            controller_0.position
+        )
         # transfer controller c0 to thymio
         _ = eval_genome_hardware(self.thymio_bot, self.settings, controller_0, model)
         # Add the controller c0 to the transfered controllers set
