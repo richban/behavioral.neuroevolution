@@ -35,7 +35,7 @@ def create_object(client_id, display_name, transform=None, parent_handle=-1, deb
                   ret_ints[0], ' transform: ', transform)
     else:
         print('create_object remote function call failed.')
-        print(''.join(traceback.format_stack()))
+        # print(''.join(traceback.format_stack()))
         return -1
     return ret_ints[0]
 
@@ -57,7 +57,7 @@ def set_pose(client_id, object_handle, transform=None, operation_mode=vrep.simx_
         print('SetPose object:', object_handle, ' position: ', transform)
     else:
         print('setPose remote function call failed.')
-        print(''.join(traceback.format_stack()))
+        # print(''.join(traceback.format_stack()))
         return -1
     return transform
 
@@ -73,7 +73,7 @@ def get_pose(client_id, object_handle, operation_mode=vrep.simx_opmode_oneshot_w
         print('Get Pose object:', object_handle, ' position: ', position)
     else:
         print('Get Pose remote function call failed.')
-        print(''.join(traceback.format_stack()))
+        # print(''.join(traceback.format_stack()))
         return -1
     return position
 
@@ -88,7 +88,7 @@ def get_object_handle(client_id, display_name, operation_mode=vrep.simx_opmode_o
         print('Get object handle: ', obj_handle)
     else:
         print('get_object_handle remote function call failed.')
-        print(''.join(traceback.format_stack()))
+        # print(''.join(traceback.format_stack()))
         return -1
     return obj_handle
 

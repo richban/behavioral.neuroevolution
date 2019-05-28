@@ -155,19 +155,15 @@ def calc_behavioral_features(areas_counter,
             avg_areas
         )
     )
-    # return avg_left, avg_right, s1-s8, area0_percentage, area1_percentage, area2_percentage
-    features = np.delete(np.concatenate(
+
+    # return avg_left, avg_right, s1-s7, area0_percentage, area1_percentage, area2_percentage
+    features = np.concatenate(
         (
             avg_wheel_speeds,
             avg_sensors_activation,
-            avg_areas
+            np.delete(avg_areas, [0, 2, 3, 5, 6, 8])
         )
-    ), [9, 11, 12, 13, 15, 17])
-
-    _ = dict(avg_wheel_speeds=avg_wheel_speeds,
-             avg_sensors_activation=avg_sensors_activation,
-             areas=avg_areas
-             )
+    )
 
     try:
         with open(f_path + 'behavioral_features.dat', 'a') as b:
