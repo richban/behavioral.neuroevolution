@@ -783,8 +783,8 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None, 
     individual.id = genome.key
 
     # simulation specific props
-    position = []
-    schedule.every(2).seconds.do(sample_job_every_2s, individual, position)
+    thymio_position = []
+    schedule.every(2).seconds.do(thymio_get_position_every_2s, individual, thymio_position)
     
     collision = False
     scaled_output = np.array([])
@@ -936,8 +936,8 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None, 
     # calculate the fitnesss
     fitness = np.sum(fitness_agg)/settings.run_time
 
-    print('Transfered to thymio genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(
-        individual.id, fitness, runtime))
+    print('Transfered to thymio genome_id: {} fitness: {:.4f} runtime: {:.2f} s steps: {}'.format(
+        individual.id, fitness, runtime, steps))
 
     if type(genome).__name__ == 'Individual':
         generation = genome.gen
@@ -952,10 +952,14 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None, 
         'THYMIO'
     )
 
+    if settings.debug:
+        print('behavioral_features: {0}\n pos_sample: {1}\n'.format(behavioral_features, thymio_position))
+
+
     if type(genome).__name__ == 'Individual':
         genome.features = behavioral_features
         genome.task_fitness = fitness
-        genome.position = position
+        genome.position = thymio_position
         genome.evaluation = 'THYMIO'
 
     if type(genome).__name__ == 'DefaultGenome':
@@ -1004,8 +1008,8 @@ def eval_moea_simulation(individual, settings, model, genome):
     wheel_speeds = []
     sensor_activations = []
 
-    position = []
-    schedule.every(2).seconds.do(sample_job_every_2s, individual, position)
+    vrep_position = []
+    schedule.every(2).seconds.do(vrep_get_position_every_2s, individual, vrep_position)
 
     # evaluation specific props
     collision = False
@@ -1123,7 +1127,7 @@ def eval_moea_simulation(individual, settings, model, genome):
                 obstacles_distance,
                 fitness_t,
                 'VREP',
-                position[-1]
+                None
             )
 
     # calculate the fitnesss
@@ -1140,9 +1144,6 @@ def eval_moea_simulation(individual, settings, model, genome):
     if (vrep.simxStopSimulation(individual.client_id, settings.op_mode) == -1):
         return
 
-    print('genome_id: {} fitness: {:.4f} runtime: {:.2f} s steps: {}'.format(
-        individual.id, fitness, runtime, steps))
-
     behavioral_features = calc_behavioral_features(
         areas_counter,
         wheel_speeds,
@@ -1152,10 +1153,16 @@ def eval_moea_simulation(individual, settings, model, genome):
         genome.gen,
         'VREP'
     )
+    
+    print('genome_id: {} fitness: {:.4f} runtime: {:.2f} s steps: {}'.format(
+        individual.id, fitness, runtime, steps))
+
+    if settings.debug:
+        print('behavioral_features: {0}\n pos_sample: {1}\n'.format(behavioral_features, vrep_position))
 
     genome.features = behavioral_features
     genome.task_fitness = fitness
-    genome.position = position
+    genome.position = vrep_position
     genome.evaluation = 'VREP'
 
     # Save the neural network model
@@ -1166,13 +1173,11 @@ def eval_moea_simulation(individual, settings, model, genome):
     return fitness
 
 
-def sample_job_every_2s(individual, position):
+def thymio_get_position_every_2s(individual, position):
+    robot_m = get_marker_object(7)
+    if robot_m.realxy() is not None:
+        position.append(robot_m.realxy()[:2])            
 
-    if type(individual).__name__ == 'EvolvedRobot':
-        # get robot marker
-        robot_m = get_marker_object(7)
-        if robot_m.realxy() is not None:
-            position.append(robot_m.realxy()[:2])            
-    
-    if type(individual).__name__ == 'VrepRobot':
-        position.append(individual.v_get_position())
+
+def vrep_get_position_every_2s(individual, position):
+    position.append(individual.v_get_position())

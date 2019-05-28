@@ -212,12 +212,12 @@ class Simulation(object):
                 shell=True, stdout=self.fnull) for port in self.ports]
             time.sleep(5)
 
-        if self.simulation_type == 'transferability':
-            self.vrep_servers = [Popen(
-                ['{0} {1} -gREMOTEAPISERVERSERVICE_{2}_TRUE_TRUE {3}'
-                    .format(self.settings.vrep_abspath, h, port, self.scenes[scene])],
-                shell=True, stdout=self.fnull) for scene, port in enumerate(self.ports)]
-            time.sleep(5)
+        # if self.simulation_type == 'transferability':
+        #     self.vrep_servers = [Popen(
+        #         ['{0} {1} -gREMOTEAPISERVERSERVICE_{2}_TRUE_TRUE {3}'
+        #             .format(self.settings.vrep_abspath, h, port, self.scenes[scene])],
+        #         shell=True, stdout=self.fnull) for scene, port in enumerate(self.ports)]
+        #     time.sleep(5)
 
         self.clients = [vrep.simxStart(
             '127.0.0.1',
@@ -767,7 +767,7 @@ class Disparity(object):
         self.disparity_value = 0.0
     
     def add(self, transfer_controller, controller_sim):
-        transfer_controller.str_disparity = euclidean_distance(transfer_controller.position, controller_sim.position)
+        transfer_controller.str_disparity = euclidean_distance(controller_sim.position, transfer_controller.position)
         # transfer_controller.str_disparity = euclidean_distance(np.array([0.992, 0.027, 0.4, 0.2, 0.0, 0.4, 0.1, 0.9, 0.,0.1, 0.3, 0.6]), controller_sim.features)
         # transfer_controller.features = np.array([0.992, 0.027, 0.4, 0.2, 0.0, 0.4, 0.1, 0.9, 0.,0.1, 0.3, 0.6])
         self.transfered_set.append(transfer_controller)
