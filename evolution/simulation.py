@@ -577,6 +577,7 @@ class Simulation(object):
         for ind, fit in zip(invalid_ind, fitnesses):
             diversity = self.disparity.diversity(ind)
             ind.fitness.values = (fit, self.disparity.disparity_value, diversity)
+            print('fitness: {0} disparity: {1} diversity: {2}'.format(fit, self.disparity.disparity_value, diversity))
             # Save Deap Individual
             with open(self.settings.path + 'deap_inds/' + str(ind.key) + "_genome_.pkl", "wb") as ind_file:
                 pickle.dump(ind, ind_file)
@@ -634,6 +635,7 @@ class Simulation(object):
             for ind, fit in zip(invalid_ind, fitnesses):
                 diversity = self.disparity.diversity(ind)
                 ind.fitness.values = (fit, self.disparity.disparity_value, diversity)
+                print('fitness: {0} disparity: {1} diversity: {2}'.format(fit, self.disparity.disparity_value, diversity))
                 # Save Deap Individual
                 with open(self.settings.path + 'deap_inds/' + str(ind.key) + "_genome_.pkl", "wb") as ind_file:
                     pickle.dump(ind, ind_file)
@@ -776,10 +778,7 @@ class Disparity(object):
         self.disparity_value = 0.0
     
     def add(self, transfer_controller, controller_sim):
-        import pdb; pdb.set_trace()
         transfer_controller.str_disparity = euclidean_distance(controller_sim.position, transfer_controller.position)
-        # transfer_controller.str_disparity = euclidean_distance(np.array([0.992, 0.027, 0.4, 0.2, 0.0, 0.4, 0.1, 0.9, 0.,0.1, 0.3, 0.6]), controller_sim.features)
-        # transfer_controller.features = np.array([0.992, 0.027, 0.4, 0.2, 0.0, 0.4, 0.1, 0.9, 0.,0.1, 0.3, 0.6])
         self.transfered_set.append(transfer_controller)
 
     def comptute(self, controller):
