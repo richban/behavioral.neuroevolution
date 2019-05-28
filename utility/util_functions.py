@@ -51,6 +51,12 @@ def f_obstacle_dist(sensors):
 def euclidean_distance(points1, points2):
     a = np.array(points1)
     b = np.array(points2)
+
+    if len(a) > len(b):
+        return np.linalg.norm(a[:len(b)]-b)
+
+    if len(b) > len(a):
+        return np.linalg.norm(a-b[:len(a)])
     # c = a-b
     # return np.sqrt(np.sum(np.square([c]), axis=1))
     return np.linalg.norm(a-b)
