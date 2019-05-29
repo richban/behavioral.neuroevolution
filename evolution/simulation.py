@@ -213,10 +213,10 @@ class Simulation(object):
             time.sleep(5)
 
         if self.simulation_type == 'transferability':
-            self.vrep_servers = [Popen(
-                ['{0} {1} -gREMOTEAPISERVERSERVICE_{2}_TRUE_TRUE {3}'
-                     .format(self.settings.vrep_abspath, h, port, self.scenes[scene])],
-                 shell=True, stdout=self.fnull) for scene, port in enumerate(self.ports)]
+            # self.vrep_servers = [Popen(
+            #     ['{0} {1} -gREMOTEAPISERVERSERVICE_{2}_TRUE_TRUE {3}'
+            #          .format(self.settings.vrep_abspath, h, port, self.scenes[scene])],
+            #      shell=True, stdout=self.fnull) for scene, port in enumerate(self.ports)]
             time.sleep(5)
 
 
@@ -654,7 +654,7 @@ class Simulation(object):
                     # add the controller to the transfered_set and compute D*(controller)
                     self.disparity.add(trans, sim)
                     # update surrogate Model
-                    self.disparity.comptute(trans)
+                    self.disparity.comptute(sim)
 
             # save the fitness of the population
             save_fitness_moea(invalid_ind, gen, self.settings.path)
