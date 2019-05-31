@@ -1010,15 +1010,15 @@ def eval_moea_simulation(individual, settings, model, genome):
     wheel_speeds = []
     sensor_activations = []
 
-    vrep_position = []
-    schedule.every(2).seconds.do(vrep_get_position_every_2s, individual, vrep_position)
+    position = []
+    # schedule.every(2).seconds.do(vrep_get_position_every_2s, individual, vrep_position)
 
     # evaluation specific props
     collision = False
     scaled_output = np.array([], ndmin=2)
     fitness_agg = np.array([], ndmin=2)
 
-    # timetep 50 ms
+    # setting time step to 50 ms (miliseconds)
     dt = 0.05
     runtime = 0
     steps = 0
@@ -1038,7 +1038,7 @@ def eval_moea_simulation(individual, settings, model, genome):
         model.set_weights(genome)
 
     genome.weights = model.get_weights()
-
+    
     # Enable the synchronous mode
     vrep.simxSynchronous(individual.client_id, True)
 
@@ -1062,19 +1062,16 @@ def eval_moea_simulation(individual, settings, model, genome):
 
     areas_counter = dict([(area, dict(count=0, percentage=0.0, total=0))
                           for area in areas_name])
-
-    now = datetime.now()
     
-    while not collision and datetime.now() - now < timedelta(seconds=settings.run_time):
-        schedule.run_pending()
+    while not collision and settings.run_time > runtime:
+        # schedule.run_pending()
 
         # The first simulation step waits for a trigger before being executed
         vrep.simxSynchronousTrigger(individual.client_id)
+        
+        # read the collision
         _, collision = vrep.simxReadCollision(
             individual.client_id, collision_handle, vrep.simx_opmode_buffer)
-
-        # get vrep robot current position
-        # position.append(individual.v_get_position())
 
         # Behavioral Feature #3
         areas = [(handle[0],) + vrep.simxReadCollision(
@@ -1098,12 +1095,26 @@ def eval_moea_simulation(individual, settings, model, genome):
 
         # set motor wheel speeds
         individual.v_set_motors(*list(scaled_output))
-
+       
+        # sample every 2 second robot position
+        if round(runtime, 2) % 2.0 == 0.0:
+            # get vrep robot current position
+            # print(individual.v_get_position())
+            position.append(individual.v_get_position())
+        
         # After this call, the first simulation step is finished
         # Now we can safely read all  values
         vrep.simxGetPingTime(individual.client_id)
+        
         runtime += dt
         steps += 1
+
+        # if at 10 seconds the robot is in the same position given a threshold stop the simulation
+        if round(runtime, 2) == 10.0:
+            if (euclidean_distance(position[0], position[-1])) < .01:
+                print(euclidean_distance(position[0], position[-1]))
+                collision = True
+        
         #  fitness_t at time stamp
         (
             fitness_t,
@@ -1135,7 +1146,7 @@ def eval_moea_simulation(individual, settings, model, genome):
     # calculate the fitnesss
     fitness = np.sum(fitness_agg)/settings.run_time
 
-    schedule.clear()
+    # schedule.clear()
     # Now send some data to V-REP in a non-blocking fashion:
     vrep.simxAddStatusbarMessage(
         individual.client_id, 'genome_id: {} fitness: {:.4f} runtime: {:.2f} s'.format(
@@ -1161,11 +1172,11 @@ def eval_moea_simulation(individual, settings, model, genome):
         individual.id, fitness, runtime, steps))
 
     if settings.debug:
-        print('behavioral_features: {0}\n pos_sample: {1}\n'.format(behavioral_features, vrep_position))
+        print('behavioral_features: {0}\n pos_sample: {1}\n n_samples: {2}\n'.format(behavioral_features, position, len(position)))
 
     genome.features = behavioral_features
     genome.task_fitness = fitness
-    genome.position = vrep_position
+    genome.position = position
     genome.evaluation = 'VREP'
 
 
