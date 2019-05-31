@@ -227,16 +227,9 @@ def eval_genomes_hardware(individual, settings, genomes, config, generation):
 def eval_genomes_simulation(individual, settings, genomes, config, generation):
     """Evaluation function to evaluate NEAT genomes in VREP simulator"""
     
-    
-    def sample_job_every_2s(individual, position):
-        print(individual.v_get_position())
-        position.append(individual.v_get_position())
-
-    
     for genome_id, genome in genomes:
         
         position = []
-        schedule.every(2).seconds.do(sample_job_every_2s, individual, position)
         # reset the individual
         individual.v_reset_init()
         individual.chromosome = genome
@@ -281,12 +274,8 @@ def eval_genomes_simulation(individual, settings, genomes, config, generation):
         # Behavioral Features #1 and #2
         wheel_speeds = []
         sensor_activations = []
-
-        now = datetime.now()
         
-        while not collision and datetime.now() - now < timedelta(seconds=settings.run_time):
-            schedule.run_pending()
-
+        while not collision and settings.run_time > runtime:
             # The first simulation step waits for a trigger before being executed
             vrep.simxSynchronousTrigger(settings.client_id)
             _, collision = vrep.simxReadCollision(
@@ -314,11 +303,25 @@ def eval_genomes_simulation(individual, settings, genomes, config, generation):
             # set motor wheel speeds
             individual.v_set_motors(*list(scaled_output))
 
+            # sample every 2 second robot position
+            if round(runtime, 2) % 2.0 == 0.0:
+                # get vrep robot current position
+                # print(individual.v_get_position())
+                position.append(individual.v_get_position())
+            
             # After this call, the first simulation step is finished
             # Now we can safely read all  values
-            vrep.simxGetPingTime(settings.client_id)
+            vrep.simxGetPingTime(individual.client_id)
+            
             runtime += dt
             steps += 1
+
+            # every 10 seconds the robot is in the same position given a threshold stop the simulation
+            if round(runtime, 2) % 10.0 == 0.0:
+                # print(euclidean_distance(position[0], position[-1]))
+                if (euclidean_distance(position[0], position[-1])) < .01:
+                    collision = True
+            
             #  fitness_t at time stamp
             (
                 fitness_t,
@@ -740,7 +743,7 @@ def eval_transferability(vrep_bot, thymio_bot, settings, genomes, config):
 
         if (t % 2 == 0):
             # print('Transfering.....:\n {0}'.format(genome))
-            f = eval_genome_hardware(thymio_bot, settings, genome, config)
+            _ = eval_genome_hardware(thymio_bot, settings, genome, config)
 
 
 def eval_genome_hardware(individual, settings, genome, model=None, config=None, generation=None):
@@ -1011,7 +1014,6 @@ def eval_moea_simulation(individual, settings, model, genome):
     sensor_activations = []
 
     position = []
-    # schedule.every(2).seconds.do(vrep_get_position_every_2s, individual, vrep_position)
 
     # evaluation specific props
     collision = False
@@ -1064,8 +1066,6 @@ def eval_moea_simulation(individual, settings, model, genome):
                           for area in areas_name])
     
     while not collision and settings.run_time > runtime:
-        # schedule.run_pending()
-
         # The first simulation step waits for a trigger before being executed
         vrep.simxSynchronousTrigger(individual.client_id)
         
@@ -1192,7 +1192,3 @@ def thymio_get_position_every_2s(position):
     robot_m = get_marker_object(7)
     if robot_m.realxy() is not None:
         position.append(robot_m.realxy()[:2])            
-
-
-def vrep_get_position_every_2s(individual, position):
-    position.append(individual.v_get_position())
