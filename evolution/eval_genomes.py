@@ -383,6 +383,7 @@ def eval_genomes_simulation(individual, settings, genomes, config, generation):
         time.sleep(1)
         genome.fitness = fitness
         genome.features = behavioral_features
+        genome.position = position
 
 
 def eval_genome(client_id, settings, genome_id, genome, config):
