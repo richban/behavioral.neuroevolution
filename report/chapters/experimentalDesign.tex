@@ -2,6 +2,50 @@
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
+\section{Test Bed}
+The experimental test bed set up was inspired by Jacobsen and Faiña \cite{faina2017automating}, which consists of a physical arena, in which the evolutionary optimization of the \emph{Thymio} robot is performed and a computer vision system. The computer vision system is used to build the virtual environment in simulation based on the environmental objects e.g. \emph{obstacles} and to track the \emph{Thymio} robot during the evaluation. The main components of the test bed are shown in the following figure \ref{fig:test_bed}.
+
+\begin{figure}[H]
+  \includegraphics[width=0.66\linewidth]{include/images/dummy.PNG}
+  \caption{\label{fig:test_bed}The test bed, composed of computer vision, physical arena containing the environmental objects and the Thymio robot and lastly the virtual simulation.}
+\end{figure}
+
+\subsection{Physical Arena and Virtual Arena}
+
+The outlook of the experiments is to validate different reality gap approaches on an obstacle avoidance task. This required to build a \emph{physical arena} where the entire reality-based optimization is taking place. The physical arena is relatively small, measures only 119 x 80 x 20 cm, however, given the simplicity of the task it's sufficient enough to perform our automated experiments. It's assembled of 4 pieces of wooden planks tight together on each side to prevent the robot to push them outside their boundary. Each of the corners is marked with a fiducial marker to assist the computer vision and the evolutionary process. The arena is divided into 3 different sectors, namely, \emph{area0, area1, area2}, that is used to measure certain behavioral features during the evolution. In order to perform simulation-based and robot-in-the-loop optimization process, a simulation model (\emph{virtual arena}) was created accordingly to the \emph{physical arena}. The physical arena can be seen in figure \ref{fig:physical_arena} and it's virtual correspondent in figure \ref{fig:virtual_arena}.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=1.0\linewidth]{include/images/dummy.PNG}
+  \caption{\label{fig:physical_arena}Physical Arena}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=1.0\linewidth]{include/images/dummy.PNG}
+  \caption{\label{fig:virtual_arena}Virtual Arena}
+\end{minipage}
+\end{figure}
+
+\subsection{Obstacles}
+
+Each arena (\emph{physical arena} and \emph{virtual arena}), contains 3 different cuboids in sizes. These are the only environmental objects that the robots interact with. Obstacles in the \emph{physical arena} are heavy enough, therefore they are not knocked over by \tmph{Thymio} robot during a collision. Additionally, each obstacle is marked with a fiducial marker, in order to set the position of its counterpart \emph{virtual obstacle} in the \emph{virtual arena}.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=1.0\linewidth]{include/images/dummy.PNG}
+  \caption{\label{fig:physical_arena}Physical obstacle.}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=1.0\linewidth]{include/images/dummy.PNG}
+  \caption{\label{fig:virtual_arena}The corresponding virtual obstacle.}
+\end{minipage}
+\end{figure}
+
 \section{Robots}
 
 One of the key component of our experiments is the physical robot. The main role that the robot system plays in our experimental setting is a black box to be programmed in order to create a concrete physical manifestation of the evolved robot control policies. In this case, the robot is not built, but rather a well functioning preassembled robot that serves as a supporting component. For our purposes, we focused on preexisting robotic platform, which comes with robot controller and programming environment, namely \emph{Thymio}.
@@ -45,6 +89,8 @@ Characteristics & \multicolumn{1}{c|}{Values} \\ \hline
 \end{table}
 \FloatBarrier
 
+\section{Software Architecture}
+
 \subsection{Aseba}
 
 Thymio can be programmed with \emph{Aseba} \cite{retornaz2013seamless}, which is a set of tools that enables to program the robot within several programming environments, namely \emph{Visual, Blockly, Text, Scratch} programming. Aseba is shipped with a command-line utility tool called \emph{asebamedulla}, that allows accessing an Aseba network through \emph{D-BUS}\footnote{\url{https://www.freedesktop.org/wiki/Software/dbus/}}. This enables to program Aseba-enabled devices, the Thymio robot, using third-party languages. Since our preferred language is Python, the python CLI\footnote{\url{https://github.com/aseba-community/aseba/blob/master/examples/clients/python-dbus/aseba.py}} was chosen, which is a thin wrapper around asebamedulla dbus interface.
@@ -80,3 +126,13 @@ interface ch.epfl.mobots.AsebaNetwork {
 The \emph{AsebaNetwork} interface allows working with all of the nodes (robots) in the same network. There are methods to retrieve a list of the connected nodes ( \emph{GetNodesList} ) and to broadcast a global event, like \emph{SendEvent}. Global events are events that aseba nodes exchange within the aseba network. On the other hand, events that are internal to the node are called \emph{local events}. \emph{SetVariable} and \emph{GetVariable}, which write and read respectively native variables of the Aseba scripting language.
 
 Asebamedulla exposes the interface \emph{EventFilter} which allows managing events. An application that wants to listen to events have register events with \emph{ListenEventName} or \emph{ListenEvent} be notified when an event occurs. The application can receive these events through the \emph{Event} signal, these events correspond to the global events of the Aseba language.
+
+\subsection{Robotic Simulator}
+
+\subsection{Computer Vision}
+
+\subsection{Path Following}
+
+\section{Automation Control}
+
+\subsection{Evaluation of the robotic platform}
