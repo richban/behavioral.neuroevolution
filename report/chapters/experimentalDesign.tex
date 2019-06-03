@@ -129,7 +129,24 @@ Asebamedulla exposes the interface \emph{EventFilter} which allows managing even
 
 \subsection{Robotic Simulator}
 
+In our experiments, a set of tools is needed in order to develop, test and validate different approaches to the reality gap problem. In relation to evolutionary robotics, these tools represent robotic simulators and robotic frameworks. Robotic simulators help to build the bridge between simulation and reality, they endorse that the developed simulation can be transferred and applied to real robotics. The most well know simulators in the community are \emph{V-REP} \cite{rohmer2013v} and \emph{Gazebo} \cite{koenig2004design} based on a survey made by Ivaldi, Peters, \cite{ivaldi2014tools}. These two simulators are compared in basic robotic control logic and evolutionary robotics experiment in \cite{nogueira2014comparative}. \emph{V-REP} robot simulation framework came out as the more intuitive and user-friendly simulator, which comes with various features and is less hardware demanding. Moreover, we have experience with \emph{V-REP} from previous works, therefore it was chosen as our main robotic framework.
+
+In this work the use of V-REP simulation is not only used for \emph{Simulation-based optimization} and \emph{Robot-in-the-loop simulation-based optimization} approaches but also for \emph{Reality-based optimization} approach. V-REP exposes a remote API that allows controlling the simulation from the external client-side application. The client-side application is written in python which enables to control the simulation over the simulation variables.
+
 \subsection{Computer Vision}
+
+One of the most pivotal points of the computer vision is to track the Thymio robot during evaluation and positioning of the obstacles in the simulation. Therefore it goes without saying that the system must be able to accurately read the position and angle of these objects. Since the environment is static and small in size, a fixed-camera computer vision is optimal to extract the necessary spatial information within a single image. The most necessary problem is solving the objects identification and accurate spatial information extraction. These problems are usually dealt with using certain marker systems. One of such a system is \cite{bencina2005improved}, which relies on 2D tracking of specially designed fiducials (markers) in a real-time video stream. This system involves a set of marker patterns and computer vision algorithms that can track and yield various spatial information of these markers. Such a marker system was chosen for our needs. The choice is supported by the same computer vision system being used and proven in \cite{faina2017automating}.
+
+\subsubsection{Fiducial tracking}
+
+The \epmh{ReacTIVision Fiducials}\ref{fig:fiducial_markers} comes in 3 different set of sizes \emph{small, medium, large} and each individual marker has it's own unique id. Furthermore, each of them is purely identified by its unique topological structure. The system employs the topological fiducial recognition, which enables detection and identification. In this approach, a region adjacency graph is computed from a binary image. The adjacency graph can be understood as a tree. By recognizing the graphs representing the fiducials, markers can be detected and identified. Moreover, the location is computed as the weighted average of all leaf centers (black and white). The vector from this centroid to a point given by the weighted average of all black (or white) leaf centers is used to compute the orientation of the fiducial \cite{bencina2005improved}.
+
+\begin{figure}[H]
+  \includegraphics[width=0.66\linewidth]{include/images/fiducial_markers.PNG}
+  \caption{\label{fig:fiducial_markers}ReacTIVision Fiducials from original paper a) a reacTIVision fiducial (b) black and white leafs and their average centroid (c) black leafs and their average centroid, and (d) the vector used to compute the orientation of the fiducial}
+\end{figure}
+
+\subsubsection{Computer Vision Implementation}
 
 \subsection{Path Following}
 
