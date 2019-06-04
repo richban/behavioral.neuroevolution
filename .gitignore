@@ -138,7 +138,7 @@ venv.bak/
 # these rules might exclude image files for figures etc.
 # *.ps
 # *.eps
-report/*.pdf
+report/**/*.pdf
 *.avi
 ## Generated if empty string is given at "Please type another file name for output:"
 
