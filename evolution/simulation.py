@@ -7,7 +7,6 @@ from utility.visualize import plot_single_run
 from evolution.eval_genomes import \
     eval_genomes_simulation, \
     eval_genomes_hardware, \
-    eval_genome, \
     eval_genome_hardware
 from subprocess import Popen
 from functools import partial
@@ -388,20 +387,6 @@ class Simulation(object):
         return self.config, self.stats, self.winner
 
     @timeit
-    def simulation_transferability(self):
-        # run simulation in vrep
-        try:
-            self.winner = self.population.run(partial(self.eval_function,
-                                                      self.vrep_bot,
-                                                      self.thymio_bot,
-                                                      self.settings),
-                                              self.settings.n_gen)
-        except neat.CompleteExtinctionException() as ex:
-            print("Extinction: {0}".format(ex))
-
-        return self.config, self.stats, self.winner
-
-    @timeit
     def simulation_threaded(self):
         """run simulation using threads in vrep"""
         # Run for up to N generations.
@@ -419,6 +404,7 @@ class Simulation(object):
         self.stop()
         return self.config, self.stats, self.winner
 
+    @timeit
     def simulation_multiobjective(self):
         """Multiobjective optmization 2. Genome is represented as
         an (concatenated) array of connections weights for each layer in the NN.
@@ -509,11 +495,29 @@ class Simulation(object):
         toolbox.register('mutate', tools.mutFlipBit, indpb=0.5)
         # register the evaluation function
         if self.simulation_type == 'transferability':
-            toolbox.register('evaluate', partial(
-                self.eval_function, self.vrep_bot, self.settings, model))
+            toolbox.register(
+                'evaluate',
+                partial(
+                    self.eval_function,
+                    self.vrep_bot,
+                    self.settings,
+                    model,
+                    None,
+                    None
+                )
+            )
         else:
-            toolbox.register('evaluate', partial(
-                self.eval_function, self.individual, self.settings, model))
+            toolbox.register(
+                'evaluate',
+                partial(
+                    self.eval_function,
+                    self.individual,
+                    self.settings,
+                    model,
+                    None,
+                    None
+                )
+            )
         # register NSGA-II multiobjective optimization algorithm
         toolbox.register("select", tools.selNSGA2)
         # instantiate the population
@@ -570,7 +574,13 @@ class Simulation(object):
 
             # transfer controller c0 to thymio
             _ = eval_genome_hardware(
-                self.thymio_bot, self.settings, controller_0, model)
+                self.thymio_bot,
+                self.settings,
+                controller_0,
+                model=model,
+                config=None,
+                generation=None
+            )
             # Add the controller c0 to the transfered controllers set
             self.disparity.add(controller_0, c0)
             # compute the surrogate model
@@ -585,7 +595,9 @@ class Simulation(object):
                 print('fitness: {0} disparity: {1} diversity: {2}'.format(
                     fit, self.disparity.disparity_value, diversity))
             else:
-                ind.fitness.values = (fit, 0.0, 1.0)
+                diversity = 1.0
+                ind.diversity = diversity
+                ind.fitness.values = (fit, 0.0, diversity)
 
             # Save Deap Individual
             with open(self.settings.path + 'deap_inds/' + str(ind.key) + "_genome_.pkl", "wb") as ind_file:
@@ -643,12 +655,15 @@ class Simulation(object):
             for ind, fit in zip(invalid_ind, fitnesses):
                 if self.simulation_type == 'transferability':
                     diversity = self.disparity.diversity(ind)
+                    ind.diversity = diversity
                     ind.fitness.values = (
                         fit, self.disparity.disparity_value, diversity)
                     print('fitness: {0} disparity: {1} diversity: {2}'.format(
                         fit, self.disparity.disparity_value, diversity))
                 else:
-                    ind.fitness.values = (fit, 0.0, 1.0)
+                    diversity = 1.0
+                    ind.diversity = diversity
+                    ind.fitness.values = (fit, 0.0, diversity)
 
                 # Save Deap Individual
                 with open(self.settings.path + 'deap_inds/' + str(ind.key) + "_genome_.pkl", "wb") as ind_file:
@@ -667,7 +682,13 @@ class Simulation(object):
                     del trans.features, trans.task_fitness, trans.diversity, trans.evaluation
                     # evaluation on the thymio
                     _ = eval_genome_hardware(
-                        self.thymio_bot, self.settings, trans, model)
+                        self.thymio_bot,
+                        self.settings,
+                        trans,
+                        model=model,
+                        config=None,
+                        generation=None
+                    )
                     # add the controller to the transfered_set and compute D*(controller)
                     self.disparity.add(trans, sim)
                     # update surrogate Model
@@ -735,7 +756,7 @@ class Simulation(object):
         else:
             if not os.path.exists('./data/neat/restored_genomes/'):
                 os.makedirs('./data/neat/restored_genomes/')
-            
+
             self.settings.path = './data/neat/restored_genomes/'
             toolbox = base.Toolbox()
             # genomes = [toolbox.clone(self.winner) for _ in range(0, N)]
@@ -750,7 +771,8 @@ class Simulation(object):
                 _ = eval_genome_hardware(
                     self.individual, self.settings, genome, model=None, config=self.config, generation=-1)
 
-                result = np.concatenate(([genome.key], [genome.fitness], genome.features))
+                result = np.concatenate(
+                    ([genome.key], [genome.fitness], genome.features))
 
                 with open(self.settings.path + 'restored_genome_{}_fitness.txt'.format(genome.key), 'a') as w:
                     np.savetxt(w, (result,), delimiter=',', fmt='%s')

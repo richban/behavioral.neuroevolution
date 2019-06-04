@@ -3,9 +3,8 @@ from evolution.eval_genomes import \
     eval_genomes_simulation, \
     eval_genomes_hardware, \
     post_eval_genome, \
-    eval_genome, \
-    eval_transferability, \
-    eval_moea_simulation
+    eval_genome_hardware, \
+    eval_genome_simulation
 from settings import Settings
 from argparse import ArgumentParser
 from evolution.simulation import Simulation
@@ -71,14 +70,14 @@ if __name__ == '__main__':
         kwargs.update({'simulation_type': 'vrep'})
 
         if args.threaded and not args.restore_genome:
-            kwargs.update({'eval_function': eval_genome})
+            kwargs.update({'eval_function': eval_genome_hardware})
             kwargs.update({'threaded': True})
             simulation = 'simulation_threaded'
         else:
             kwargs.update({'eval_function': eval_genomes_simulation})
 
         if args.multiobjective:
-            kwargs.update({'eval_function': eval_moea_simulation})
+            kwargs.update({'eval_function': eval_genome_simulation})
             simulation = 'simulation_multiobjective'
             if args.n_layers:
                 kwargs.update({'n_layers': args.n_layers})
@@ -157,7 +156,7 @@ if __name__ == '__main__':
             time.sleep(2)
 
         if args.multiobjective:
-            kwargs.update({'eval_function': eval_moea_simulation})
+            kwargs.update({'eval_function': eval_genome_simulation})
             kwargs.update({'simulation_type': 'transferability'})
             simulation = 'simulation_multiobjective'
 
@@ -166,10 +165,6 @@ if __name__ == '__main__':
 
             if args.neurons:
                 kwargs.update({'neurons': args.neurons})
-        else:
-            kwargs.update({'simulation_type': 'transferability'})
-            kwargs.update({'eval_function': eval_transferability})
-            simulation = 'simulation_transferability'
     else:
         print('Something went really wrong!')
 
@@ -180,7 +175,6 @@ if __name__ == '__main__':
         simulation != 'restore_genome' and
         simulation != 'post_eval' and
         simulation != 'simulation_multiobjective' and
-        simulation != 'simulation_multiobjective_2' and
         settings.save_data
     ):
         sim.log_statistics()
