@@ -721,7 +721,7 @@ class Simulation(object):
         return pop, hof, logbook, best_inds, best_inds_fitness
 
     @timeit
-    def restore_genome(self, N=10):
+    def restore_genome(self, N=2):
         """restore genome and re-run simulation"""
 
         if N == 1:
@@ -734,7 +734,7 @@ class Simulation(object):
             self.settings.path = './data/neat/restored_genomes/'
             toolbox = base.Toolbox()
             # genomes = [toolbox.clone(self.winner) for _ in range(0, N)]
-            for _ in range(0, N):
+            for i in range(0, N):
                 genome = toolbox.clone(self.winner)
 
                 del (
@@ -745,12 +745,12 @@ class Simulation(object):
                 _ = eval_genome_hardware(
                     self.individual, self.settings, genome, model=None, config=self.config, generation=-1)
 
-                result = np.concatenate(([genome.key], [genome.fitness], [genome.features])])
+                result = np.concatenate(([genome.key], [genome.fitness], genome.features))
 
                 with open(self.settings.path + 'restored_genome_{}_fitness.txt'.format(genome.key), 'a') as w:
                     np.savetxt(w, (result,), delimiter=',', fmt='%s')
 
-                with open(self.settings.path + str(genome.key) + "_restored_genome_.pkl", "wb") as ind_file:
+                with open(self.settings.path + '{}_{}_restored_genome_.pkl'.format(genome.key, i), 'wb') as ind_file:
                     pickle.dump(genome, ind_file)
         return
 
