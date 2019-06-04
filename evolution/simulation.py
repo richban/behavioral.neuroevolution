@@ -740,7 +740,7 @@ class Simulation(object):
                     genome.position
                 )
                 _ = eval_genome_hardware(
-                    self.individual, self.settings, self.winner, model=None, self.config, generation=-1)
+                    self.individual, self.settings, genome, model=None, config=self.config, generation=-1)
 
                 print(genome.features)
                 print(genome.fitness)

@@ -76,6 +76,10 @@ def eval_genomes_hardware(individual, settings, genomes, config, generation):
             # update current position of the robot
             robot_current_position = robot_m.realxy()[:2]
 
+        # simulation specific props
+        thymio_position = []
+        schedule.every(2).seconds.do(thymio_get_position_every_2s, thymio_position)
+
         # timetep 50 ms
         dt = 0.05
         runtime = 0
@@ -187,6 +191,8 @@ def eval_genomes_hardware(individual, settings, genomes, config, generation):
         # calculate the fitnesss
         fitness = np.sum(fitness_agg)/settings.run_time
 
+        schedule.clear()
+
         print('genome_id: {} fitness: {:.4f} runtime: {:.2f} s steps: {}'.format(
             individual.id, fitness, runtime, steps))
 
@@ -205,6 +211,7 @@ def eval_genomes_hardware(individual, settings, genomes, config, generation):
 
         genome.fitness = fitness
         genome.features = behavioral_features
+        genome.position = thymio_position
 
         follow_path(
             individual,
