@@ -725,8 +725,13 @@ class Simulation(object):
         """restore genome and re-run simulation"""
 
         if N == 1:
-            self.winner = self.eval_function(
-                self.individual, self.settings, [(self.winner.key, self.winner)], self.config)
+
+            if self.simulation_type == 'thymio':
+                _ = eval_genome_hardware(
+                    self.individual, self.settings, self.winner, model=None, config=self.config, generation=-1)
+            else:
+                self.winner = self.eval_function(
+                    self.individual, self.settings, [(self.winner.key, self.winner)], self.config)
         else:
             if not os.path.exists('./data/neat/restored_genomes/'):
                 os.makedirs('./data/neat/restored_genomes/')
