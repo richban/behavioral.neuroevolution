@@ -14,8 +14,8 @@ import warnings
 import matplotlib as mpl
 mpl.use('TkAgg')
 
-# plotly.tools.set_credentials_file(username=os.environ['PLOTLY_USERNAME'],
-#                                   api_key=os.environ['PLOTLY_API_KEY'])
+plotly.tools.set_credentials_file(username=os.environ['PLOTLY_USERNAME'],
+                                  api_key=os.environ['PLOTLY_API_KEY'])
 
 
 def plot_stats(statistics, ylog=False, view=False, filename='avg_fitness.svg'):
@@ -450,3 +450,287 @@ def plot_single_run(gen, fit_mins, fit_avgs, fit_maxs, title=None, ratio=None, s
     plt.legend(lns, labs, loc="lower right")
 
     _save_or_show(save)
+
+
+def plot_runs(dt, title, offline=True):
+    """Plots the Max/Average/Median"""
+    trace0 = go.Scatter(
+        x=dt.index,
+        y=dt.loc[:, 'max'],
+        mode='lines',
+        name='Max',
+        line=dict(
+            color="rgb(204, 51, 51)",
+            dash="solid",
+            shape="spline",
+            smoothing=0.0,
+            width=2
+        ),
+    )
+
+    trace1 = go.Scatter(
+        x=dt.index,
+        y=dt.loc[:, 'median'],
+        mode='lines',
+        name='Median',
+        line=dict(
+            color="rgb(173, 181, 97)",
+            shape="spline",
+            dash="solid",
+            smoothing=0.0,
+            width=2
+        )
+    )
+
+    trace2 = go.Scatter(
+        x=dt.index,
+        y=dt.loc[:, 'avg'],
+        mode='lines',
+        name='Average',
+        line=dict(
+            color="rgb(62, 173, 212)",
+            shape="spline",
+            dash="solid",
+            smoothing=0.0,
+            width=2
+        )
+    )
+
+    layout = go.Layout(
+        showlegend=True,
+        hovermode='closest',
+        title=title,
+        xaxis=dict(
+            autorange=False,
+            range=[0, 20],
+            showspikes=False,
+            title="Generations",
+            ticklen=5,
+            gridwidth=1,
+        ),
+        yaxis=dict(
+            autorange=True,
+            title="Fitness",
+            ticklen=5,
+            gridwidth=1,
+        ),
+    )
+
+    data = [trace0, trace1, trace2]
+    fig = go.Figure(data, layout=layout)
+
+    return py.iplot(fig, filename=title)
+
+    l = []
+    y = []
+
+    N = len(scatter.gen.unique())
+
+    c = ['hsl('+str(h)+',50%'+',50%)' for h in np.linspace(0, 360, N)]
+
+    for i in range(int(N)):
+        subset = scatter.loc[scatter['gen'] == i]
+
+        trace0 = go.Scatter(
+            x=subset.loc[:, 'gen'],
+            y=subset.loc[:, 'fitness'],
+            mode='markers',
+            marker=dict(size=7,
+                        line=dict(width=1),
+                        color=c[i],
+                        opacity=0.5
+                        ),
+            name='gen {}'.format(i),
+            text=subset.loc[:, 'genome']
+        )
+        l.append(trace0)
+
+    trace0 = go.Scatter(
+        x=dt.loc[:, 'gen'],
+        y=dt.loc[:, 'max'],
+        mode='lines',
+        name='Max',
+        line=dict(
+            color="rgb(204, 51, 51)",
+            dash="solid",
+            shape="spline",
+            smoothing=0.0,
+            width=2
+        ),
+    )
+
+    trace1 = go.Scatter(
+        x=dt.loc[:, 'gen'],
+        y=dt.loc[:, 'median'],
+        mode='lines',
+        name='Median',
+        line=dict(
+            color="rgb(173, 181, 97)",
+            shape="spline",
+            dash="solid",
+            smoothing=0.0,
+            width=2
+        )
+    )
+
+    trace2 = go.Scatter(
+        x=dt.loc[:, 'gen'],
+        y=dt.loc[:, 'avg'],
+        mode='lines',
+        name='Average',
+        line=dict(
+            color="rgb(62, 173, 212)",
+            shape="spline",
+            dash="solid",
+            smoothing=0.0,
+            width=2
+        )
+    )
+
+    data = [trace0, trace1, trace2]
+
+    layout = go.Layout(
+        title='Fitness of Population Individuals - {}'.format(title),
+        hovermode='closest',
+        xaxis=dict(
+            title='Generations',
+            ticklen=5,
+            zeroline=False,
+            gridwidth=2,
+        ),
+        yaxis=dict(
+            title='Fitness',
+            ticklen=5,
+            gridwidth=1,
+        ),
+        showlegend=False
+    )
+
+    fig = go.Figure(data=data+l, layout=layout)
+
+    return py.iplot(fig, filename='fitness-average-n-runs', layout=layout)
+
+
+def plot_scatter(dt, title):
+    """Plots a Scatter plot of each individual in the population"""
+    l = []
+    y = []
+
+    N = len(dt.gen.unique())
+
+    c = ['hsl('+str(h)+',50%'+',50%)' for h in np.linspace(0, 360, N)]
+    for i in range(int(N)):
+        subset = dt.loc[dt['gen'] == i]
+
+        trace0 = go.Scatter(
+            x=subset.loc[:, 'gen'],
+            y=subset.loc[:, 'fitness'],
+            mode='markers',
+            marker=dict(size=14,
+                        line=dict(width=1),
+                        color=c[i],
+                        opacity=0.3
+                        ),
+            name='gen {}'.format(i),
+            text=subset.loc[:, 'genome'],
+        )
+        l.append(trace0)
+
+    layout = go.Layout(
+        title='Fitness of Population Individuals - {}'.format(title),
+        hovermode='closest',
+        xaxis=dict(
+            title='Generations',
+            ticklen=5,
+            zeroline=False,
+            gridwidth=2,
+        ),
+        yaxis=dict(
+            title='Fitness',
+            ticklen=5,
+            gridwidth=1,
+        ),
+        showlegend=False
+    )
+
+    fig = go.Figure(data=l, layout=layout)
+
+    return py.iplot(fig, filename='population-scatter')
+
+
+def plot_grid(grid):
+    trace = go.Heatmap(z=grid, colorscale='Viridis')
+    data = [trace]
+
+    layout = go.Layout(
+        title='Environment and obstacles',
+        showlegend=False
+    )
+
+    return py.iplot(data, filename='grid-heatmap', layout=layout)
+
+
+def plot_fitness(dt):
+
+    upper_bound = go.Scatter(
+        name='75%',
+        x=dt.index.values,
+        y=dt.loc[:, 'q3'],
+        mode='lines',
+        marker=dict(color="#444"),
+        line=dict(width=0),
+        fillcolor='rgba(68, 68, 68, 0.3)',
+        fill='tonexty')
+
+    trace = go.Scatter(
+        name='Median',
+        x=dt.index.values,
+        y=dt.loc[:, 'q2'],
+        mode='lines',
+        line=dict(color='rgb(31, 119, 180)'),
+        fillcolor='rgba(68, 68, 68, 0.3)',
+        fill='tonexty')
+
+    lower_bound = go.Scatter(
+        name='25%',
+        x=dt.index.values,
+        y=dt.loc[:, 'q1'],
+        marker=dict(color="#444"),
+        line=dict(width=0),
+        mode='lines')
+
+    trace_max = go.Scatter(
+        x=dt.index.values,
+        y=dt.loc[:, 'q4'],
+        mode='lines',
+        name='Max',
+        line=dict(
+            color="rgb(204, 51, 51)",
+            dash="solid",
+            shape="spline",
+            smoothing=0.0,
+            width=2
+        ),
+    )
+
+    data = [lower_bound, trace, upper_bound, trace_max]
+
+    layout = go.Layout(
+        title='Fitness of Population Individuals',
+        hovermode='closest',
+        xaxis=dict(
+            title='Generations',
+            ticklen=5,
+            zeroline=False,
+            gridwidth=1,
+        ),
+        yaxis=dict(
+            title='Fitness',
+            ticklen=5,
+            gridwidth=1,
+        ),
+        showlegend=True
+    )
+
+    fig = go.Figure(data=data, layout=layout)
+    return py.iplot(fig, filename='fitness-graph-quartile')

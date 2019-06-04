@@ -31,6 +31,7 @@ keras = "*"
 tensorflow = "*"
 pydot = "*"
 schedule = "*"
+import-ipynb = "*"
 
 [requires]
 python_version = "3.7"
