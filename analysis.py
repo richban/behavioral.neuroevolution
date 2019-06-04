@@ -46,3 +46,48 @@ def compute_quartiles(dt):
     q.index = q.index.astype(int)
 
     return q.sort_index()
+
+
+def read_behaviors(files):
+    columns = [
+        'gen',
+        'genome_id',
+        'simulation',
+        'avg_left', 'avg_right',
+        's1', 's2', 's3', 's4', 's5', 's6', 's7',
+        'area0_count', 'area0_percentage', 'area0_total',
+        'area1_count', 'area1_percentage', 'area1_total',
+        'area2_count', 'area2_percentage',
+        'total',
+    ]
+
+    USE_COLUMS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 16, 19]
+
+    converters = {
+        0: lambda x: int(x),
+        1: lambda x: int(x),
+        2: lambda x: str(x),
+        3: lambda x: float(x),
+        4: lambda x: float(X),
+        5: lambda x: float(x),
+        6: lambda x: float(x),
+        7: lambda x: float(x),
+        8: lambda x: float(x),
+        9: lambda x: float(x),
+        10: lambda x: float(x),
+        11: lambda x: float(x),
+        12: lambda x: int(x),
+        13: lambda x: float(x),
+        14: lambda x: int(x),
+        15: lambda x: int(x),
+        16: lambda x: float(x),
+        17: lambda x: int(x),
+        18: lambda x: int(x),
+        19: lambda x: float(x),
+        20: lambda x: int(x),
+    }
+
+    features = [pd.read_csv(f, names=columns, converters=converters,
+                            usecols=USE_COLUMS) for f in files]
+
+    return features

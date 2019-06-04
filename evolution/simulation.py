@@ -721,18 +721,35 @@ class Simulation(object):
         return pop, hof, logbook, best_inds, best_inds_fitness
 
     @timeit
-    def restore_genome(self, N=1):
+    def restore_genome(self, N=10):
         """restore genome and re-run simulation"""
 
         if N == 1:
             self.winner = self.eval_function(
                 self.individual, self.settings, [(self.winner.key, self.winner)], self.config)
         else:
+            self.settings.path = '../'
+            toolbox = base.Toolbox()
+            # genomes = [toolbox.clone(self.winner) for _ in range(0, N)]
             for _ in range(0, N):
-                genome = self.eval_function(
-                    self.individual, self.settings, [(self.winner.key, self.winner)], self.config)
-                with open('genome_{}_fitness.txt'.format(self.winner.key), 'a') as w:
+                genome = toolbox.clone(self.winner)
+
+                del (
+                    genome.features,
+                    genome.fitness,
+                    genome.position
+                )
+                _ = eval_genome_hardware(
+                    self.individual, self.settings, self.winner, model=None, self.config, generation=-1)
+
+                print(genome.features)
+                print(genome.fitness)
+
+                with open('restored_genome_{}_fitness.txt'.format(self.winner.key), 'a') as w:
                     w.write('{0},{1}'.format(genome.key, genome.fitness))
+
+                with open(str(genome.key) + "_restored_genome_.pkl", "wb") as ind_file:
+                    pickle.dump(genome, ind_file)
         return
 
     def post_eval(self):

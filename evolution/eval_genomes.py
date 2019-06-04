@@ -581,6 +581,34 @@ def post_eval_genome(individual, settings, genome, config):
         return individual
 
     elif type(individual).__name__ == 'EvolvedRobot':
+        init_position = np.array([0.19, 0.22])
+        
+        if settings.config_scene:
+                # Get the position of all the obstacles in reality
+            obstacles_pos = [get_marker_object(obstacle).realxy()
+                            for obstacle in (9, 10, 11)]
+            # Get all obstacle handlers from VREP
+            obstacle_handlers = [get_object_handle(settings.client_id, obstacle) for obstacle in (
+                'obstacle', 'obstacle1', 'obstacle0')]
+            # Set the position of obstacles in vrep according the obstacles from reality
+            for obs, handler in zip(obstacles_pos, obstacle_handlers):
+                set_pose(settings.client_id, handler, [obs[0], obs[1], 0.099999])
+
+            # add markers position to obstacle_markers
+            for position, marker in zip(obstacles_pos, settings.obstacle_markers):
+                for _, value in marker.items():
+                    value.update(center=(position[:2]*1000).astype(int))
+
+            obstacle_grid = create_grid(settings.obstacle_markers)
+        else:
+            # add markers position to obstacle_markers
+            obstacles_pos = [[620, 590, 0], [880, 100, 0], [150, 430, 0]]
+            for position, marker in zip(obstacles_pos, settings.obstacle_markers):
+                for _, value in marker.items():
+                    value.update(center=position[:2])
+            obstacle_grid = create_grid(settings.obstacle_markers)
+
+
         individual.chromosome = genome
         individual.id = genome.key
         t_xy, t_angle = thymio_position()
@@ -623,6 +651,16 @@ def post_eval_genome(individual, settings, genome, config):
             individual.t_set_motors(*list(scaled_output))
 
         individual.t_stop()
+
+        follow_path(
+            individual,
+            init_position,
+            get_marker_object,
+            vrep,
+            settings.client_id,
+            grid=obstacle_grid,
+            log_time=settings.logtime_data
+        )
 
         if (vrep.simxStopSimulation(settings.client_id, settings.op_mode) == -1):
             print('Failed to stop the simulation')
@@ -971,6 +1009,7 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None, 
     if type(genome).__name__ == 'DefaultGenome':
         genome.features = behavioral_features
         genome.fitness = fitness
+        genome.position = thymio_position
 
     follow_path(
         individual,
