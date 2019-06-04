@@ -129,9 +129,44 @@ Asebamedulla exposes the interface \emph{EventFilter} which allows managing even
 
 \subsection{Robotic Simulator}
 
+In our experiments, a set of tools is needed in order to develop, test and validate different approaches to the reality gap problem. In relation to evolutionary robotics, these tools represent robotic simulators and robotic frameworks. Robotic simulators help to build the bridge between simulation and reality, they endorse that the developed simulation can be transferred and applied to real robotics. The most well know simulators in the community are \emph{V-REP} \cite{rohmer2013v} and \emph{Gazebo} \cite{koenig2004design} based on a survey made by Ivaldi, Peters, \cite{ivaldi2014tools}. These two simulators are compared in basic robotic control logic and evolutionary robotics experiment in \cite{nogueira2014comparative}. \emph{V-REP} robot simulation framework came out as the more intuitive and user-friendly simulator, which comes with various features and is less hardware demanding. Moreover, we have experience with \emph{V-REP} from previous works, therefore it was chosen as our main robotic framework.
+
+In this work the use of V-REP simulation is not only used for \emph{Simulation-based optimization} and \emph{Robot-in-the-loop simulation-based optimization} approaches but also for \emph{Reality-based optimization} approach. V-REP exposes a remote API that allows controlling the simulation from the external client-side application. The client-side application is written in python which enables to control the simulation over the simulation variables.
+
 \subsection{Computer Vision}
 
-\subsection{Path Following}
+One of the most pivotal points of the computer vision is to track the Thymio robot during evaluation and positioning of the obstacles in the simulation. Therefore it goes without saying that the system must be able to accurately read the position and angle of these objects. Since the environment is static and small in size, a fixed-camera computer vision is optimal to extract the necessary spatial information within a single image. The most necessary problem is solving the objects identification and accurate spatial information extraction. These problems are usually dealt with using certain marker systems. One of such a system is \cite{bencina2005improved}, which relies on 2D tracking of specially designed fiducials (markers) in a real-time video stream. This system involves a set of marker patterns and computer vision algorithms that can track and yield various spatial information of these markers. Such a marker system was chosen in this project as it perfectly satisfy our requirements. The choice is supported by the same computer vision system being used and proven in \cite{faina2017automating}.
+
+\subsubsection{Fiducial tracking}
+
+The \epmh{ReacTIVision Fiducials} \ref{fig:fiducial_markers} comes in 3 different set of sizes \emph{small, medium, large} and each individual marker has it's own unique id. Furthermore, each of them is purely identified by its unique topological structure. The system employs the topological fiducial recognition, which enables detection and identification. In this approach, a region adjacency graph is computed from a binary image. The adjacency graph can be understood as a tree. By recognizing the graphs representing the fiducials, markers can be detected and identified. Moreover, the location is computed as the weighted average of all leaf centers (black and white). The vector from this centroid to a point given by the weighted average of all black (or white) leaf centers is used to compute the orientation of the fiducial \cite{bencina2005improved}.
+
+\begin{figure}[H]
+  \includegraphics[width=0.66\linewidth]{include/images/fiducial_markers.PNG}
+  \caption{\label{fig:fiducial_markers}ReacTIVision Fiducials from original paper a) a reacTIVision fiducial (b) black and white leafs and their average centroid (c) black leafs and their average centroid, and (d) the vector used to compute the orientation of the fiducial}
+\end{figure}
+
+\subsubsection{Computer Vision Implementation}
+
+The original implementation of the \emph{reacTIVision} system has been re-implemented using \emph{OpenCV}\footnote{\url{https://opencv.org/}} by Faina, in \cite{faina2017automating}. The actual implementation is written in Python, and have been slightly modified, concretely, have been made thread-safe. The entire vision system operates on pixel-coordinates, which is turned into a base coordinate system. Transformation...
+
+The video frame is captured by using an HD camera \footnote{Logitech 1980x1080 pixels}, which is placed on top of the physical arena \ref{fig:test_bed}. Processing a single frame consist of the following steps: 
+
+\begin{itemize}
+  \item Pre-processing. Compensate radial and tangential lens distortion.
+  \item Thresholding. Transform grayscale image to a binary image.
+  \item Segmentation. Construct the region adjacency graph.
+  \item Fiducial Recognition. Subgraphs are identified and their location and orientation are computed.   
+\end{itemize}
+
+As was pointed out in \cite{faina2017automating}, the lighting condition has to be constant in order to be able to locate the fiducial markers. This issue arises only when sudden, lighting changes occur in the environment. For example, window blinds have been folded. Even though the vision system is able to compensate incidents such this by stabilizing the image, when the lighting conditions are too extreme (sunset/sunrise) the cameras automatic white balancing and focusing make the image to blurred to identify the fiducial markers. This issue was fixed by placing a fixture to the ceiling which ensured that the lighting condition is more or less constant.
+
+
+\subsection{Simulation Restart}
+
+One of the requirements of the evolutionary procedure applied in this projects is that the agent is required to start each iteration of the evolutionary algorithm from the same position. Naturally, for the simulation-based approach utilized in a simulation, it is not a problem, since the robot position can be easily set by the simulation tool. On the other hand, this behavior had to be implemented in the reality-based optimization approach for dealing with situations when the Thymio had to return to his initial position after an evaluation. This behavior is the \emph{path following} behavior of the Thymio vehicle. Several important facts had to be considered in the implementation. Among the most important one is the ability to track the path from any given position to the initial position. In addition to this tracking, the system has to take full control of the Thymio vehicle and operate it to follow the computed route as close as possible to the initial position, considering all errors along the way. Another important part of the path following is the consideration of the obstacles. It has to take into account the static obstacles that might be in the direction of travel.
+
+\subsubsection{Path following}
 
 \section{Automation Control}
 
