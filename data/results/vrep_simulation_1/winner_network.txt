@@ -1,0 +1,22 @@
+
+Best genome:
+Key: 376
+Fitness: 13.725706068600953
+Nodes:
+	0 DefaultNodeGene(key=0, bias=1.3353222846057955, response=1.0, activation=sigmoid, aggregation=sum)
+	1 DefaultNodeGene(key=1, bias=2.2582969103057033, response=1.0, activation=sigmoid, aggregation=sum)
+Connections:
+	DefaultConnectionGene(key=(-7, 0), weight=-1.1878848562514932, enabled=False)
+	DefaultConnectionGene(key=(-7, 1), weight=1.7546547504849508, enabled=False)
+	DefaultConnectionGene(key=(-6, 0), weight=0.1710208826142641, enabled=True)
+	DefaultConnectionGene(key=(-6, 1), weight=2.115512528428232, enabled=True)
+	DefaultConnectionGene(key=(-5, 0), weight=-0.16587385974732566, enabled=True)
+	DefaultConnectionGene(key=(-4, 0), weight=2.917740954711789, enabled=True)
+	DefaultConnectionGene(key=(-4, 1), weight=-1.0852557399138494, enabled=True)
+	DefaultConnectionGene(key=(-3, 0), weight=-4.903350210640773, enabled=True)
+	DefaultConnectionGene(key=(-3, 1), weight=-0.5482981896991099, enabled=True)
+	DefaultConnectionGene(key=(-2, 1), weight=-0.7057926167380428, enabled=False)
+	DefaultConnectionGene(key=(-1, 0), weight=-2.2971729383736026, enabled=True)
+	DefaultConnectionGene(key=(-1, 1), weight=4.2321967707427675, enabled=True)
+Best genomes:
+None
