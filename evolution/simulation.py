@@ -728,7 +728,10 @@ class Simulation(object):
             self.winner = self.eval_function(
                 self.individual, self.settings, [(self.winner.key, self.winner)], self.config)
         else:
-            self.settings.path = '../'
+            if not os.path.exists('./data/neat/restored_genomes/'):
+                os.makedirs('./data/neat/restored_genomes/')
+            
+            self.settings.path = './data/neat/restored_genomes/'
             toolbox = base.Toolbox()
             # genomes = [toolbox.clone(self.winner) for _ in range(0, N)]
             for _ in range(0, N):
@@ -737,18 +740,17 @@ class Simulation(object):
                 del (
                     genome.features,
                     genome.fitness,
-                    genome.position
+                    # genome.position
                 )
                 _ = eval_genome_hardware(
                     self.individual, self.settings, genome, model=None, config=self.config, generation=-1)
 
-                print(genome.features)
-                print(genome.fitness)
+                result = np.concatenate(([genome.key], [genome.fitness], [genome.features])])
 
-                with open('restored_genome_{}_fitness.txt'.format(self.winner.key), 'a') as w:
-                    w.write('{0},{1}'.format(genome.key, genome.fitness))
+                with open(self.settings.path + 'restored_genome_{}_fitness.txt'.format(genome.key), 'a') as w:
+                    np.savetxt(w, (result,), delimiter=',', fmt='%s')
 
-                with open(str(genome.key) + "_restored_genome_.pkl", "wb") as ind_file:
+                with open(self.settings.path + str(genome.key) + "_restored_genome_.pkl", "wb") as ind_file:
                     pickle.dump(genome, ind_file)
         return
 
