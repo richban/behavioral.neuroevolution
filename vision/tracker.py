@@ -258,9 +258,14 @@ class Tracker(threading.Thread):
         self.cap.set(37, 1)
         self.cap.set(cv2.CAP_PROP_FPS, 20)
         self.cap.read()
+        self._stop_event = threading.Event()
 
     def stop(self):
         self.cap.release()
+        self._stop_event.set()
+
+    def stopped(self):
+        return self._stop_event.is_set()
 
     def _get_marker_object(self, mid, markers):
         """
