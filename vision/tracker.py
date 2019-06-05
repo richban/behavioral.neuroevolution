@@ -263,6 +263,7 @@ class Tracker(threading.Thread):
     def stop(self):
         self.cap.release()
         self._stop_event.set()
+        cv2.destroyAllWindows()
 
     def stopped(self):
         return self._stop_event.is_set()
@@ -390,7 +391,7 @@ class Tracker(threading.Thread):
 
         print("Last markers len: " + str(len(self.lastMarkers)))
 
-        while(True):
+        while(self.cap.isOpened()):
             start = time.time()
             m = self._getMarkers()
             # Add the last markers and remove the first one
