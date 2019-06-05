@@ -7,7 +7,8 @@ from utility.visualize import plot_single_run
 from evolution.eval_genomes import \
     eval_genomes_simulation, \
     eval_genomes_hardware, \
-    eval_genome_hardware
+    eval_genome_hardware, \
+    eval_genome_simulation
 from subprocess import Popen
 from functools import partial
 from neat import ParallelEvaluator
@@ -298,10 +299,43 @@ class Simulation(object):
         self.agent_initialized = True
 
     def _init_genome(self):
+        def init_individual(cls, genome):
+            """Concatenated weights of the Keras model
+            Weights are concatenated into a single list of floating points.
+            The weights than are reshaped and adjusted in the eval_function in
+            order to update the model weights correctly.
+            """
+            ind = cls(genome)
+            ind.weights_shape = [(7, 5), (5,), (5, 2), (2,)]
+            ind.features = None
+            ind.weights = None
+            ind.str_disparity = None
+            ind.diversity = None
+            ind.task_fitness = None
+            ind.evaluation = None
+            ind.position = None
+            ind.gen = None
+            ind.key = None
+
+            return ind
+
         if self.genome_path:
             with open(self.genome_path, 'rb') as f:
                 genome = pickle.load(f)
-            self.winner = genome
+
+            if self.multiobjective:
+                # Creating the appropriate type of the problem
+                creator.create("FitnessMax", base.Fitness,
+                               weights=(1.0, -1.0, 1.0))
+                creator.create("Individual", list,
+                               fitness=creator.FitnessMax, genome=None)
+                toolbox = base.Toolbox()
+                toolbox.register("individual", init_individual,
+                                 creator.Individual, genome=genome)
+
+                self.winner = toolbox.individual()
+            else:
+                self.winner = genome
             print(genome)
         return
 
@@ -724,7 +758,7 @@ class Simulation(object):
             pickle.dump(best_inds, fp)
 
         # save the best individual
-        with open(self.settings.path + 'winner_{0}.pkl'.format(hof[0].key), 'wb') as winner:
+        with open(self.settings.path + 'winner_{0}'.format(hof[0].key), 'wb') as winner:
             pickle.dump(hof[0], winner)
 
         # Evolution records as a chronological list of dictionaries
@@ -744,50 +778,48 @@ class Simulation(object):
         # plot the best individuals genealogy
         gen_best = history.getGenealogy(hof[0])
         graph = networkx.DiGraph(gen_best).reverse()
-        colors = [toolbox.evaluate(history.genealogy_history[i])[0] for i in graph]
+        colors = [toolbox.evaluate(history.genealogy_history[i])[
+            0] for i in graph]
         networkx.draw(graph, node_color=colors, node_size=100)
         plt.savefig(self.settings.path + 'genealogy_tree.pdf')
 
         return pop, hof, logbook, best_inds, best_inds_fitness
 
     @timeit
-    def restore_genome(self, N=2):
+    def restore_genome(self, N=1):
         """restore genome and re-run simulation"""
 
-        if N == 1:
+        toolbox = base.Toolbox()
+        model = None
+
+        if self.multiobjective:
+            model = self.build_model(
+                self.n_layers, self.input_dim, self.neurons)
+
+        for i in range(0, N):
+            genome = toolbox.clone(self.winner)
+
+            del (
+                genome.features,
+                genome.fitness,
+                # genome.position
+            )
 
             if self.simulation_type == 'thymio':
                 _ = eval_genome_hardware(
-                    self.individual, self.settings, self.winner, model=None, config=self.config, generation=-1)
+                    self.individual, self.settings, genome, model=model, config=self.config, generation=-1)
             else:
-                self.winner = self.eval_function(
-                    self.individual, self.settings, [(self.winner.key, self.winner)], self.config)
-        else:
-            if not os.path.exists('./data/neat/restored_genomes/'):
-                os.makedirs('./data/neat/restored_genomes/')
+                fitness = eval_genome_simulation(
+                    self.individual, self.settings, model, self.config, -1, genome)
 
-            self.settings.path = './data/neat/restored_genomes/'
-            toolbox = base.Toolbox()
-            # genomes = [toolbox.clone(self.winner) for _ in range(0, N)]
-            for i in range(0, N):
-                genome = toolbox.clone(self.winner)
+            result = np.concatenate(
+                ([genome.key], [fitness], genome.features))
 
-                del (
-                    genome.features,
-                    genome.fitness,
-                    # genome.position
-                )
-                _ = eval_genome_hardware(
-                    self.individual, self.settings, genome, model=None, config=self.config, generation=-1)
+            with open(self.settings.restored_genomes + 'restored_genome_{}_fitness.txt'.format(genome.key), 'a') as w:
+                np.savetxt(w, (result,), delimiter=',', fmt='%s')
 
-                result = np.concatenate(
-                    ([genome.key], [genome.fitness], genome.features))
-
-                with open(self.settings.path + 'restored_genome_{}_fitness.txt'.format(genome.key), 'a') as w:
-                    np.savetxt(w, (result,), delimiter=',', fmt='%s')
-
-                with open(self.settings.path + '{}_{}_restored_genome_.pkl'.format(genome.key, i), 'wb') as ind_file:
-                    pickle.dump(genome, ind_file)
+            with open(self.settings.restored_genomes + '{}_{}_restored_genome_.pkl'.format(genome.key, i), 'wb') as ind_file:
+                pickle.dump(genome, ind_file)
         return
 
     def post_eval(self):
