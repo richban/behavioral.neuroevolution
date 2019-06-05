@@ -255,7 +255,8 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None, 
 
     now = datetime.now()
 
-    while not collision and datetime.now() - now < timedelta(seconds=settings.run_time):
+    while datetime.now() - now < timedelta(seconds=settings.run_time):
+    # while not collision and datetime.now() - now < timedelta(seconds=settings.run_time):
         schedule.run_pending()
         # get robot marker
         robot_m = get_marker_object(7)

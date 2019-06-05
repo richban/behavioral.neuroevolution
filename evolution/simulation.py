@@ -786,7 +786,7 @@ class Simulation(object):
         return pop, hof, logbook, best_inds, best_inds_fitness
 
     @timeit
-    def restore_genome(self, N=1):
+    def restore_genome(self, N=10):
         """restore genome and re-run simulation"""
 
         toolbox = base.Toolbox()
