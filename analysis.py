@@ -68,7 +68,7 @@ def read_behaviors(files):
         1: lambda x: int(x),
         2: lambda x: str(x),
         3: lambda x: float(x),
-        4: lambda x: float(X),
+        4: lambda x: float(x),
         5: lambda x: float(x),
         6: lambda x: float(x),
         7: lambda x: float(x),
@@ -89,5 +89,38 @@ def read_behaviors(files):
 
     features = [pd.read_csv(f, names=columns, converters=converters,
                             usecols=USE_COLUMS) for f in files]
+
+    return features
+
+
+def read_restored_behaviors(files):
+    columns = [
+        'genome_id',
+        'fitness',
+        'avg_left', 'avg_right',
+        's1', 's2', 's3', 's4', 's5', 's6', 's7',
+        'area0_percentage',
+        'area1_percentage',
+        'area2_percentage',
+    ]
+
+    converters = {
+        0: lambda x: int(float(x)),
+        1: lambda x: float(x),
+        2: lambda x: float(x),
+        3: lambda x: float(x),
+        4: lambda x: float(x),
+        5: lambda x: float(x),
+        6: lambda x: float(x),
+        7: lambda x: float(x),
+        8: lambda x: float(x),
+        9: lambda x: float(x),
+        10: lambda x: float(x),
+        11: lambda x: float(x),
+        12: lambda x: float(x),
+    }
+
+    features = [pd.read_csv(f, names=columns, converters=converters)
+                for f in files]
 
     return features

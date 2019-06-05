@@ -734,3 +734,82 @@ def plot_fitness(dt):
 
     fig = go.Figure(data=data, layout=layout)
     return py.iplot(fig, filename='fitness-graph-quartile')
+
+
+def plot_n_fitness(dt_list):
+
+    rgb_colors = [
+        "rgb(204, 51, 51)",
+        "rgb(255, 153, 204)",
+        "rgb(255, 204, 102)",
+        "rgb(102, 204, 0)",
+    ]
+
+    data = [
+        go.Scatter(
+            name=str(dt.genome_id.iloc[0]),
+            x=dt.index.values,
+            y=dt.loc[:, 'fitness'],
+            mode='lines',
+            line=dict(
+                color=rgb,
+                dash="solid",
+                shape="spline",
+                smoothing=0.0,
+                width=2
+            )
+        )
+        for (rgb, dt) in zip(rgb_colors, dt_list)
+    ]
+
+    layout = go.Layout(
+        title='Fitness of post evaluated individuals in 10 runs',
+        hovermode='closest',
+        xaxis=dict(
+            title='# of the post-evaluation',
+            ticklen=5,
+            zeroline=False,
+            gridwidth=1,
+        ),
+        yaxis=dict(
+            title='Fitness',
+            ticklen=5,
+            gridwidth=1,
+        ),
+        showlegend=True
+    )
+
+    fig = go.Figure(data=data, layout=layout)
+    return py.iplot(fig, filename='fitness-post-evaluated-individuals')
+
+
+def plot_boxplot_sensors(dt):
+
+    colors = [
+        "#3D9970",
+        "#FF4136",
+        "#ff9933",
+        "#6666ff",
+        "#33cccc",
+        "#39e600",
+        "#3333cc"
+    ]
+
+    data = [
+        go.Box(
+            y=dt.loc[:, 's{}'.format(i+1)],
+            name='sensor {}'.format(i+1),
+            marker=dict(color=color)
+        )
+        for i, color in enumerate(colors)
+    ]
+
+    layout = go.Layout(
+        yaxis=dict(
+            title='Sensors Activations',
+            zeroline=False
+        ),
+    )
+
+    fig = go.Figure(data=data, layout=layout)
+    return py.iplot(fig)

@@ -813,9 +813,9 @@ class Simulation(object):
                     self.individual, self.settings, model, self.config, -1, genome)
 
             result = np.concatenate(
-                ([genome.key], [fitness], genome.features))
+                ([int(genome.key)], [fitness], genome.features))
 
-            with open(self.settings.restored_genomes + 'restored_genome_{}_fitness.txt'.format(genome.key), 'a') as w:
+            with open(self.settings.restored_genomes + 'restored_genome_fitness_{}.dat'.format(genome.key), 'a') as w:
                 np.savetxt(w, (result,), delimiter=',', fmt='%s')
 
             with open(self.settings.restored_genomes + '{}_{}_restored_genome_.pkl'.format(genome.key, i), 'wb') as ind_file:
