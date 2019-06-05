@@ -62,7 +62,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     kwargs = {'config_file': config}
     simulation = 'simulation'
-
+    vision_thread = None
     settings = Settings(thymio, args.save_data, args.debug,
                         args.generations, args.multiobjective)
 
@@ -112,7 +112,7 @@ if __name__ == '__main__':
                                 mid_aux=0,
                                 video_source=-1,
                                 capture=False,
-                                show=False,
+                                show=True,
                                 debug=False,
                                 )
 
@@ -179,3 +179,6 @@ if __name__ == '__main__':
     ):
         sim.log_statistics()
         sim.visualize_results()
+
+    if (vision_thread):
+        vision_thread.stop()
