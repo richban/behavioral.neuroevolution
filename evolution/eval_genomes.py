@@ -92,11 +92,12 @@ def post_eval_genome(individual, settings, genome, model=None, config=None, gene
 
             # input data to the neural network
             if type(network).__name__ == 'FeedForwardNetwork':
-                net_output = network.activate(individual.n_t_sensor_activation)
+                net_output = network.activate(
+                    individual.v_norm_sensor_activation)
 
             if type(network).__name__ == 'Sequential':
                 net_output = network.predict(
-                    (individual.n_t_sensor_activation).reshape((1, 7)))[0]
+                    (individual.v_norm_sensor_activation).reshape((1, 7)))[0]
             # [-2, 2] wheel speed thymio
             scaled_output = np.array(
                 [scale(xi, -2.0, 2.0) for xi in net_output])
