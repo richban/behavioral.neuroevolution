@@ -16,6 +16,8 @@ from keras.layers import Dense
 from keras.initializers import normal
 from keras.utils import plot_model
 from deap import base, creator, tools, algorithms
+import matplotlib.pyplot as plt
+import networkx
 import numpy as np
 import vrep.vrep as vrep
 import neat
@@ -492,7 +494,7 @@ class Simulation(object):
         # register the crossover operator
         toolbox.register('mate', tools.cxTwoPoint)
         # register the mutation operator
-        toolbox.register('mutate', tools.mutFlipBit, indpb=0.5)
+        toolbox.register('mutate', tools.mutFlipBit, indpb=self.settings.MUTPB)
         # register the evaluation function
         if self.simulation_type == 'transferability':
             toolbox.register(
@@ -536,8 +538,8 @@ class Simulation(object):
         best_inds, best_inds_fitness = np.array([]), np.array([])
 
         # Decorate the variation operators
-        # toolbox.decorate("mate", history.decorator)
-        # toolbox.decorate("mutate", history.decorator)
+        toolbox.decorate("mate", history.decorator)
+        toolbox.decorate("mutate", history.decorator)
 
         # create an initial population of N individuals
         pop = toolbox.population(n=self.settings.pop)
@@ -615,7 +617,7 @@ class Simulation(object):
         hof.update(pop)
 
         # Begin the generational process
-        for gen in range(1, self.settings.n_gen+1):
+        for gen in range(1, self.settings.n_gen):
             # Vary the population & crete the offspring
             offspring = tools.selTournamentDCD(pop, len(pop))
             offspring = [toolbox.clone(ind) for ind in offspring]
@@ -738,6 +740,13 @@ class Simulation(object):
             fit_maxs,
             ratio=0.35,
             save=self.settings.path + 'evolved-obstacle.pdf')
+
+        # plot the best individuals genealogy
+        gen_best = history.getGenealogy(hof[0])
+        graph = networkx.DiGraph(gen_best).reverse()
+        colors = [toolbox.evaluate(history.genealogy_history[i])[0] for i in graph]
+        networkx.draw(graph, node_color=colors, node_size=100)
+        plt.savefig(self.settings.path + 'genealogy_tree.pdf')
 
         return pop, hof, logbook, best_inds, best_inds_fitness
 

@@ -21,7 +21,8 @@ class Settings:
         self.vrep_abspath = '~/Developer/vrep-edu/vrep.app/Contents/MacOS/vrep'
         self.logtime_data = {}
         self.pop = 20
-        self.CXPB = 0.3
+        self.CXPB = 0.4
+        self.MUTPB = 0.5
         self.STR = 0.5
         self.multiobjective = multiobjective
         # Obstacle Markers IDs and dimensions in mm

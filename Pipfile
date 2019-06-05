@@ -32,6 +32,7 @@ tensorflow = "*"
 pydot = "*"
 schedule = "*"
 import-ipynb = "*"
+networkx = "*"
 
 [requires]
 python_version = "3.7"
