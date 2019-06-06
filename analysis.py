@@ -156,3 +156,22 @@ def restore_genomes(files):
     for genome in genomes:
         genome.position = np.array(genome.position)
     return genomes
+
+
+def simulation_dt(genome):
+    columns = [
+        'genome_id',
+        'fitness',
+        'avg_left', 'avg_right',
+        's1', 's2', 's3', 's4', 's5', 's6', 's7',
+        'area0_percentage',
+        'area1_percentage',
+        'area2_percentage',
+    ]
+    data = np.array([np.concatenate(([int(float(genome.key))], [
+        genome.fitness], genome.features)) for genome in [genome]*10])
+
+    df = pd.DataFrame(data, columns=columns)
+    df['genome_id'] = df['genome_id'].astype(int)
+
+    return df
