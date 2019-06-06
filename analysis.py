@@ -1,6 +1,8 @@
 from pathlib import Path, PurePath
+from utility.path_tracking import create_grid
 import numpy as np
 import pandas as pd
+import pickle
 import os
 
 
@@ -124,3 +126,33 @@ def read_restored_behaviors(files):
                 for f in files]
 
     return features
+
+
+def obstacle_grid():
+    obstacle_markers = [
+        dict([(9, dict(dimension=[80, 400]))]),
+        dict([(10, dict(dimension=[40, 250]))]),
+        dict([(11, dict(dimension=[260, 60]))]),
+    ]
+
+    obstacles_pos = [[620, 590, 0], [880, 100, 0], [150, 430, 0]]
+    for position, marker in zip(obstacles_pos, obstacle_markers):
+        for _, value in marker.items():
+            value.update(center=position[:2])
+
+    grid = create_grid(obstacle_markers)
+
+    return grid
+
+
+def return_genome(file):
+    with open(file, 'rb') as f:
+        genome = pickle.load(f)
+    return genome
+
+
+def restore_genomes(files):
+    genomes = [return_genome(f) for f in files]
+    for genome in genomes:
+        genome.position = np.array(genome.position)
+    return genomes

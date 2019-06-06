@@ -736,7 +736,7 @@ def plot_fitness(dt):
     return py.iplot(fig, filename='fitness-graph-quartile')
 
 
-def plot_n_fitness(dt_list):
+def plot_n_fitness(dt_list, title):
 
     rgb_colors = [
         "rgb(204, 51, 51)",
@@ -763,7 +763,7 @@ def plot_n_fitness(dt_list):
     ]
 
     layout = go.Layout(
-        title='Fitness of post evaluated individuals in 10 runs',
+        title=title,
         hovermode='closest',
         xaxis=dict(
             title='# of the post-evaluation',
@@ -809,6 +809,8 @@ def plot_boxplot_sensors(dt):
             title='Sensors Activations',
             zeroline=False
         ),
+        title='Sensors Behavioral Features of Individual {}'.format(
+            dt.loc[:, 'genome_id'].iloc[0]),
     )
 
     fig = go.Figure(data=data, layout=layout)
@@ -822,18 +824,22 @@ def plot_boxplot_wheels(dt_list):
         "#FF4136",
         "#ff9933",
         "#6666ff",
-        "#33cccc",
-        "#39e600",
-        "#3333cc"
+        # "#33cccc",
+        # "#39e600",
+        # "#3333cc"
     ]
 
     data = [
         go.Box(
-            y=dt.loc[:, 's{}'.format(i+1)],
-            name='sensor {}'.format(i+1),
+            x=['individual {0}'.format(genome_id)
+               for genome_id in dt.loc[:, 'genome_id']],
+            y=dt.loc[:, '{}'.format(wheel)],
+            name='individual {0} {1}'.format(
+                dt.loc[:, 'genome_id'].iloc[0], wheel),
             marker=dict(color=color)
         )
-        for i, color in enumerate(colors)
+        for dt in dt_list
+        for (color, wheel) in zip(['#3D9970', '#FF4136'], ['avg_left', 'avg_right'])
     ]
 
     layout = go.Layout(
@@ -841,6 +847,141 @@ def plot_boxplot_wheels(dt_list):
             title='Sensors Activations',
             zeroline=False
         ),
+        boxmode='group'
+    )
+
+    fig = go.Figure(data=data, layout=layout)
+    return py.iplot(fig)
+
+
+def plot_path(genomes):
+
+    colors = [
+        "#3D9970",
+        "#FF4136",
+        "#ff9933",
+        "#6666ff",
+        "#33cccc",
+        "#39e600",
+        "#3333cc",
+        "#42f498",
+        "#3c506d",
+        "#ada387"
+    ]
+
+    data = [
+        go.Scatter(
+            x=genome.position[:, 0],
+            y=genome.position[:, 1],
+            mode='lines',
+            name='path{}'.format(genome.key),
+            marker=dict(color=color)
+        ) for (color, genome) in zip(colors, genomes)
+    ]
+
+    layout = go.Layout(
+        title='Path travelled by genome {0}'.format(genomes[0].key),
+        xaxis=dict(
+            zeroline=True,
+            showline=True,
+            mirror='ticks',
+            zerolinecolor='#969696',
+            zerolinewidth=4,
+            linecolor='#636363',
+            linewidth=6,
+            range=[0.0, 1.19]
+        ),
+        yaxis=dict(
+            zeroline=True,
+            showline=True,
+            mirror='ticks',
+            zerolinecolor='#969696',
+            zerolinewidth=4,
+            linecolor='#636363',
+            linewidth=6,
+            range=[0.0, 0.8]
+        )
+    )
+    fig = go.Figure(data=data, layout=layout)
+
+    return py.iplot(fig, filename='path-traveled-genomes')
+
+
+def plot_thymio_fitness(thymio1, thymio2, title):
+
+    thymio1 = go.Scatter(
+        name='Thymio 1 - genome_id: {0}'.format(thymio1.genome_id.iloc[0]),
+        x=thymio1.index.values,
+        y=thymio1.loc[:, 'fitness'],
+        mode='lines',
+        line=dict(
+            color="rgb(255, 204, 102)",
+            dash="solid",
+            shape="spline",
+            smoothing=0.0,
+            width=2
+        )
+    )
+
+    thymio2 = go.Scatter(
+        name='Thymio 2 - genome_id: {0}'.format(thymio2.genome_id.iloc[0]),
+        x=thymio2.index.values,
+        y=thymio2.loc[:, 'fitness'],
+        mode='lines',
+        line=dict(
+            color="rgb(102, 204, 0)",
+            dash="solid",
+            shape="spline",
+            smoothing=0.0,
+            width=2
+        )
+    )
+
+    data = [thymio1, thymio2]
+
+    layout = go.Layout(
+        title=title,
+        hovermode='closest',
+        xaxis=dict(
+            title='# of the post-evaluation',
+            ticklen=5,
+            zeroline=False,
+            gridwidth=1,
+        ),
+        yaxis=dict(
+            title='Fitness',
+            ticklen=5,
+            gridwidth=1,
+        ),
+        showlegend=True
+    )
+
+    fig = go.Figure(data=data, layout=layout)
+    return py.iplot(fig, filename='fitness-difference-thymio1-thymio2')
+
+
+def plot_thymio_behaviors(thymio1, thymio2):
+
+    thymio1 = go.Box(
+        y=thymio1,
+        name='Behavioral Features Thymio 1',
+        marker=dict(color="#FF4136")
+    )
+
+    thymio2 = go.Box(
+        y=thymio2,
+        name='Behavioral Features Thymio 2',
+        marker=dict(color="#39e600")
+    )
+
+    data = [thymio1, thymio2]
+
+    layout = go.Layout(
+        yaxis=dict(
+            title='Summed Behavioral Featuers of 10 runs',
+            zeroline=False
+        ),
+        title='Thymio 1 and Thymio 2 Behavioral Features'
     )
 
     fig = go.Figure(data=data, layout=layout)
