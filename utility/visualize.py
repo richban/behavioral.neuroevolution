@@ -813,3 +813,35 @@ def plot_boxplot_sensors(dt):
 
     fig = go.Figure(data=data, layout=layout)
     return py.iplot(fig)
+
+
+def plot_boxplot_wheels(dt_list):
+
+    colors = [
+        "#3D9970",
+        "#FF4136",
+        "#ff9933",
+        "#6666ff",
+        "#33cccc",
+        "#39e600",
+        "#3333cc"
+    ]
+
+    data = [
+        go.Box(
+            y=dt.loc[:, 's{}'.format(i+1)],
+            name='sensor {}'.format(i+1),
+            marker=dict(color=color)
+        )
+        for i, color in enumerate(colors)
+    ]
+
+    layout = go.Layout(
+        yaxis=dict(
+            title='Sensors Activations',
+            zeroline=False
+        ),
+    )
+
+    fig = go.Figure(data=data, layout=layout)
+    return py.iplot(fig)
