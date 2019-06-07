@@ -76,7 +76,7 @@ def post_eval_genome(individual, settings, genome, model=None, config=None, gene
             return
 
         # collistion detection initialization
-        collision_handle, collision = init_collision(settings.client_id)
+        collision_handle, collision = init_collision(individual.client_id)
 
         dt = 0.05
         runtime = 0
@@ -136,7 +136,7 @@ def post_eval_genome(individual, settings, genome, model=None, config=None, gene
         individual.v_set_pos_angle(position, orientation)
 
         # collistion detection initialization
-        collision_handle, collision = init_collision(settings.client_id)
+        collision_handle, collision = init_collision(individual.client_id)
 
         now = datetime.now()
 
@@ -240,7 +240,7 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None, 
         return
 
     # collistion detection initialization
-    collision_handle, collision = init_collision(settings.client_id)
+    collision_handle, collision = init_collision(individual.client_id)
 
     # areas detection initlaization
     areas_name = ('area0', 'area1', 'area2')
@@ -255,8 +255,8 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None, 
 
     now = datetime.now()
 
-    while datetime.now() - now < timedelta(seconds=settings.run_time):
-    # while not collision and datetime.now() - now < timedelta(seconds=settings.run_time):
+    # while datetime.now() - now < timedelta(seconds=settings.run_time):
+    while not collision and datetime.now() - now < timedelta(seconds=settings.run_time):
         schedule.run_pending()
         # get robot marker
         robot_m = get_marker_object(7)
@@ -443,7 +443,7 @@ def eval_genome_simulation(individual, settings, model, config, generation, geno
         return
 
     # collistion detection initialization
-    collision_handle, collision = init_collision(settings.client_id)
+    collision_handle, collision = init_collision(individual.client_id)
 
     # areas detection initlaization
     areas_name = ('area0', 'area1', 'area2')
