@@ -1,0 +1,12 @@
+Exception ignored in: <function Image.__del__ at 0x7f4cd35b26a8>
+Traceback (most recent call last):
+    File "/home/richban/.asdf/installs/python/3.7.2/lib/python3.7/tkinter/__init__.py", line 3507, in __del__
+        self.tk.call('image', 'delete', self.name)
+    RuntimeError: main thread is not in main loop
+                  Exception ignored in: <function Image.__del__ at 0x7f4cd35b26a8>
+                  Traceback (most recent call last):
+                      File "/home/richban/.asdf/installs/python/3.7.2/lib/python3.7/tkinter/__init__.py", line 3507, in __del__
+                          self.tk.call('image', 'delete', self.name)
+                      RuntimeError: main thread is not in main loop
+                                    Tcl_AsyncDelete: async handler deleted by the wrong thread
+                                    [1]    27257 abort (core dumped)  pipenv run python neuroevolution.py -simulation thymio -save_data True
