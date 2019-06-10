@@ -891,7 +891,12 @@ class Disparity(object):
         denominator = np.sum([np.power(euclidean_distance(
             ind.features, controller.features), -2) for ind in self.transfered_set])
 
-        self.disparity_value = numerator / denominator
+        try:
+            transferability = numerator / denominator
+            self.disparity_value = transferability
+        except:
+            _ = [print(np.power(euclidean_distance(
+                ind.features, controller.features), -2), ind.features, controller.features) for ind in self.transfered_set]
 
     def diversity(self, controller):
         diversity = np.amin([euclidean_distance(
