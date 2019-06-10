@@ -1,0 +1,34 @@
+
+Best genome:
+Key: 375
+Fitness: 17.023056496569616
+Nodes:
+	0 DefaultNodeGene(key=0, bias=2.0030323888960595, response=1.0, activation=sigmoid, aggregation=sum)
+	1 DefaultNodeGene(key=1, bias=2.977670700537547, response=1.0, activation=sigmoid, aggregation=sum)
+	20 DefaultNodeGene(key=20, bias=-1.3191773668394862, response=1.0, activation=sigmoid, aggregation=sum)
+	91 DefaultNodeGene(key=91, bias=0.9434944161060201, response=1.0, activation=sigmoid, aggregation=sum)
+Connections:
+	DefaultConnectionGene(key=(-7, 1), weight=1.9216869256184972, enabled=True)
+	DefaultConnectionGene(key=(-7, 20), weight=-1.6410841115204144, enabled=True)
+	DefaultConnectionGene(key=(-6, 0), weight=-4.394765477053379, enabled=True)
+	DefaultConnectionGene(key=(-6, 1), weight=-0.6997345257526533, enabled=True)
+	DefaultConnectionGene(key=(-6, 20), weight=2.2902989295895684, enabled=True)
+	DefaultConnectionGene(key=(-5, 0), weight=-1.0874648527841533, enabled=True)
+	DefaultConnectionGene(key=(-5, 1), weight=0.32816139991112864, enabled=True)
+	DefaultConnectionGene(key=(-5, 20), weight=1.596734438665265, enabled=False)
+	DefaultConnectionGene(key=(-5, 91), weight=1.0097562254982375, enabled=True)
+	DefaultConnectionGene(key=(-4, 0), weight=-1.1678884550301971, enabled=True)
+	DefaultConnectionGene(key=(-4, 1), weight=0.599970135524896, enabled=True)
+	DefaultConnectionGene(key=(-4, 20), weight=-0.5380969522346137, enabled=True)
+	DefaultConnectionGene(key=(-3, 0), weight=-1.1992679475780723, enabled=True)
+	DefaultConnectionGene(key=(-3, 1), weight=0.531421045006104, enabled=False)
+	DefaultConnectionGene(key=(-3, 20), weight=-2.747275100189573, enabled=True)
+	DefaultConnectionGene(key=(-2, 0), weight=1.465423948060306, enabled=True)
+	DefaultConnectionGene(key=(-2, 20), weight=-1.4894501986554394, enabled=False)
+	DefaultConnectionGene(key=(-1, 0), weight=-4.781140766494563, enabled=True)
+	DefaultConnectionGene(key=(-1, 1), weight=-1.0703882106686378, enabled=False)
+	DefaultConnectionGene(key=(20, 0), weight=2.513895787728394, enabled=True)
+	DefaultConnectionGene(key=(20, 1), weight=-0.5808235830308589, enabled=True)
+	DefaultConnectionGene(key=(91, 1), weight=-0.9648503307893723, enabled=True)
+Best genomes:
+None
