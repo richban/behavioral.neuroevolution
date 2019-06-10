@@ -628,7 +628,7 @@ class Simulation(object):
                 diversity = self.disparity.diversity(ind)
                 ind.fitness.values = (
                     fit, self.disparity.disparity_value, diversity)
-                print('fitness: {0} disparity: {1} diversity: {2}'.format(
+                print('fitness: {:.4f} disparity: {:.4f} diversity: {:.4f}'.format(
                     fit, self.disparity.disparity_value, diversity))
             else:
                 diversity = 1.0
@@ -694,7 +694,7 @@ class Simulation(object):
                     ind.diversity = diversity
                     ind.fitness.values = (
                         fit, self.disparity.disparity_value, diversity)
-                    print('fitness: {0} disparity: {1} diversity: {2}'.format(
+                    print('fitness: {:.4f} disparity: {:.4f} diversity: {:.4f}'.format(
                         fit, self.disparity.disparity_value, diversity))
                 else:
                     diversity = 1.0
