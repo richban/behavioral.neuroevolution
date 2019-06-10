@@ -78,6 +78,7 @@ if __name__ == '__main__':
 
         if args.multiobjective:
             kwargs.update({'eval_function': eval_genome_simulation})
+            kwargs.update({'multiobjective': True})
             simulation = 'simulation_multiobjective'
             if args.n_layers:
                 kwargs.update({'n_layers': args.n_layers})
@@ -86,6 +87,7 @@ if __name__ == '__main__':
 
         if args.restore_genome and not args.threaded:
             kwargs.update({'genome_path': args.restore_genome})
+            kwargs.update({'eval_function': eval_genome_simulation})
             simulation = 'restore_genome'
 
         if args.restore_genome and args.post_eval:
@@ -158,6 +160,7 @@ if __name__ == '__main__':
         if args.multiobjective:
             kwargs.update({'eval_function': eval_genome_simulation})
             kwargs.update({'simulation_type': 'transferability'})
+            kwargs.update({'multiobjective': True})
             simulation = 'simulation_multiobjective'
 
             if args.n_layers:

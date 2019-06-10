@@ -1,6 +1,8 @@
 from pathlib import Path, PurePath
+from utility.path_tracking import create_grid
 import numpy as np
 import pandas as pd
+import pickle
 import os
 
 
@@ -68,7 +70,7 @@ def read_behaviors(files):
         1: lambda x: int(x),
         2: lambda x: str(x),
         3: lambda x: float(x),
-        4: lambda x: float(X),
+        4: lambda x: float(x),
         5: lambda x: float(x),
         6: lambda x: float(x),
         7: lambda x: float(x),
@@ -91,3 +93,85 @@ def read_behaviors(files):
                             usecols=USE_COLUMS) for f in files]
 
     return features
+
+
+def read_restored_behaviors(files):
+    columns = [
+        'genome_id',
+        'fitness',
+        'avg_left', 'avg_right',
+        's1', 's2', 's3', 's4', 's5', 's6', 's7',
+        'area0_percentage',
+        'area1_percentage',
+        'area2_percentage',
+    ]
+
+    converters = {
+        0: lambda x: int(float(x)),
+        1: lambda x: float(x),
+        2: lambda x: float(x),
+        3: lambda x: float(x),
+        4: lambda x: float(x),
+        5: lambda x: float(x),
+        6: lambda x: float(x),
+        7: lambda x: float(x),
+        8: lambda x: float(x),
+        9: lambda x: float(x),
+        10: lambda x: float(x),
+        11: lambda x: float(x),
+        12: lambda x: float(x),
+    }
+
+    features = [pd.read_csv(f, names=columns, converters=converters)
+                for f in files]
+
+    return features
+
+
+def obstacle_grid():
+    obstacle_markers = [
+        dict([(9, dict(dimension=[80, 400]))]),
+        dict([(10, dict(dimension=[40, 250]))]),
+        dict([(11, dict(dimension=[260, 60]))]),
+    ]
+
+    obstacles_pos = [[620, 590, 0], [880, 100, 0], [150, 430, 0]]
+    for position, marker in zip(obstacles_pos, obstacle_markers):
+        for _, value in marker.items():
+            value.update(center=position[:2])
+
+    grid = create_grid(obstacle_markers)
+
+    return grid
+
+
+def return_genome(file):
+    with open(file, 'rb') as f:
+        genome = pickle.load(f)
+    return genome
+
+
+def restore_genomes(files):
+    genomes = [return_genome(f) for f in files]
+    for genome in genomes:
+        genome.position = np.array(genome.position)
+    return genomes
+
+
+def simulation_dt(genome):
+    columns = [
+        'genome_id',
+        'fitness',
+        'avg_left', 'avg_right',
+        's1', 's2', 's3', 's4', 's5', 's6', 's7',
+        'area0_percentage',
+        'area1_percentage',
+        'area2_percentage',
+    ]
+    data = np.array([np.concatenate(([int(float(genome.key))], [
+        genome.fitness], genome.features)) for genome in [genome]*10])
+
+    df = pd.DataFrame(data, columns=columns)
+    df['genome_id'] = df['genome_id'].astype(int)
+
+    return df

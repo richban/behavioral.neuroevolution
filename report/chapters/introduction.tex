@@ -62,8 +62,24 @@ As a consequence of highly time-consuming optimization procedures on a physical 
 
 \subsection{Robot-in-the-loop simulation-based optimization}
 
-The robot-in-the-loop simulation-based optimization approaches also rely mostly on simulators but some transfer experiments are allowed during the optimization \cite{inproceedings}. Essentially, this approach involves optimization mainly in simulation but few transfers are allowed during the optimization process to conduct some meaningful results on the real robot. This allows to guide the evolutionary search and reduce the number of experiments required to find optimal solutions. There are several works who successfully implemented this approach \cite{bongard2006resilient} \cite{koos2009automatic} but the most promising approach is the so-called \emph{transferability approach}, which is able to learn the limits of the simulation and select individuals with good fitness in simulation and with a high probability of transferability.
+The robot-in-the-loop simulation-based optimization approaches also rely mostly on simulators but some transfer experiments are allowed during the optimization \cite{inproceedings}. Essentially, this approach involves optimization mainly in simulation but few transfers are allowed during the optimization process to conduct some meaningful results on the real robot. This allows to guide the evolutionary search and reduce the number of experiments required to find optimal solutions. There are several works who successfully implemented this approach \cite{bongard2006resilient} \cite{koos2009automatic} but the most promising approach is the s so-called \emph{transferability approach}, which is able to learn the limits of the simulation and select individuals with good fitness in simulation and with a high probability of transferability.
 
 \section{The Transferability Approach}
 
 \section{Concluding thoughts}
+
+As mentioned earlier, the aim of the thesis project is to compare and explore state-of-the-art approaches to the reality gap problem. After reviewing the various approaches, we defined the following experiments and approaches to tackle the reality-gap problem:
+
+\begin{enumerate}
+    \item{\emph{Simulation-based optimization}. In this approach, we first aim to evolve an obstacle avoidance behavior in simulation. Afterwards, we take the best controllers among the simulation runs and look at how well they transfer to reality. Since we rely on a highly accurate simulator and the task is somehow simple, optimal solutions that emerge in simulation should transfer well into reality. Although we hypothesize that's not guaranteed. This experiment involves optimizing ANN controllers using NEAT.}
+    
+    \item{\emph{Reality-based optimization}. Although the optimization on a physical robot is time-consuming, it's an appealing approach to explore. Likewise the previous approach, this experiment involves evolving obstacle avoidance behavior using the same evolutionary strategy - NEAT. Moreover, as far as evolutionary robotics is concerned, controllers are always evolved for a specific robot, therefore we look how evolved behaviors differ when transferred to a different but same model of \emph{Thymio} robot.}
+    
+    \item{\emph{Robot-in-the-loop simulation-based optimization}. More precisely, the \emph{Transferability approach} will be reproduced, which relies on multi-objective optimization with a pareto-based ranking scheme. Again, our  hypothesis is based on the fact that if the \textit{surrogate model} is more accurate and updated more frequently, this would lead to more transferable controllers since in the original implementation the average number of transferred controllers is 6 for each run.}
+    
+    \item{Since much of the experiments involves reality-based optimization and validation on the physical robot, it is clear to investigage how to aid and speed up the optimization/evaluation process which has been forsaken in much of the works. To address this issue, we build an automated robotic platform which enables us to test and validate as many transfers as we want and run the entire optimization process on the physical robot without human intervention while taking the entire physical environment into account.}
+\end{enumerate}
+
+
+
+
