@@ -255,8 +255,8 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None, 
 
     now = datetime.now()
 
-    while datetime.now() - now < timedelta(seconds=settings.run_time):
-        # while not collision and datetime.now() - now < timedelta(seconds=settings.run_time):
+    # while datetime.now() - now < timedelta(seconds=settings.run_time):
+    while not collision and datetime.now() - now < timedelta(seconds=settings.run_time):
         schedule.run_pending()
         # get robot marker
         robot_m = get_marker_object(7)
@@ -310,8 +310,8 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None, 
         # every 10 seconds the robot is in the same position given a threshold stop the simulation
         if round(runtime, 2) % 10.0 == 0.0:
             print(euclidean_distance(thymio_position[0], thymio_position[-1]))
-            # if (euclidean_distance(thymio_position[0], thymio_position[-1])) < .01:
-            #     collision = True
+            if (euclidean_distance(thymio_position[0], thymio_position[-1])) < .09:
+                collision = True
 
         #  fitness_t at time stamp
         (

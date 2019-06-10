@@ -114,7 +114,7 @@ if __name__ == '__main__':
                                 mid_aux=0,
                                 video_source=-1,
                                 capture=False,
-                                show=True,
+                                show=False,
                                 debug=False,
                                 )
 
