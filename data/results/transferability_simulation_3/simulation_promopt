@@ -1,0 +1,1023 @@
+Transfered to thymio genome_id: 35 fitness: 0.2669 runtime: 10.00 s steps: 200
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244475793266522, 0.595299274759087, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+0.0
+Transfered to thymio genome_id: 36 fitness: 0.0078 runtime: 10.00 s steps: 200
+Marker 7 not found. Waiting...
+Marker 7 not found. Waiting...
+Marker 7 not found. Waiting...
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244475793266522, 0.595299274759087, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+0.04392370665935612
+Transfered to thymio genome_id: 37 fitness: 0.0503 runtime: 10.00 s steps: 200
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244475793266522, 0.595299274759087, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+0.024486065325255324
+Transfered to thymio genome_id: 38 fitness: 0.2339 runtime: 10.00 s steps: 200
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244475793266522, 0.595299274759087, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+0.0
+Transfered to thymio genome_id: 39 fitness: 0.0021 runtime: 10.00 s steps: 200
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244475793266522, 0.595299274759087, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 40 fitness: 0.1611 runtime: 6.40 s steps: 128
+1       20      1.82046         0.00214607      1.44609         7.06551
+genome_id: 41 fitness: 1.9345 runtime: 25.00 s steps: 500
+fitness: 1.9344861671543858 disparity: 0.3071709981797116 diversity: 0.5203482829162868
+genome_id: 42 fitness: 2.2469 runtime: 15.30 s steps: 306
+fitness: 2.2468773365546872 disparity: 0.3071709981797116 diversity: 0.6044765752300236
+genome_id: 43 fitness: 0.9991 runtime: 17.45 s steps: 349
+fitness: 0.9990904723737998 disparity: 0.3071709981797116 diversity: 0.2845062201743873
+genome_id: 44 fitness: 1.8829 runtime: 26.00 s steps: 520
+fitness: 1.882897212677736 disparity: 0.3071709981797116 diversity: 0.46770189340499974
+genome_id: 45 fitness: 3.5737 runtime: 35.85 s steps: 717
+fitness: 3.573674940201142 disparity: 0.3071709981797116 diversity: 0.47146157709052494
+genome_id: 46 fitness: 1.2372 runtime: 15.10 s steps: 302
+fitness: 1.2371888219407314 disparity: 0.3071709981797116 diversity: 0.34363749619919653
+genome_id: 47 fitness: 2.4898 runtime: 16.20 s steps: 324
+fitness: 2.4898286393609586 disparity: 0.3071709981797116 diversity: 0.6003451267634948
+genome_id: 48 fitness: 8.7893 runtime: 38.60 s steps: 772
+fitness: 8.789344684788993 disparity: 0.3071709981797116 diversity: 0.6316191931239376
+genome_id: 49 fitness: 1.3550 runtime: 12.10 s steps: 242
+fitness: 1.355015122788047 disparity: 0.3071709981797116 diversity: 0.5941562234009354
+genome_id: 50 fitness: 4.8110 runtime: 25.70 s steps: 514
+fitness: 4.811046914921328 disparity: 0.3071709981797116 diversity: 0.5302908734734346
+genome_id: 51 fitness: 2.9272 runtime: 60.05 s steps: 1201
+fitness: 2.9271989119681554 disparity: 0.3071709981797116 diversity: 0.35565947510987944
+genome_id: 52 fitness: 1.0761 runtime: 13.05 s steps: 261
+fitness: 1.076092336489832 disparity: 0.3071709981797116 diversity: 0.3530171125436143
+genome_id: 53 fitness: 5.7996 runtime: 40.15 s steps: 803
+fitness: 5.799628132349325 disparity: 0.3071709981797116 diversity: 0.4803774343304769
+genome_id: 54 fitness: 1.2608 runtime: 14.35 s steps: 287
+fitness: 1.2607707221868993 disparity: 0.3071709981797116 diversity: 0.44257431879945974
+genome_id: 55 fitness: 1.0412 runtime: 16.65 s steps: 333
+fitness: 1.0412332344963562 disparity: 0.3071709981797116 diversity: 0.324642129875982
+genome_id: 56 fitness: 1.8905 runtime: 13.35 s steps: 267
+fitness: 1.890532979314987 disparity: 0.3071709981797116 diversity: 0.640484895938531
+genome_id: 57 fitness: 1.9487 runtime: 60.05 s steps: 1201
+fitness: 1.9487105290335882 disparity: 0.3071709981797116 diversity: 0.2249199926415358
+genome_id: 58 fitness: 1.0007 runtime: 18.20 s steps: 364
+fitness: 1.0006913099645949 disparity: 0.3071709981797116 diversity: 0.2360153209758425
+genome_id: 59 fitness: 1.4202 runtime: 16.95 s steps: 339
+fitness: 1.4201868858828164 disparity: 0.3071709981797116 diversity: 0.20558415853847378
+genome_id: 60 fitness: 6.5000 runtime: 28.50 s steps: 570
+fitness: 6.499977472855114 disparity: 0.3071709981797116 diversity: 0.34035343927312467
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244475793266522, 0.595299274759087, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 41 fitness: 0.4326 runtime: 5.70 s steps: 114
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244475793266522, 0.595299274759087, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 42 fitness: 0.5294 runtime: 4.35 s steps: 87
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244475793266522, 0.595299274759087, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 47 fitness: 0.7364 runtime: 5.20 s steps: 104
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244475793266522, 0.595299274759087, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 48 fitness: 0.7417 runtime: 4.40 s steps: 88
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244475793266522, 0.595299274759087, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 49 fitness: 0.5790 runtime: 5.20 s steps: 104
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244475793266522, 0.595299274759087, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 50 fitness: 0.9060 runtime: 5.60 s steps: 112
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244475793266522, 0.595299274759087, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 56 fitness: 0.6500 runtime: 4.85 s steps: 97
+2       20      2.04201         0.00214607      1.5739          8.78934
+genome_id: 61 fitness: 1.7022 runtime: 20.75 s steps: 415
+fitness: 1.7021910301846164 disparity: 0.330050574098917 diversity: 0.28956601873522264
+genome_id: 62 fitness: 1.2580 runtime: 16.30 s steps: 326
+fitness: 1.2580104653541848 disparity: 0.330050574098917 diversity: 0.40948152250298847
+genome_id: 63 fitness: 2.8720 runtime: 60.05 s steps: 1201
+fitness: 2.871983069769672 disparity: 0.330050574098917 diversity: 0.388865984076277
+genome_id: 64 fitness: 4.7944 runtime: 43.20 s steps: 864
+fitness: 4.794406677461994 disparity: 0.330050574098917 diversity: 0.45679273825332484
+genome_id: 65 fitness: 0.0059 runtime: 10.00 s steps: 200
+fitness: 0.005901656452699918 disparity: 0.330050574098917 diversity: 0.004813270224701673
+genome_id: 66 fitness: 1.9673 runtime: 13.85 s steps: 277
+fitness: 1.9672900490389604 disparity: 0.330050574098917 diversity: 0.5922568872022542
+genome_id: 67 fitness: 1.6207 runtime: 18.75 s steps: 375
+fitness: 1.6207490240076103 disparity: 0.330050574098917 diversity: 0.18166667591587082
+genome_id: 68 fitness: 6.8083 runtime: 49.85 s steps: 997
+fitness: 6.8083158092299945 disparity: 0.330050574098917 diversity: 0.4544906048006634
+genome_id: 69 fitness: 1.0146 runtime: 17.90 s steps: 358
+fitness: 1.0146365072122974 disparity: 0.330050574098917 diversity: 0.27161240013502697
+genome_id: 70 fitness: 1.3485 runtime: 18.75 s steps: 375
+fitness: 1.3485342486933038 disparity: 0.330050574098917 diversity: 0.38509325357462604
+genome_id: 71 fitness: 1.0720 runtime: 14.20 s steps: 284
+fitness: 1.0720039874112979 disparity: 0.330050574098917 diversity: 0.429259966297901
+genome_id: 72 fitness: 1.0483 runtime: 13.15 s steps: 263
+fitness: 1.048300510557394 disparity: 0.330050574098917 diversity: 0.3155451043788349
+genome_id: 73 fitness: 0.6976 runtime: 12.15 s steps: 243
+fitness: 0.697634038748518 disparity: 0.330050574098917 diversity: 0.26097736502822344
+genome_id: 74 fitness: 1.0665 runtime: 13.30 s steps: 266
+fitness: 1.066454218609812 disparity: 0.330050574098917 diversity: 0.3080396347137674
+genome_id: 75 fitness: 6.3351 runtime: 40.85 s steps: 817
+fitness: 6.335077333462129 disparity: 0.330050574098917 diversity: 0.2939579830811243
+genome_id: 76 fitness: 1.5280 runtime: 12.20 s steps: 244
+fitness: 1.5280176028952084 disparity: 0.330050574098917 diversity: 0.615870299953025
+genome_id: 77 fitness: 4.0871 runtime: 42.30 s steps: 846
+fitness: 4.087147080154259 disparity: 0.330050574098917 diversity: 0.40756397788327525
+genome_id: 78 fitness: 2.1251 runtime: 16.00 s steps: 320
+fitness: 2.1251389237314724 disparity: 0.330050574098917 diversity: 0.5800459127396757
+genome_id: 79 fitness: 7.3613 runtime: 60.05 s steps: 1201
+fitness: 7.361253124355324 disparity: 0.330050574098917 diversity: 0.25525517014986177
+genome_id: 80 fitness: 1.8665 runtime: 18.35 s steps: 367
+fitness: 1.866541309758682 disparity: 0.330050574098917 diversity: 0.30923925836119337
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244475793266522, 0.595299274759087, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 66 fitness: 0.6256 runtime: 4.85 s steps: 97
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244475793266522, 0.595299274759087, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 76 fitness: 0.5463 runtime: 4.55 s steps: 91
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244475793266522, 0.595299274759087, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 78 fitness: 0.8080 runtime: 6.35 s steps: 127
+3       20      2.25741         0.00214607      1.70639         8.78934
+genome_id: 81 fitness: 1.4277 runtime: 14.15 s steps: 283
+fitness: 1.4276559555350181 disparity: 0.3268021552923966 diversity: 0.28522801000254244
+genome_id: 82 fitness: 1.4221 runtime: 15.95 s steps: 319
+fitness: 1.4221104318120927 disparity: 0.3268021552923966 diversity: 0.46032725514701844
+genome_id: 83 fitness: 4.4262 runtime: 60.05 s steps: 1201
+fitness: 4.426202711000399 disparity: 0.3268021552923966 diversity: 0.35229974228207345
+genome_id: 84 fitness: 1.2458 runtime: 19.00 s steps: 380
+fitness: 1.2457549694735595 disparity: 0.3268021552923966 diversity: 0.35207923207252817
+genome_id: 85 fitness: 3.3190 runtime: 20.95 s steps: 419
+fitness: 3.3189903861538586 disparity: 0.3268021552923966 diversity: 0.33313384976472227
+genome_id: 86 fitness: 2.7366 runtime: 40.00 s steps: 800
+fitness: 2.736586259930222 disparity: 0.3268021552923966 diversity: 0.4451202084463903
+genome_id: 87 fitness: 1.1653 runtime: 12.35 s steps: 247
+fitness: 1.1652747814772548 disparity: 0.3268021552923966 diversity: 0.49929551783710246
+genome_id: 88 fitness: 5.4803 runtime: 21.70 s steps: 434
+fitness: 5.480302811935696 disparity: 0.3268021552923966 diversity: 0.26300158687850644
+genome_id: 89 fitness: 2.8587 runtime: 60.05 s steps: 1201
+fitness: 2.8587031904905387 disparity: 0.3268021552923966 diversity: 0.36479536353251246
+genome_id: 90 fitness: 2.4430 runtime: 60.05 s steps: 1201
+fitness: 2.442965864124639 disparity: 0.3268021552923966 diversity: 0.2465053465403632
+genome_id: 91 fitness: 0.8165 runtime: 13.50 s steps: 270
+fitness: 0.8165415203766739 disparity: 0.3268021552923966 diversity: 0.3237461462280039
+genome_id: 92 fitness: 4.4502 runtime: 25.50 s steps: 510
+fitness: 4.450168159254796 disparity: 0.3268021552923966 diversity: 0.3829499512105645
+genome_id: 93 fitness: 1.9567 runtime: 27.30 s steps: 546
+fitness: 1.9566551234750862 disparity: 0.3268021552923966 diversity: 0.21589448845901693
+genome_id: 94 fitness: 3.5353 runtime: 23.50 s steps: 470
+fitness: 3.535340825609582 disparity: 0.3268021552923966 diversity: 0.5522324587461193
+genome_id: 95 fitness: 5.5003 runtime: 21.05 s steps: 421
+fitness: 5.500306817980042 disparity: 0.3268021552923966 diversity: 0.2693456977481852
+genome_id: 96 fitness: 2.2282 runtime: 60.05 s steps: 1201
+fitness: 2.2281619892627136 disparity: 0.3268021552923966 diversity: 0.23537817231201663
+genome_id: 97 fitness: 2.4484 runtime: 60.05 s steps: 1201
+fitness: 2.4483660596020997 disparity: 0.3268021552923966 diversity: 0.2362781510759487
+genome_id: 98 fitness: 3.9859 runtime: 27.95 s steps: 559
+fitness: 3.985853094712341 disparity: 0.3268021552923966 diversity: 0.2086576985697966
+genome_id: 99 fitness: 1.1407 runtime: 18.80 s steps: 376
+fitness: 1.1406646225730281 disparity: 0.3268021552923966 diversity: 0.3439307557688063
+genome_id: 100 fitness: 3.3652 runtime: 19.10 s steps: 382
+fitness: 3.365222339507549 disparity: 0.3268021552923966 diversity: 0.5694705118977178
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244475793266522, 0.595299274759087, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 94 fitness: 1.0170 runtime: 7.15 s steps: 143
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244475793266522, 0.595299274759087, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 100 fitness: 0.5816 runtime: 3.95 s steps: 79
+4       20      2.25741         0.00214607      1.70639         8.78934
+genome_id: 101 fitness: 3.3878 runtime: 19.35 s steps: 387
+fitness: 3.387798137518927 disparity: 0.33187683597691514 diversity: 0.3120859517024606
+genome_id: 102 fitness: 1.9755 runtime: 16.95 s steps: 339
+fitness: 1.9754959398411434 disparity: 0.33187683597691514 diversity: 0.4005228112902157
+genome_id: 103 fitness: 1.3582 runtime: 23.55 s steps: 471
+fitness: 1.3582325526029222 disparity: 0.33187683597691514 diversity: 0.3009847238080116
+genome_id: 104 fitness: 5.6880 runtime: 60.05 s steps: 1201
+fitness: 5.6880443614745 disparity: 0.33187683597691514 diversity: 0.46493687412669044
+genome_id: 105 fitness: 0.6769 runtime: 10.55 s steps: 211
+fitness: 0.6769499094622888 disparity: 0.33187683597691514 diversity: 0.3351008976651907
+genome_id: 106 fitness: 1.1390 runtime: 15.75 s steps: 315
+fitness: 1.1390382421789564 disparity: 0.33187683597691514 diversity: 0.38852705035452356
+genome_id: 107 fitness: 6.8721 runtime: 51.15 s steps: 1023
+fitness: 6.872124344025013 disparity: 0.33187683597691514 diversity: 0.20015224010003227
+genome_id: 108 fitness: 3.7170 runtime: 34.85 s steps: 697
+fitness: 3.7169501436343904 disparity: 0.33187683597691514 diversity: 0.4860564909535031
+genome_id: 109 fitness: 1.4383 runtime: 23.15 s steps: 463
+fitness: 1.438298624184258 disparity: 0.33187683597691514 diversity: 0.3661437723968829
+genome_id: 110 fitness: 3.0705 runtime: 17.70 s steps: 354
+fitness: 3.0704956370320255 disparity: 0.33187683597691514 diversity: 0.5274782044714098
+genome_id: 111 fitness: 1.9838 runtime: 33.35 s steps: 667
+fitness: 1.9838046635160917 disparity: 0.33187683597691514 diversity: 0.477790131032158
+genome_id: 112 fitness: 6.7584 runtime: 36.05 s steps: 721
+fitness: 6.758405697215888 disparity: 0.33187683597691514 diversity: 0.25195545678038095
+genome_id: 113 fitness: 2.0192 runtime: 13.80 s steps: 276
+fitness: 2.0191840446149123 disparity: 0.33187683597691514 diversity: 0.5556389111446431
+genome_id: 114 fitness: 3.3889 runtime: 37.65 s steps: 753
+fitness: 3.3889351452299064 disparity: 0.33187683597691514 diversity: 0.37077570747012434
+genome_id: 115 fitness: 8.8527 runtime: 44.45 s steps: 889
+fitness: 8.852660066945743 disparity: 0.33187683597691514 diversity: 0.5745117889642386
+genome_id: 116 fitness: 0.8034 runtime: 11.60 s steps: 232
+fitness: 0.8033520453407562 disparity: 0.33187683597691514 diversity: 0.4023038954423783
+genome_id: 117 fitness: 1.1108 runtime: 12.05 s steps: 241
+fitness: 1.1108362689034896 disparity: 0.33187683597691514 diversity: 0.47269311844013234
+genome_id: 118 fitness: 2.0072 runtime: 60.05 s steps: 1201
+fitness: 2.0072376719189418 disparity: 0.33187683597691514 diversity: 0.26963815375152617
+genome_id: 119 fitness: 2.3218 runtime: 60.05 s steps: 1201
+fitness: 2.3218220473282387 disparity: 0.33187683597691514 diversity: 0.25970023903385586
+genome_id: 120 fitness: 7.1499 runtime: 53.15 s steps: 1063
+fitness: 7.149947183803148 disparity: 0.33187683597691514 diversity: 0.5217438050749315
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244475793266522, 0.595299274759087, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 110 fitness: 0.6250 runtime: 4.20 s steps: 84
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244475793266522, 0.595299274759087, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 113 fitness: 0.6037 runtime: 4.60 s steps: 92
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244475793266522, 0.595299274759087, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 115 fitness: 0.8408 runtime: 5.55 s steps: 111
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244475793266522, 0.595299274759087, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 120 fitness: 1.1755 runtime: 8.40 s steps: 168
+5       20      2.36909         0.00214607      1.73691         8.85266
+genome_id: 121 fitness: 11.0440 runtime: 57.05 s steps: 1141
+fitness: 11.043979627825463 disparity: 0.40817033109891865 diversity: 0.5974320252513432
+genome_id: 122 fitness: 4.0832 runtime: 60.05 s steps: 1201
+fitness: 4.083241812569322 disparity: 0.40817033109891865 diversity: 0.40851523241508064
+genome_id: 123 fitness: 0.8958 runtime: 15.40 s steps: 308
+fitness: 0.8957670911376998 disparity: 0.40817033109891865 diversity: 0.2800169236445117
+genome_id: 124 fitness: 3.0920 runtime: 18.25 s steps: 365
+fitness: 3.092030635550157 disparity: 0.40817033109891865 diversity: 0.37005717928948006
+genome_id: 125 fitness: 5.0092 runtime: 60.05 s steps: 1201
+fitness: 5.009177034550436 disparity: 0.40817033109891865 diversity: 0.44518796126117
+genome_id: 126 fitness: 1.4287 runtime: 16.95 s steps: 339
+fitness: 1.4286907756829492 disparity: 0.40817033109891865 diversity: 0.21712769178921798
+genome_id: 127 fitness: 2.0380 runtime: 20.80 s steps: 416
+fitness: 2.038022027708675 disparity: 0.40817033109891865 diversity: 0.3919198221985244
+genome_id: 128 fitness: 1.2912 runtime: 14.55 s steps: 291
+fitness: 1.2911730668757746 disparity: 0.40817033109891865 diversity: 0.45418806400656037
+genome_id: 129 fitness: 4.1563 runtime: 38.95 s steps: 779
+fitness: 4.156311013044585 disparity: 0.40817033109891865 diversity: 0.46084375707944036
+genome_id: 130 fitness: 3.1064 runtime: 16.05 s steps: 321
+fitness: 3.1063963858344925 disparity: 0.40817033109891865 diversity: 0.3406163978822617
+genome_id: 131 fitness: 1.7078 runtime: 16.55 s steps: 331
+fitness: 1.7077640698814813 disparity: 0.40817033109891865 diversity: 0.29574964707460744
+genome_id: 132 fitness: 2.8805 runtime: 17.40 s steps: 348
+fitness: 2.8804773176667724 disparity: 0.40817033109891865 diversity: 0.3832984842207911
+genome_id: 133 fitness: 4.1634 runtime: 22.65 s steps: 453
+fitness: 4.163441369451809 disparity: 0.40817033109891865 diversity: 0.405293368468112
+genome_id: 134 fitness: 3.6864 runtime: 21.40 s steps: 428
+fitness: 3.6864335248822253 disparity: 0.40817033109891865 diversity: 0.2611595867913829
+genome_id: 135 fitness: 2.3781 runtime: 60.05 s steps: 1201
+fitness: 2.378147311706299 disparity: 0.40817033109891865 diversity: 0.27043907270292655
+genome_id: 136 fitness: 1.5973 runtime: 22.25 s steps: 445
+fitness: 1.5972931437400069 disparity: 0.40817033109891865 diversity: 0.1910400106017218
+genome_id: 137 fitness: 2.0478 runtime: 60.05 s steps: 1201
+fitness: 2.047753204844372 disparity: 0.40817033109891865 diversity: 0.33538415370576896
+genome_id: 138 fitness: 1.6829 runtime: 13.15 s steps: 263
+fitness: 1.6829356657988832 disparity: 0.40817033109891865 diversity: 0.4126988629666621
+genome_id: 139 fitness: 1.4686 runtime: 30.00 s steps: 600
+fitness: 1.4685744153833644 disparity: 0.40817033109891865 diversity: 0.45469165304341824
+genome_id: 140 fitness: 0.9745 runtime: 12.30 s steps: 246
+fitness: 0.9745002134199888 disparity: 0.40817033109891865 diversity: 0.33301601027539884
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244475793266522, 0.595299274759087, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 121 fitness: 0.9621 runtime: 6.30 s steps: 126
+6       20      2.64461         0.00214607      1.90341         11.044
+genome_id: 141 fitness: 0.8317 runtime: 12.75 s steps: 255
+fitness: 0.8316995902013337 disparity: 0.3527802885613313 diversity: 0.3370076500276694
+genome_id: 142 fitness: 2.2716 runtime: 20.75 s steps: 415
+fitness: 2.2715829012890167 disparity: 0.3527802885613313 diversity: 0.46186222387627796
+genome_id: 143 fitness: 7.5771 runtime: 60.05 s steps: 1201
+fitness: 7.577134603506598 disparity: 0.3527802885613313 diversity: 0.47695372431654337
+genome_id: 144 fitness: 6.0868 runtime: 22.55 s steps: 451
+fitness: 6.086809796107494 disparity: 0.3527802885613313 diversity: 0.3409263490156212
+genome_id: 145 fitness: 1.6422 runtime: 19.30 s steps: 386
+fitness: 1.6421974371820154 disparity: 0.3527802885613313 diversity: 0.21481679376978358
+genome_id: 146 fitness: 1.2615 runtime: 14.20 s steps: 284
+fitness: 1.2614656351722688 disparity: 0.3527802885613313 diversity: 0.4641764745395216
+genome_id: 147 fitness: 3.7267 runtime: 25.80 s steps: 516
+fitness: 3.7267183681901455 disparity: 0.3527802885613313 diversity: 0.23129398848337976
+genome_id: 148 fitness: 1.6739 runtime: 18.95 s steps: 379
+fitness: 1.6738573849452056 disparity: 0.3527802885613313 diversity: 0.17139800223756607
+genome_id: 149 fitness: 9.0892 runtime: 42.30 s steps: 846
+fitness: 9.089240440779657 disparity: 0.3527802885613313 diversity: 0.6077207037965451
+genome_id: 150 fitness: 3.6923 runtime: 45.90 s steps: 918
+fitness: 3.692295979240057 disparity: 0.3527802885613313 diversity: 0.43025225058767697
+genome_id: 151 fitness: 7.1573 runtime: 59.30 s steps: 1186
+fitness: 7.157251929834458 disparity: 0.3527802885613313 diversity: 0.1568519121620227
+genome_id: 152 fitness: 1.8583 runtime: 40.00 s steps: 800
+fitness: 1.8582560205348233 disparity: 0.3527802885613313 diversity: 0.3402313185377526
+genome_id: 153 fitness: 0.7399 runtime: 9.90 s steps: 198
+fitness: 0.7399299825883585 disparity: 0.3527802885613313 diversity: 0.4566141544604266
+genome_id: 154 fitness: 1.5697 runtime: 12.55 s steps: 251
+fitness: 1.5697311249597306 disparity: 0.3527802885613313 diversity: 0.40968621570700225
+genome_id: 155 fitness: 1.8898 runtime: 22.30 s steps: 446
+fitness: 1.8897944749785145 disparity: 0.3527802885613313 diversity: 0.20862612106106734
+genome_id: 156 fitness: 1.5477 runtime: 18.45 s steps: 369
+fitness: 1.5476890790351803 disparity: 0.3527802885613313 diversity: 0.19652818579007097
+genome_id: 157 fitness: 2.5580 runtime: 60.05 s steps: 1201
+fitness: 2.558022314811969 disparity: 0.3527802885613313 diversity: 0.35219437129533476
+genome_id: 158 fitness: 1.8898 runtime: 22.05 s steps: 441
+fitness: 1.8898019936833035 disparity: 0.3527802885613313 diversity: 0.2526014888954683
+genome_id: 159 fitness: 1.6266 runtime: 18.70 s steps: 374
+fitness: 1.6265688618100633 disparity: 0.3527802885613313 diversity: 0.18468286677863452
+genome_id: 160 fitness: 0.0539 runtime: 10.00 s steps: 200
+fitness: 0.05389494410847787 disparity: 0.3527802885613313 diversity: 0.026855095879999992
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244475793266522, 0.595299274759087, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 149 fitness: 0.7231 runtime: 4.50 s steps: 90
+7       20      2.87457         0.00214607      2.14326         11.044
+genome_id: 161 fitness: 6.9790 runtime: 51.20 s steps: 1024
+fitness: 6.978955946458805 disparity: 0.3477190948070839 diversity: 0.30410135654059467
+genome_id: 162 fitness: 1.6194 runtime: 15.95 s steps: 319
+fitness: 1.6193887286715 disparity: 0.3477190948070839 diversity: 0.2460715109238789
+genome_id: 163 fitness: 2.3859 runtime: 28.15 s steps: 563
+fitness: 2.385927968652366 disparity: 0.3477190948070839 diversity: 0.41597162686294475
+genome_id: 164 fitness: 3.3262 runtime: 21.00 s steps: 420
+fitness: 3.326206379789971 disparity: 0.3477190948070839 diversity: 0.3333179570405763
+genome_id: 165 fitness: 1.1767 runtime: 10.95 s steps: 219
+fitness: 1.1766856637914702 disparity: 0.3477190948070839 diversity: 0.4621468440129879
+genome_id: 166 fitness: 3.9402 runtime: 60.05 s steps: 1201
+fitness: 3.9401807853012754 disparity: 0.3477190948070839 diversity: 0.36155116038361385
+genome_id: 167 fitness: 4.2857 runtime: 32.40 s steps: 648
+fitness: 4.285718624187228 disparity: 0.3477190948070839 diversity: 0.45339266904529635
+genome_id: 168 fitness: 4.0057 runtime: 46.80 s steps: 936
+fitness: 4.005661629737174 disparity: 0.3477190948070839 diversity: 0.5106116581714369
+genome_id: 169 fitness: 2.8715 runtime: 60.05 s steps: 1201
+fitness: 2.871528228699489 disparity: 0.3477190948070839 diversity: 0.48347464506099913
+genome_id: 170 fitness: 1.2309 runtime: 14.90 s steps: 298
+fitness: 1.230933986388061 disparity: 0.3477190948070839 diversity: 0.27676585353736555
+genome_id: 171 fitness: 8.3843 runtime: 60.05 s steps: 1201
+fitness: 8.384272827022333 disparity: 0.3477190948070839 diversity: 0.38068496494177967
+genome_id: 172 fitness: 3.3913 runtime: 25.95 s steps: 519
+fitness: 3.391263663412967 disparity: 0.3477190948070839 diversity: 0.403550754582111
+genome_id: 173 fitness: 2.1409 runtime: 20.30 s steps: 406
+fitness: 2.1409244339217413 disparity: 0.3477190948070839 diversity: 0.29596536123749134
+genome_id: 174 fitness: 3.3553 runtime: 19.35 s steps: 387
+fitness: 3.355255338013715 disparity: 0.3477190948070839 diversity: 0.2854644433337698
+genome_id: 175 fitness: 7.4759 runtime: 60.05 s steps: 1201
+fitness: 7.475879282710692 disparity: 0.3477190948070839 diversity: 0.22550031419233538
+genome_id: 176 fitness: 2.9323 runtime: 60.00 s steps: 1200
+fitness: 2.932342732726865 disparity: 0.3477190948070839 diversity: 0.43907666753091434
+genome_id: 177 fitness: 1.4585 runtime: 20.90 s steps: 418
+fitness: 1.4584720002662486 disparity: 0.3477190948070839 diversity: 0.2033616706652868
+genome_id: 178 fitness: 1.2137 runtime: 10.30 s steps: 206
+fitness: 1.21372235210607 disparity: 0.3477190948070839 diversity: 0.452348678767954
+genome_id: 179 fitness: 3.0644 runtime: 21.15 s steps: 423
+fitness: 3.0644490194684577 disparity: 0.3477190948070839 diversity: 0.40214304600582207
+genome_id: 180 fitness: 1.0268 runtime: 11.00 s steps: 220
+fitness: 1.0267811462302243 disparity: 0.3477190948070839 diversity: 0.4873072114800072
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244475793266522, 0.595299274759087, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 168 fitness: 0.5209 runtime: 6.80 s steps: 136
+8       20      2.97735         0.00214607      2.26145         11.044
+genome_id: 181 fitness: 3.6419 runtime: 18.10 s steps: 362
+fitness: 3.6419466533268707 disparity: 0.34951297258250974 diversity: 0.40909178024089654
+genome_id: 182 fitness: 6.3161 runtime: 45.90 s steps: 918
+fitness: 6.316132468134314 disparity: 0.34951297258250974 diversity: 0.2649265731576099
+genome_id: 183 fitness: 8.2315 runtime: 60.05 s steps: 1201
+fitness: 8.231520955428847 disparity: 0.34951297258250974 diversity: 0.33046760956675636
+genome_id: 184 fitness: 8.7076 runtime: 37.90 s steps: 758
+fitness: 8.707560621139946 disparity: 0.34951297258250974 diversity: 0.5700112391563144
+genome_id: 185 fitness: 7.7232 runtime: 60.05 s steps: 1201
+fitness: 7.723247395694642 disparity: 0.34951297258250974 diversity: 0.31774424732897677
+genome_id: 186 fitness: 3.1126 runtime: 21.15 s steps: 423
+fitness: 3.1126259674557177 disparity: 0.34951297258250974 diversity: 0.4012132251471964
+genome_id: 187 fitness: 1.2078 runtime: 10.00 s steps: 200
+fitness: 1.2078004177321617 disparity: 0.34951297258250974 diversity: 0.44572959853073374
+genome_id: 188 fitness: 2.1779 runtime: 27.20 s steps: 544
+fitness: 2.177924304437809 disparity: 0.34951297258250974 diversity: 0.4479479236906278
+genome_id: 189 fitness: 3.6659 runtime: 24.10 s steps: 482
+fitness: 3.665945220616541 disparity: 0.34951297258250974 diversity: 0.3985207928185311
+genome_id: 190 fitness: 1.5098 runtime: 16.55 s steps: 331
+fitness: 1.509766456830805 disparity: 0.34951297258250974 diversity: 0.4694978477915379
+genome_id: 191 fitness: 5.4822 runtime: 23.55 s steps: 471
+fitness: 5.482150311501869 disparity: 0.34951297258250974 diversity: 0.4099562200279984
+genome_id: 192 fitness: 1.9652 runtime: 16.80 s steps: 336
+fitness: 1.9651517118464783 disparity: 0.34951297258250974 diversity: 0.3817447764248459
+genome_id: 193 fitness: 2.1715 runtime: 14.55 s steps: 291
+fitness: 2.1715460021930864 disparity: 0.34951297258250974 diversity: 0.4027711249333266
+genome_id: 194 fitness: 6.8552 runtime: 32.80 s steps: 656
+fitness: 6.855155687095951 disparity: 0.34951297258250974 diversity: 0.34244570903046206
+genome_id: 195 fitness: 4.0155 runtime: 23.55 s steps: 471
+fitness: 4.0155049438839745 disparity: 0.34951297258250974 diversity: 0.37861867647329006
+genome_id: 196 fitness: 2.4657 runtime: 60.05 s steps: 1201
+fitness: 2.465733224203321 disparity: 0.34951297258250974 diversity: 0.30122036864995483
+genome_id: 197 fitness: 2.9196 runtime: 60.05 s steps: 1201
+fitness: 2.9195896329371873 disparity: 0.34951297258250974 diversity: 0.43761649705204075
+genome_id: 198 fitness: 6.6560 runtime: 32.80 s steps: 656
+fitness: 6.6559803138329805 disparity: 0.34951297258250974 diversity: 0.18065180379005166
+genome_id: 199 fitness: 1.7489 runtime: 40.00 s steps: 800
+fitness: 1.7488516310268418 disparity: 0.34951297258250974 diversity: 0.27910561280611695
+genome_id: 200 fitness: 1.8774 runtime: 22.05 s steps: 441
+fitness: 1.8774155694899715 disparity: 0.34951297258250974 diversity: 0.3006260739917163
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244475793266522, 0.595299274759087, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 184 fitness: 0.7234 runtime: 4.15 s steps: 83
+9       20      3.0134          0.00214607      2.28179         11.044
+genome_id: 201 fitness: 0.6799 runtime: 11.30 s steps: 226
+fitness: 0.679853686370166 disparity: 0.34752349116182757 diversity: 0.3223552518199868
+genome_id: 202 fitness: 1.8399 runtime: 60.05 s steps: 1201
+fitness: 1.8398633299326173 disparity: 0.34752349116182757 diversity: 0.2795611087281703
+genome_id: 203 fitness: 3.0789 runtime: 16.50 s steps: 330
+fitness: 3.078917424315089 disparity: 0.34752349116182757 diversity: 0.33396526849483105
+genome_id: 204 fitness: 2.0011 runtime: 60.05 s steps: 1201
+fitness: 2.001125785861618 disparity: 0.34752349116182757 diversity: 0.23759574800445
+genome_id: 205 fitness: 2.7126 runtime: 17.20 s steps: 344
+fitness: 2.7125800727245166 disparity: 0.34752349116182757 diversity: 0.40522332888612334
+genome_id: 206 fitness: 1.8424 runtime: 50.00 s steps: 1000
+fitness: 1.8424161000550148 disparity: 0.34752349116182757 diversity: 0.3021946764775494
+genome_id: 207 fitness: 4.7785 runtime: 60.05 s steps: 1201
+fitness: 4.778498635559926 disparity: 0.34752349116182757 diversity: 0.17215821951468982
+genome_id: 208 fitness: 9.4846 runtime: 46.80 s steps: 936
+fitness: 9.484574161391686 disparity: 0.34752349116182757 diversity: 0.6025105997943931
+genome_id: 209 fitness: 2.1589 runtime: 60.05 s steps: 1201
+fitness: 2.1588729338219754 disparity: 0.34752349116182757 diversity: 0.3892516349462989
+genome_id: 210 fitness: 8.0115 runtime: 37.80 s steps: 756
+fitness: 8.011515267149472 disparity: 0.34752349116182757 diversity: 0.5835852203307148
+genome_id: 211 fitness: 1.8359 runtime: 40.00 s steps: 800
+fitness: 1.8359342341977898 disparity: 0.34752349116182757 diversity: 0.3326949437141215
+genome_id: 212 fitness: 3.5056 runtime: 20.15 s steps: 403
+fitness: 3.5055919657491357 disparity: 0.34752349116182757 diversity: 0.2909689929905275
+genome_id: 213 fitness: 1.7012 runtime: 16.75 s steps: 335
+fitness: 1.7012406246378944 disparity: 0.34752349116182757 diversity: 0.4606919611324134
+genome_id: 214 fitness: 1.1206 runtime: 14.60 s steps: 292
+fitness: 1.1205989320842504 disparity: 0.34752349116182757 diversity: 0.4369542385481436
+genome_id: 215 fitness: 2.9369 runtime: 60.05 s steps: 1201
+fitness: 2.936935989716944 disparity: 0.34752349116182757 diversity: 0.4291687581813501
+genome_id: 216 fitness: 1.2378 runtime: 18.35 s steps: 367
+fitness: 1.2378425990517734 disparity: 0.34752349116182757 diversity: 0.26812619749749506
+genome_id: 217 fitness: 0.6758 runtime: 10.85 s steps: 217
+fitness: 0.6757535539431382 disparity: 0.34752349116182757 diversity: 0.3124008113389328
+genome_id: 218 fitness: 1.3170 runtime: 13.25 s steps: 265
+fitness: 1.3169655227318378 disparity: 0.34752349116182757 diversity: 0.2405371829040054
+genome_id: 219 fitness: 1.4519 runtime: 21.50 s steps: 430
+fitness: 1.4519048718709826 disparity: 0.34752349116182757 diversity: 0.20556421990071894
+genome_id: 220 fitness: 1.4341 runtime: 11.20 s steps: 224
+fitness: 1.4341449424489667 disparity: 0.34752349116182757 diversity: 0.4298997554849088
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244569543451811, 0.5956732712256587, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 208 fitness: 0.9548 runtime: 5.85 s steps: 117
+Marker 7 not found. Waiting...
+Marker 7 not found. Waiting...
+Marker 7 not found. Waiting...
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244475793266522, 0.595299274759087, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 210 fitness: 0.7612 runtime: 4.55 s steps: 91
+10      20      3.12968         0.00214607      2.41803         11.044
+genome_id: 221 fitness: 2.5203 runtime: 14.15 s steps: 283
+fitness: 2.520292342534168 disparity: 0.341864428240568 diversity: 0.41057112147166375
+genome_id: 222 fitness: 7.3704 runtime: 50.70 s steps: 1014
+fitness: 7.370429449637194 disparity: 0.341864428240568 diversity: 0.3004752663822949
+genome_id: 223 fitness: 1.5948 runtime: 14.15 s steps: 283
+fitness: 1.5948205321268139 disparity: 0.341864428240568 diversity: 0.31613732581424714
+genome_id: 224 fitness: 6.0831 runtime: 24.05 s steps: 481
+fitness: 6.083140217162306 disparity: 0.341864428240568 diversity: 0.34486392047522374
+genome_id: 225 fitness: 1.9885 runtime: 19.55 s steps: 391
+fitness: 1.9885443027540874 disparity: 0.341864428240568 diversity: 0.2958025241216858
+genome_id: 226 fitness: 1.3886 runtime: 16.75 s steps: 335
+fitness: 1.388564005927877 disparity: 0.341864428240568 diversity: 0.21118380202048467
+genome_id: 227 fitness: 2.8847 runtime: 60.05 s steps: 1201
+fitness: 2.884659230364001 disparity: 0.341864428240568 diversity: 0.4658530649414078
+genome_id: 228 fitness: 1.0966 runtime: 11.90 s steps: 238
+fitness: 1.0965693467027888 disparity: 0.341864428240568 diversity: 0.47239774360078385
+genome_id: 229 fitness: 6.2128 runtime: 26.40 s steps: 528
+fitness: 6.212796569904241 disparity: 0.341864428240568 diversity: 0.2810127354853649
+genome_id: 230 fitness: 1.0079 runtime: 16.25 s steps: 325
+fitness: 1.007934209332104 disparity: 0.341864428240568 diversity: 0.30094905785564313
+genome_id: 231 fitness: 8.6853 runtime: 44.15 s steps: 883
+fitness: 8.685251226659835 disparity: 0.341864428240568 diversity: 0.5715287820190706
+genome_id: 232 fitness: 2.6673 runtime: 40.00 s steps: 800
+fitness: 2.6673370791657285 disparity: 0.341864428240568 diversity: 0.3906964781823859
+genome_id: 233 fitness: 3.5446 runtime: 23.90 s steps: 478
+fitness: 3.5446418467089935 disparity: 0.341864428240568 diversity: 0.37985374241063397
+genome_id: 234 fitness: 3.3008 runtime: 17.50 s steps: 350
+fitness: 3.300795002481643 disparity: 0.341864428240568 diversity: 0.2369898615556112
+genome_id: 235 fitness: 8.9250 runtime: 44.05 s steps: 881
+fitness: 8.925002681675583 disparity: 0.341864428240568 diversity: 0.535955330421899
+genome_id: 236 fitness: 7.3767 runtime: 50.85 s steps: 1017
+fitness: 7.376677658439904 disparity: 0.341864428240568 diversity: 0.28293594932249966
+genome_id: 237 fitness: 2.0397 runtime: 14.60 s steps: 292
+fitness: 2.039676672500181 disparity: 0.341864428240568 diversity: 0.40531158348652213
+genome_id: 238 fitness: 4.2300 runtime: 26.95 s steps: 539
+fitness: 4.229979217172531 disparity: 0.341864428240568 diversity: 0.25980532946376983
+genome_id: 239 fitness: 2.0575 runtime: 24.35 s steps: 487
+fitness: 2.057546806553792 disparity: 0.341864428240568 diversity: 0.23366292789937193
+genome_id: 240 fitness: 0.8536 runtime: 14.10 s steps: 282
+fitness: 0.853582770219678 disparity: 0.341864428240568 diversity: 0.27495498179723077
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244612511299202, 0.5958446823332839, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 231 fitness: 0.9335 runtime: 5.75 s steps: 115
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244694539102409, 0.5961719148445097, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 235 fitness: 0.8804 runtime: 5.45 s steps: 109
+11      20      3.18197         0.00214607      2.44802         11.044
+genome_id: 241 fitness: 3.9882 runtime: 33.80 s steps: 676
+fitness: 3.9881527152256817 disparity: 0.3421854229530757 diversity: 0.18199106729382925
+genome_id: 242 fitness: 1.5286 runtime: 22.30 s steps: 446
+fitness: 1.5286267974263652 disparity: 0.3421854229530757 diversity: 0.21286911159620855
+genome_id: 243 fitness: 2.6489 runtime: 16.90 s steps: 338
+fitness: 2.6488755633593195 disparity: 0.3421854229530757 diversity: 0.3885243128479898
+genome_id: 244 fitness: 2.4821 runtime: 60.05 s steps: 1201
+fitness: 2.4821064002748447 disparity: 0.3421854229530757 diversity: 0.34646728305370733
+genome_id: 245 fitness: 0.7912 runtime: 13.30 s steps: 266
+fitness: 0.7912239370120029 disparity: 0.3421854229530757 diversity: 0.24758039323063374
+genome_id: 246 fitness: 4.5894 runtime: 60.05 s steps: 1201
+fitness: 4.589442418582199 disparity: 0.3421854229530757 diversity: 0.32554030378710036
+genome_id: 247 fitness: 2.1581 runtime: 15.65 s steps: 313
+fitness: 2.1580534224871806 disparity: 0.3421854229530757 diversity: 0.40511885423603405
+genome_id: 248 fitness: 2.7748 runtime: 15.70 s steps: 314
+fitness: 2.774841418650268 disparity: 0.3421854229530757 diversity: 0.41016359901432364
+genome_id: 249 fitness: 0.6958 runtime: 12.00 s steps: 240
+fitness: 0.6958151891805345 disparity: 0.3421854229530757 diversity: 0.26337880113143597
+genome_id: 250 fitness: 3.0203 runtime: 16.90 s steps: 338
+fitness: 3.020304779543159 disparity: 0.3421854229530757 diversity: 0.3306357393387358
+genome_id: 251 fitness: 1.7741 runtime: 15.45 s steps: 309
+fitness: 1.7741477725374717 disparity: 0.3421854229530757 diversity: 0.36345901882601617
+genome_id: 252 fitness: 6.2799 runtime: 26.40 s steps: 528
+fitness: 6.279914039987434 disparity: 0.3421854229530757 diversity: 0.29081516002499336
+genome_id: 253 fitness: 1.8922 runtime: 18.30 s steps: 366
+fitness: 1.892236142285357 disparity: 0.3421854229530757 diversity: 0.2629298200458671
+genome_id: 254 fitness: 1.0753 runtime: 14.05 s steps: 281
+fitness: 1.0753156065233958 disparity: 0.3421854229530757 diversity: 0.4094889848418172
+genome_id: 255 fitness: 2.2988 runtime: 19.20 s steps: 384
+fitness: 2.2987615869779954 disparity: 0.3421854229530757 diversity: 0.4127249692835421
+genome_id: 256 fitness: 3.5176 runtime: 17.85 s steps: 357
+fitness: 3.5176408660489886 disparity: 0.3421854229530757 diversity: 0.3576932110452814
+genome_id: 257 fitness: 2.0966 runtime: 15.65 s steps: 313
+fitness: 2.0966434463205674 disparity: 0.3421854229530757 diversity: 0.40032379786181255
+genome_id: 258 fitness: 3.9076 runtime: 24.30 s steps: 486
+fitness: 3.9075794309282363 disparity: 0.3421854229530757 diversity: 0.25536438083522506
+genome_id: 259 fitness: 6.6112 runtime: 36.85 s steps: 737
+fitness: 6.611177648900268 disparity: 0.3421854229530757 diversity: 0.2538115221618927
+genome_id: 260 fitness: 0.8789 runtime: 14.20 s steps: 284
+fitness: 0.8788631333895438 disparity: 0.3421854229530757 diversity: 0.32644494874492636
+12      20      3.18197         0.00214607      2.44802         11.044
+genome_id: 261 fitness: 3.5156 runtime: 17.55 s steps: 351
+fitness: 3.5155555252527066 disparity: 0.3421854229530757 diversity: 0.4162126605983514
+genome_id: 262 fitness: 1.5948 runtime: 40.00 s steps: 800
+fitness: 1.5948304033699103 disparity: 0.3421854229530757 diversity: 0.3334609468269163
+genome_id: 263 fitness: 0.8495 runtime: 11.30 s steps: 226
+fitness: 0.8494617840677818 disparity: 0.3421854229530757 diversity: 0.43041826212714634
+genome_id: 264 fitness: 5.5606 runtime: 40.80 s steps: 816
+fitness: 5.560621688674595 disparity: 0.3421854229530757 diversity: 0.5139076234724358
+genome_id: 265 fitness: 1.1177 runtime: 15.05 s steps: 301
+fitness: 1.1177477391329096 disparity: 0.3421854229530757 diversity: 0.4041995416656358
+genome_id: 266 fitness: 3.1156 runtime: 18.30 s steps: 366
+fitness: 3.115609629894719 disparity: 0.3421854229530757 diversity: 0.3435488748045253
+genome_id: 267 fitness: 2.9694 runtime: 16.20 s steps: 324
+fitness: 2.9694376030857086 disparity: 0.3421854229530757 diversity: 0.40714100804116504
+genome_id: 268 fitness: 1.6818 runtime: 12.00 s steps: 240
+fitness: 1.6817993886605174 disparity: 0.3421854229530757 diversity: 0.41473289561078636
+genome_id: 269 fitness: 3.4711 runtime: 23.35 s steps: 467
+fitness: 3.471140871950831 disparity: 0.3421854229530757 diversity: 0.3873314643105294
+genome_id: 270 fitness: 11.1223 runtime: 58.05 s steps: 1161
+fitness: 11.122331321515935 disparity: 0.3421854229530757 diversity: 0.5986561620906256
+genome_id: 271 fitness: 4.8433 runtime: 58.10 s steps: 1162
+fitness: 4.843348991771641 disparity: 0.3421854229530757 diversity: 0.42820281822988565
+genome_id: 272 fitness: 1.9097 runtime: 31.95 s steps: 639
+fitness: 1.9096892563232968 disparity: 0.3421854229530757 diversity: 0.5551246390312109
+genome_id: 273 fitness: 1.4206 runtime: 14.25 s steps: 285
+fitness: 1.420600782416732 disparity: 0.3421854229530757 diversity: 0.22550394950530186
+genome_id: 274 fitness: 2.7087 runtime: 21.85 s steps: 437
+fitness: 2.708717526812407 disparity: 0.3421854229530757 diversity: 0.41638534635123425
+genome_id: 275 fitness: 1.5980 runtime: 18.40 s steps: 368
+fitness: 1.5980155419656603 disparity: 0.3421854229530757 diversity: 0.18258045870570255
+genome_id: 276 fitness: 5.5299 runtime: 25.10 s steps: 502
+fitness: 5.529867355969478 disparity: 0.3421854229530757 diversity: 0.21237471026828844
+genome_id: 277 fitness: 1.6813 runtime: 18.85 s steps: 377
+fitness: 1.681348835449666 disparity: 0.3421854229530757 diversity: 0.17571039260992016
+genome_id: 278 fitness: 5.2573 runtime: 21.60 s steps: 432
+fitness: 5.257280979260582 disparity: 0.3421854229530757 diversity: 0.43426073436213486
+genome_id: 279 fitness: 4.2323 runtime: 45.05 s steps: 901
+fitness: 4.232347564360965 disparity: 0.3421854229530757 diversity: 0.16866993500714153
+genome_id: 280 fitness: 2.5690 runtime: 15.35 s steps: 307
+fitness: 2.5689559101890285 disparity: 0.3421854229530757 diversity: 0.3997543209017861
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244694539102409, 0.5961719148445097, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 264 fitness: 0.9278 runtime: 7.00 s steps: 140
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244694539102409, 0.5961719148445097, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 270 fitness: 0.9918 runtime: 6.60 s steps: 132
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244694539102409, 0.5961719148445097, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 272 fitness: 0.4036 runtime: 7.45 s steps: 149
+13      20      3.29543         0.00214607      2.50003         11.1223
+genome_id: 281 fitness: 1.2353 runtime: 12.30 s steps: 246
+fitness: 1.2352601778657246 disparity: 0.33992761557509504 diversity: 0.26876789381856325
+genome_id: 282 fitness: 8.5787 runtime: 44.30 s steps: 886
+fitness: 8.578743824321554 disparity: 0.33992761557509504 diversity: 0.581769322598135
+genome_id: 283 fitness: 4.0964 runtime: 60.05 s steps: 1201
+fitness: 4.096423255044036 disparity: 0.33992761557509504 diversity: 0.4015162291657322
+genome_id: 284 fitness: 3.2227 runtime: 18.40 s steps: 368
+fitness: 3.2226613293966313 disparity: 0.33992761557509504 diversity: 0.3958843745440577
+genome_id: 285 fitness: 1.9474 runtime: 31.95 s steps: 639
+fitness: 1.947394449236102 disparity: 0.33992761557509504 diversity: 0.4903953188021117
+genome_id: 286 fitness: 2.4196 runtime: 60.05 s steps: 1201
+fitness: 2.419626775702661 disparity: 0.33992761557509504 diversity: 0.3240095504584147
+genome_id: 287 fitness: 7.0182 runtime: 51.35 s steps: 1027
+fitness: 7.0181980040305 disparity: 0.33992761557509504 diversity: 0.27611966825410367
+genome_id: 288 fitness: 2.1450 runtime: 14.15 s steps: 283
+fitness: 2.145016626492231 disparity: 0.33992761557509504 diversity: 0.40569598546627494
+genome_id: 289 fitness: 2.3653 runtime: 22.15 s steps: 443
+fitness: 2.3652962759834475 disparity: 0.33992761557509504 diversity: 0.4535533694444428
+genome_id: 290 fitness: 6.2823 runtime: 51.75 s steps: 1035
+fitness: 6.282302651708937 disparity: 0.33992761557509504 diversity: 0.286606349529171
+genome_id: 291 fitness: 4.2314 runtime: 60.05 s steps: 1201
+fitness: 4.231365293138152 disparity: 0.33992761557509504 diversity: 0.3994231481207657
+genome_id: 292 fitness: 2.0563 runtime: 24.10 s steps: 482
+fitness: 2.0562763208553165 disparity: 0.33992761557509504 diversity: 0.2521101501804047
+genome_id: 293 fitness: 6.1121 runtime: 41.25 s steps: 825
+fitness: 6.112121898931485 disparity: 0.33992761557509504 diversity: 0.4915277366705728
+genome_id: 294 fitness: 7.6297 runtime: 60.05 s steps: 1201
+fitness: 7.629716905589997 disparity: 0.33992761557509504 diversity: 0.4491124151465599
+genome_id: 295 fitness: 9.2468 runtime: 60.05 s steps: 1201
+fitness: 9.246785819772576 disparity: 0.33992761557509504 diversity: 0.5140481829106611
+genome_id: 296 fitness: 2.7339 runtime: 19.15 s steps: 383
+fitness: 2.7339231371820847 disparity: 0.33992761557509504 diversity: 0.4046038738511772
+genome_id: 297 fitness: 1.7518 runtime: 12.30 s steps: 246
+fitness: 1.7518367452329622 disparity: 0.33992761557509504 diversity: 0.41257423393474707
+genome_id: 298 fitness: 6.8897 runtime: 36.60 s steps: 732
+fitness: 6.889703174055096 disparity: 0.33992761557509504 diversity: 0.2525790297637696
+genome_id: 299 fitness: 1.4258 runtime: 14.35 s steps: 287
+fitness: 1.4257851173971317 disparity: 0.33992761557509504 diversity: 0.24625815294200243
+genome_id: 300 fitness: 8.8964 runtime: 39.35 s steps: 787
+fitness: 8.896381533179335 disparity: 0.33992761557509504 diversity: 0.6012790244401132
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244694539102409, 0.5961719148445097, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 282 fitness: 0.8377 runtime: 5.20 s steps: 104
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244694539102409, 0.5961719148445097, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 295 fitness: 0.4599 runtime: 2.85 s steps: 57
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244694539102409, 0.5961719148445097, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 300 fitness: 0.0360 runtime: 0.15 s steps: 3
+14      20      3.50657         0.00214607      2.65416         11.1223
+genome_id: 301 fitness: 4.2587 runtime: 60.05 s steps: 1201
+fitness: 4.258713345286869 disparity: 0.3529644804105973 diversity: 0.3540248125333144
+genome_id: 302 fitness: 3.3800 runtime: 18.50 s steps: 370
+fitness: 3.380030121266514 disparity: 0.3529644804105973 diversity: 0.23907704661753962
+genome_id: 303 fitness: 2.5943 runtime: 60.05 s steps: 1201
+fitness: 2.59425936967356 disparity: 0.3529644804105973 diversity: 0.35218770572198643
+genome_id: 304 fitness: 6.4812 runtime: 41.45 s steps: 829
+fitness: 6.4812130721931265 disparity: 0.3529644804105973 diversity: 0.2927777729055215
+genome_id: 305 fitness: 7.0910 runtime: 52.75 s steps: 1055
+fitness: 7.090953121766083 disparity: 0.3529644804105973 diversity: 0.2736901653795473
+genome_id: 306 fitness: 6.6306 runtime: 60.05 s steps: 1201
+fitness: 6.630561749874413 disparity: 0.3529644804105973 diversity: 0.1601605090086116
+genome_id: 307 fitness: 3.4212 runtime: 22.85 s steps: 457
+fitness: 3.4212382850374223 disparity: 0.3529644804105973 diversity: 0.3890228612529154
+genome_id: 308 fitness: 2.6279 runtime: 14.65 s steps: 293
+fitness: 2.627860711039752 disparity: 0.3529644804105973 diversity: 0.4135924926443088
+genome_id: 309 fitness: 7.1759 runtime: 45.25 s steps: 905
+fitness: 7.1758809949706945 disparity: 0.3529644804105973 diversity: 0.30647067720450166
+genome_id: 310 fitness: 0.8174 runtime: 13.90 s steps: 278
+fitness: 0.8173919811342272 disparity: 0.3529644804105973 diversity: 0.28424162967333694
+genome_id: 311 fitness: 7.0763 runtime: 59.80 s steps: 1196
+fitness: 7.076254103479376 disparity: 0.3529644804105973 diversity: 0.2282558914627402
+genome_id: 312 fitness: 1.7229 runtime: 14.95 s steps: 299
+fitness: 1.7228946928250617 disparity: 0.3529644804105973 diversity: 0.3441640896692611
+genome_id: 313 fitness: 4.5435 runtime: 60.05 s steps: 1201
+fitness: 4.543455390568238 disparity: 0.3529644804105973 diversity: 0.3311428967429086
+genome_id: 314 fitness: 9.0561 runtime: 44.35 s steps: 887
+fitness: 9.056057188248824 disparity: 0.3529644804105973 diversity: 0.48694505254964376
+genome_id: 315 fitness: 1.3314 runtime: 12.35 s steps: 247
+fitness: 1.3313620470355099 disparity: 0.3529644804105973 diversity: 0.46066185644684376
+genome_id: 316 fitness: 5.0263 runtime: 37.70 s steps: 754
+fitness: 5.026291895581223 disparity: 0.3529644804105973 diversity: 0.3361847885556119
+genome_id: 317 fitness: 6.3368 runtime: 46.10 s steps: 922
+fitness: 6.3368088351540575 disparity: 0.3529644804105973 diversity: 0.21666943140281766
+genome_id: 318 fitness: 5.2637 runtime: 21.65 s steps: 433
+fitness: 5.26374030411063 disparity: 0.3529644804105973 diversity: 0.1803883320821163
+genome_id: 319 fitness: 1.2384 runtime: 14.95 s steps: 299
+fitness: 1.238363101631042 disparity: 0.3529644804105973 diversity: 0.2948874496507467
+genome_id: 320 fitness: 3.3436 runtime: 19.60 s steps: 392
+fitness: 3.3436227076461384 disparity: 0.3529644804105973 diversity: 0.2935972979621067
+15      20      3.51766         0.00214607      2.65865         11.1223
+genome_id: 321 fitness: 0.6786 runtime: 11.15 s steps: 223
+fitness: 0.678566138881518 disparity: 0.3529644804105973 diversity: 0.2865911171123368
+genome_id: 322 fitness: 1.2800 runtime: 15.35 s steps: 307
+fitness: 1.2799816521537026 disparity: 0.3529644804105973 diversity: 0.21236329522984695
+genome_id: 323 fitness: 2.3901 runtime: 60.00 s steps: 1200
+fitness: 2.3900518113635982 disparity: 0.3529644804105973 diversity: 0.3802680620493409
+genome_id: 324 fitness: 6.0751 runtime: 22.55 s steps: 451
+fitness: 6.075084661359806 disparity: 0.3529644804105973 diversity: 0.24220052651455817
+genome_id: 325 fitness: 3.8101 runtime: 26.15 s steps: 523
+fitness: 3.810070744037095 disparity: 0.3529644804105973 diversity: 0.2202711841597428
+genome_id: 326 fitness: 4.3199 runtime: 60.05 s steps: 1201
+fitness: 4.319913077390843 disparity: 0.3529644804105973 diversity: 0.39765511564975353
+genome_id: 327 fitness: 1.4080 runtime: 16.55 s steps: 331
+fitness: 1.407993990982665 disparity: 0.3529644804105973 diversity: 0.2705101427987038
+genome_id: 328 fitness: 2.6039 runtime: 60.05 s steps: 1201
+fitness: 2.603875283260894 disparity: 0.3529644804105973 diversity: 0.36829019941531255
+genome_id: 329 fitness: 1.3363 runtime: 12.30 s steps: 246
+fitness: 1.3362763500475372 disparity: 0.3529644804105973 diversity: 0.44503892851585347
+genome_id: 330 fitness: 3.5552 runtime: 20.50 s steps: 410
+fitness: 3.555160244346182 disparity: 0.3529644804105973 diversity: 0.2657095142984038
+genome_id: 331 fitness: 1.4572 runtime: 20.70 s steps: 414
+fitness: 1.4572032837398419 disparity: 0.3529644804105973 diversity: 0.22589433272617893
+genome_id: 332 fitness: 4.8587 runtime: 25.20 s steps: 504
+fitness: 4.858748821518924 disparity: 0.3529644804105973 diversity: 0.292779164721696
+genome_id: 333 fitness: 7.1213 runtime: 44.80 s steps: 896
+fitness: 7.121321745729641 disparity: 0.3529644804105973 diversity: 0.32646239106141095
+genome_id: 334 fitness: 1.7895 runtime: 15.40 s steps: 308
+fitness: 1.7894979339077683 disparity: 0.3529644804105973 diversity: 0.42668669432590667
+genome_id: 335 fitness: 10.0367 runtime: 53.60 s steps: 1072
+fitness: 10.0367283147084 disparity: 0.3529644804105973 diversity: 0.5723204946239252
+genome_id: 336 fitness: 3.6413 runtime: 21.95 s steps: 439
+fitness: 3.641310509932066 disparity: 0.3529644804105973 diversity: 0.3961843391425783
+genome_id: 337 fitness: 6.4969 runtime: 50.05 s steps: 1001
+fitness: 6.496877468426351 disparity: 0.3529644804105973 diversity: 0.44142752894010706
+genome_id: 338 fitness: 3.0733 runtime: 18.25 s steps: 365
+fitness: 3.0733382339456368 disparity: 0.3529644804105973 diversity: 0.21969627572783554
+genome_id: 339 fitness: 6.0102 runtime: 21.05 s steps: 421
+fitness: 6.010233493737574 disparity: 0.3529644804105973 diversity: 0.2733249735480896
+genome_id: 340 fitness: 3.0808 runtime: 21.00 s steps: 420
+fitness: 3.080825797519447 disparity: 0.3529644804105973 diversity: 0.40462500520488126
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244694539102409, 0.5961719148445097, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 335 fitness: 0.0301 runtime: 0.15 s steps: 3
+16      20      3.54862         0.00214607      2.67641         11.1223
+genome_id: 341 fitness: 8.2335 runtime: 57.70 s steps: 1154
+fitness: 8.233461573242957 disparity: 0.3580954522947534 diversity: 0.2503501357845549
+genome_id: 342 fitness: 1.1339 runtime: 16.65 s steps: 333
+fitness: 1.1338996560878756 disparity: 0.3580954522947534 diversity: 0.2621339084904763
+genome_id: 343 fitness: 1.2839 runtime: 12.30 s steps: 246
+fitness: 1.283911998690804 disparity: 0.3580954522947534 diversity: 0.44104001968239487
+genome_id: 344 fitness: 4.0042 runtime: 24.70 s steps: 494
+fitness: 4.004152242671205 disparity: 0.3580954522947534 diversity: 0.23554110232379863
+genome_id: 345 fitness: 1.1333 runtime: 12.30 s steps: 246
+fitness: 1.133345095868165 disparity: 0.3580954522947534 diversity: 0.47922368183108466
+genome_id: 346 fitness: 4.8057 runtime: 25.40 s steps: 508
+fitness: 4.80571417006068 disparity: 0.3580954522947534 diversity: 0.29361466606338343
+genome_id: 347 fitness: 1.2292 runtime: 15.65 s steps: 313
+fitness: 1.229175779117521 disparity: 0.3580954522947534 diversity: 0.4177396813180175
+genome_id: 348 fitness: 3.7656 runtime: 21.00 s steps: 420
+fitness: 3.7655545675547857 disparity: 0.3580954522947534 diversity: 0.38883984944949634
+genome_id: 349 fitness: 6.7008 runtime: 32.30 s steps: 646
+fitness: 6.7007543947898105 disparity: 0.3580954522947534 diversity: 0.24795345281968587
+genome_id: 350 fitness: 1.5430 runtime: 19.70 s steps: 394
+fitness: 1.5429615318377836 disparity: 0.3580954522947534 diversity: 0.4203296717818039
+genome_id: 351 fitness: 6.6034 runtime: 60.05 s steps: 1201
+fitness: 6.603396926356946 disparity: 0.3580954522947534 diversity: 0.1650592694373952
+genome_id: 352 fitness: 6.9112 runtime: 44.80 s steps: 896
+fitness: 6.911247954698555 disparity: 0.3580954522947534 diversity: 0.28846957824681346
+genome_id: 353 fitness: 1.0914 runtime: 13.30 s steps: 266
+fitness: 1.0913771104812857 disparity: 0.3580954522947534 diversity: 0.3106769339156964
+genome_id: 354 fitness: 9.6172 runtime: 52.15 s steps: 1043
+fitness: 9.617238895737273 disparity: 0.3580954522947534 diversity: 0.5688433504461913
+genome_id: 355 fitness: 0.7417 runtime: 10.25 s steps: 205
+fitness: 0.7416722668759401 disparity: 0.3580954522947534 diversity: 0.45468838521691385
+genome_id: 356 fitness: 2.6077 runtime: 60.05 s steps: 1201
+fitness: 2.6077373548791685 disparity: 0.3580954522947534 diversity: 0.3761816793627881
+genome_id: 357 fitness: 4.4732 runtime: 32.40 s steps: 648
+fitness: 4.47320641486009 disparity: 0.3580954522947534 diversity: 0.5370888319127376
+genome_id: 358 fitness: 1.4458 runtime: 14.25 s steps: 285
+fitness: 1.4458368221899167 disparity: 0.3580954522947534 diversity: 0.2691529197214958
+genome_id: 359 fitness: 1.4172 runtime: 13.95 s steps: 279
+fitness: 1.417224828524984 disparity: 0.3580954522947534 diversity: 0.2448161649385277
+genome_id: 360 fitness: 1.4411 runtime: 14.05 s steps: 281
+fitness: 1.4410561954022307 disparity: 0.3580954522947534 diversity: 0.2765461540748354
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244694539102409, 0.5961719148445097, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 354 fitness: 0.0300 runtime: 0.15 s steps: 3
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244694539102409, 0.5961719148445097, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 357 fitness: 0.0271 runtime: 0.15 s steps: 3
+17      20      3.54862         0.00214607      2.67641         11.1223
+genome_id: 361 fitness: 3.3800 runtime: 18.30 s steps: 366
+fitness: 3.3799655093576186 disparity: 0.38490100386466464 diversity: 0.24897707398951602
+genome_id: 362 fitness: 1.4381 runtime: 60.05 s steps: 1201
+fitness: 1.4381423504439985 disparity: 0.38490100386466464 diversity: 0.3856625114222172
+genome_id: 363 fitness: 3.8907 runtime: 30.65 s steps: 613
+fitness: 3.8907191504407193 disparity: 0.38490100386466464 diversity: 0.18395981328883093
+genome_id: 364 fitness: 1.4664 runtime: 23.75 s steps: 475
+fitness: 1.4663764615425186 disparity: 0.38490100386466464 diversity: 0.368383143887742
+genome_id: 365 fitness: 1.7245 runtime: 11.90 s steps: 238
+fitness: 1.7245343530936277 disparity: 0.38490100386466464 diversity: 0.4340693212086175
+genome_id: 366 fitness: 4.4178 runtime: 60.05 s steps: 1201
+fitness: 4.41780494805339 disparity: 0.38490100386466464 diversity: 0.35475574111523667
+genome_id: 367 fitness: 9.3406 runtime: 43.80 s steps: 876
+fitness: 9.340611124052467 disparity: 0.38490100386466464 diversity: 0.5345151537448675
+genome_id: 368 fitness: 1.3595 runtime: 14.20 s steps: 284
+fitness: 1.359463851768351 disparity: 0.38490100386466464 diversity: 0.47290119378868195
+genome_id: 369 fitness: 1.4254 runtime: 30.00 s steps: 600
+fitness: 1.4254424295171437 disparity: 0.38490100386466464 diversity: 0.3343168100785134
+genome_id: 370 fitness: 2.5856 runtime: 13.90 s steps: 278
+fitness: 2.585559067787754 disparity: 0.38490100386466464 diversity: 0.40254034488622203
+genome_id: 371 fitness: 1.5889 runtime: 18.85 s steps: 377
+fitness: 1.5889197703614821 disparity: 0.38490100386466464 diversity: 0.20689687322049552
+genome_id: 372 fitness: 1.3907 runtime: 12.35 s steps: 247
+fitness: 1.3906635704739887 disparity: 0.38490100386466464 diversity: 0.4349219342229245
+genome_id: 373 fitness: 1.7195 runtime: 40.00 s steps: 800
+fitness: 1.7194726068409063 disparity: 0.38490100386466464 diversity: 0.2927630640013823
+genome_id: 374 fitness: 1.5003 runtime: 23.55 s steps: 471
+fitness: 1.5003482824467034 disparity: 0.38490100386466464 diversity: 0.33984376962377155
+genome_id: 375 fitness: 1.1175 runtime: 9.80 s steps: 196
+fitness: 1.1174717575581667 disparity: 0.38490100386466464 diversity: 0.46288007187853486
+genome_id: 376 fitness: 3.7143 runtime: 30.95 s steps: 619
+fitness: 3.7143261586433116 disparity: 0.38490100386466464 diversity: 0.22734861164384268
+genome_id: 377 fitness: 5.8298 runtime: 38.25 s steps: 765
+fitness: 5.829841274770792 disparity: 0.38490100386466464 diversity: 0.2825103264960826
+genome_id: 378 fitness: 1.3178 runtime: 15.55 s steps: 311
+fitness: 1.3177912778117953 disparity: 0.38490100386466464 diversity: 0.2752572998718362
+genome_id: 379 fitness: 6.1210 runtime: 26.20 s steps: 524
+fitness: 6.120996971173634 disparity: 0.38490100386466464 diversity: 0.251798053261436
+genome_id: 380 fitness: 2.5864 runtime: 24.40 s steps: 488
+fitness: 2.5863861245391604 disparity: 0.38490100386466464 diversity: 0.345036709245888
+Get object handle:  37
+Get object handle:  40
+Get object handle:  39
+SetPose object: 37  position:  [0.6244694539102409, 0.5961719148445097, 0.099999]
+SetPose object: 40  position:  [0.8904767089863768, 0.11202851796531732, 0.099999]
+SetPose object: 39  position:  [0.1531950816652884, 0.4221606956578699, 0.099999]
+Transfered to thymio genome_id: 367 fitness: 0.0341 runtime: 0.15 s steps: 3
+18      20      3.54862         0.00214607      2.67641         11.1223
+genome_id: 381 fitness: 2.8687 runtime: 60.05 s steps: 1201
+fitness: 2.868660863614854 disparity: 0.3573375964577037 diversity: 0.3410969449777274
+genome_id: 382 fitness: 1.5944 runtime: 15.30 s steps: 306
+fitness: 1.594377754576898 disparity: 0.3573375964577037 diversity: 0.26534617571906155
+genome_id: 383 fitness: 1.7527 runtime: 25.35 s steps: 507
+fitness: 1.7526775887030757 disparity: 0.3573375964577037 diversity: 0.20506365260794587
+genome_id: 384 fitness: 8.7950 runtime: 38.25 s steps: 765
+fitness: 8.794996671661476 disparity: 0.3573375964577037 diversity: 0.47546995353076876
+genome_id: 385 fitness: 1.8117 runtime: 40.00 s steps: 800
+fitness: 1.8117420868565597 disparity: 0.3573375964577037 diversity: 0.2905300132674852
+genome_id: 386 fitness: 0.9696 runtime: 17.05 s steps: 341
+fitness: 0.9695672182725211 disparity: 0.3573375964577037 diversity: 0.2649470328680899
+genome_id: 387 fitness: 7.0827 runtime: 36.20 s steps: 724
+fitness: 7.082689157456475 disparity: 0.3573375964577037 diversity: 0.24454023213826323
+genome_id: 388 fitness: 1.6610 runtime: 19.40 s steps: 388
+fitness: 1.6609532894799814 disparity: 0.3573375964577037 diversity: 0.17671827781562593
+genome_id: 389 fitness: 1.2778 runtime: 15.45 s steps: 309
+fitness: 1.277802925501511 disparity: 0.3573375964577037 diversity: 0.2901788171266008
+genome_id: 390 fitness: 2.3660 runtime: 20.00 s steps: 400
+fitness: 2.365994482765942 disparity: 0.3573375964577037 diversity: 0.4224621736582727
+genome_id: 391 fitness: 1.1569 runtime: 10.70 s steps: 214
+fitness: 1.1569465274606585 disparity: 0.3573375964577037 diversity: 0.4613770830603569
+genome_id: 392 fitness: 2.5420 runtime: 60.05 s steps: 1201
+fitness: 2.5420435278855584 disparity: 0.3573375964577037 diversity: 0.28544076578753674
+genome_id: 393 fitness: 5.7494 runtime: 60.05 s steps: 1201
+fitness: 5.749357756514147 disparity: 0.3573375964577037 diversity: 0.47358261741136404
+genome_id: 394 fitness: 2.7230 runtime: 15.35 s steps: 307
+fitness: 2.7229644146694665 disparity: 0.3573375964577037 diversity: 0.2745199075280731
+genome_id: 395 fitness: 2.4283 runtime: 23.00 s steps: 460
+fitness: 2.4282756032794386 disparity: 0.3573375964577037 diversity: 0.44293269066047647
+genome_id: 396 fitness: 2.9706 runtime: 17.25 s steps: 345
+fitness: 2.9706321368134385 disparity: 0.3573375964577037 diversity: 0.39677544281832144
+genome_id: 397 fitness: 9.5317 runtime: 45.35 s steps: 907
+fitness: 9.531734729519806 disparity: 0.3573375964577037 diversity: 0.46781310619815136
+genome_id: 398 fitness: 1.4779 runtime: 11.75 s steps: 235
+fitness: 1.477941560853392 disparity: 0.3573375964577037 diversity: 0.41646927170941256
+genome_id: 399 fitness: 1.9304 runtime: 16.35 s steps: 327
+fitness: 1.9304092305765392 disparity: 0.3573375964577037 diversity: 0.4355445589760811
+genome_id: 400 fitness: 2.2362 runtime: 16.15 s steps: 323
+fitness: 2.236172683678667 disparity: 0.3573375964577037 diversity: 0.4037613520299387
+19      20      3.54862         0.00214607      2.67641         11.1223
