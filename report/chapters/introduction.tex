@@ -66,6 +66,8 @@ The robot-in-the-loop simulation-based optimization approaches also rely mostly 
 
 \section{The Transferability Approach}
 
+The \emph{transferability approach} falls into the robot-in-the-loop simulation-based optimization approaches. This approach hypothesizes that reality gap arises from two conflicting conditions: the performance of solutions in simulation and their corresponding transferability from simulation to reality. Thus this lead, to a multiobjective formulation of the evolutionary strategy where two objectives are optimized via a Pareto-based multiobjective-evolutionary algorithm. One of the objectives is maximized, the task-dependent fitness, while the other is minimized, the transferability objective. This objective relies on a quality measure that compares a given's controller's behavior in simulation with its counterpart in reality.  Since the transferability measure is not obtained for each controller, the approach relies on a so-called surrogate model, which approximates a transferability function by interpolation from a few selected transfer solutions. This model is updated during the optimation based on criteria which evaluate which controllers are most meaningful to transfer. In summary, this approach is attractive to explore, as it is aiming at finding solutions that are both efficient and transferable from simulation to reality.
+
 \section{Concluding thoughts}
 
 As mentioned earlier, the aim of the thesis project is to compare and explore state-of-the-art approaches to the reality gap problem. After reviewing the various approaches, we defined the following experiments and approaches to tackle the reality-gap problem:
