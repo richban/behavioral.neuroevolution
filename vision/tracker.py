@@ -261,9 +261,9 @@ class Tracker(threading.Thread):
         self._stop_event = threading.Event()
 
     def stop(self):
+        cv2.destroyAllWindows()
         self.cap.release()
         self._stop_event.set()
-        cv2.destroyAllWindows()
 
     def stopped(self):
         return self._stop_event.is_set()
@@ -314,59 +314,59 @@ class Tracker(threading.Thread):
         currentMarkers = currentMarkersTmp
         lock.release()
 
-        if self.show:
-            font = cv2.FONT_HERSHEY_SIMPLEX
-            for m in markers:
-                cv2.circle(image, m.center(), 50, (255, 255, 255), 3)
-                cx, cy = m.center()
-                cv2.putText(image, str(m.mid), (cx + 25, cy + 25),
-                            font, 1, (255, 255, 255), 2, cv2.LINE_AA)
-            cv2.putText(image, str(round(self.fps, 2)), (10, 25),
-                        font, 1, (255, 255, 255), 2, cv2.LINE_AA)
+        # if self.show:
+        #     font = cv2.FONT_HERSHEY_SIMPLEX
+        #     for m in markers:
+        #         cv2.circle(image, m.center(), 50, (255, 255, 255), 3)
+        #         cx, cy = m.center()
+        #         cv2.putText(image, str(m.mid), (cx + 25, cy + 25),
+        #                     font, 1, (255, 255, 255), 2, cv2.LINE_AA)
+        #     cv2.putText(image, str(round(self.fps, 2)), (10, 25),
+        #                 font, 1, (255, 255, 255), 2, cv2.LINE_AA)
 
-            for m in safeMarkers:
-                cx, cy = m.center()
-                center = (int(round(cx)), int(round(cy)))
+        #     for m in safeMarkers:
+        #         cx, cy = m.center()
+        #         center = (int(round(cx)), int(round(cy)))
 
-                if not m.isMoving:
-                    cv2.circle(image, center, 60, (255, 0, 0), 3)
-                else:
-                    cv2.circle(image, center, 60, (255, 0, 0), 7)
+        #         if not m.isMoving:
+        #             cv2.circle(image, center, 60, (255, 0, 0), 3)
+        #         else:
+        #             cv2.circle(image, center, 60, (255, 0, 0), 7)
 
-                angle = m.orientation()
-                l_ = 40
-                pt2 = (int(round(cx + l_ * math.cos(angle))),
-                       int(round(cy + l_ * math.sin(angle))))
-                cv2.line(image, center, pt2, (255, 0, 0), 2, cv2.LINE_AA)
-                cv2.putText(image, str(angle),
-                            (int(round(cx)) + 45,
-                             int(round(cy)) + 45),
-                            font, 1, (255, 0, 0),
-                            2, cv2.LINE_AA)
+        #         angle = m.orientation()
+        #         l_ = 40
+        #         pt2 = (int(round(cx + l_ * math.cos(angle))),
+        #                int(round(cy + l_ * math.sin(angle))))
+        #         cv2.line(image, center, pt2, (255, 0, 0), 2, cv2.LINE_AA)
+        #         cv2.putText(image, str(angle),
+        #                     (int(round(cx)) + 45,
+        #                      int(round(cy)) + 45),
+        #                     font, 1, (255, 0, 0),
+        #                     2, cv2.LINE_AA)
 
-            idx, m = self._get_marker_object(5, currentMarkersTmp)
+        #     idx, m = self._get_marker_object(5, currentMarkersTmp)
 
-            if m is not None:
-                cx, cy = m.center()
-                center = (int(round(cx)), int(round(cy)))
-                cv2.circle(image, center, 60, (0, 0, 255), 3)
-                angle = m.orientation()
-                l_ = 40
-                pt2 = (int(round(cx + l_ * math.cos(angle))),
-                       int(round(cy + l_ * math.sin(angle))))
-                cv2.line(image, center, pt2, (0, 0, 255), 2, cv2.LINE_AA)
-                cv2.putText(image, str(m.mid),
-                            (int(round(cx)) + 45,
-                             int(round(cy)) + 45),
-                            font, 1, (0, 0, 255), 2, cv2.LINE_AA)
+        #     if m is not None:
+        #         cx, cy = m.center()
+        #         center = (int(round(cx)), int(round(cy)))
+        #         cv2.circle(image, center, 60, (0, 0, 255), 3)
+        #         angle = m.orientation()
+        #         l_ = 40
+        #         pt2 = (int(round(cx + l_ * math.cos(angle))),
+        #                int(round(cy + l_ * math.sin(angle))))
+        #         cv2.line(image, center, pt2, (0, 0, 255), 2, cv2.LINE_AA)
+        #         cv2.putText(image, str(m.mid),
+        #                     (int(round(cx)) + 45,
+        #                      int(round(cy)) + 45),
+        #                     font, 1, (0, 0, 255), 2, cv2.LINE_AA)
 
-            for m in self.originCalibrationMarkers:
-                x, y = m.center()
-                cv2.circle(image, (int(x), int(y)), 4, (255, 0, 255), -1)
+        #     for m in self.originCalibrationMarkers:
+        #         x, y = m.center()
+        #         cv2.circle(image, (int(x), int(y)), 4, (255, 0, 255), -1)
 
-            cv2.imshow('capture', image)
-            # cv2.imshow('thresh', thresh)
-            cv2.waitKey(1)
+        #     cv2.imshow('capture', image)
+        #     # cv2.imshow('thresh', thresh)
+        #     cv2.waitKey(1)
 
         if self.capture:
             cv2.imwrite('foundMarkers.jpg', thresh)
@@ -678,7 +678,7 @@ class Tracker(threading.Thread):
                         return (False, None)
                     center = (int(xC), int(yC))
                     radiusC = int(radiusC)
-                    cv2.circle(image, center, radiusC, (0, 0, 255), -1)
+                    # cv2.circle(image, center, radiusC, (0, 0, 255), -1)
                     # cv2.putText(image, str(radiusC),
                     # center, font, 1, (0,0,255), 2, cv2.LINE_AA)
 
@@ -690,15 +690,15 @@ class Tracker(threading.Thread):
                         return (False, None)
                     center = (int(xC), int(yC))
                     radiusC = int(radiusC)
-                    cv2.circle(image, center, radiusC, (0, 255, 255), -1)
+                    # cv2.circle(image, center, radiusC, (0, 255, 255), -1)
                     # cv2.putText(image, str(radiusC), center,
                     #               font, 1, (0,255,255), 2, cv2.LINE_AA)
 
-                # Draw the outer contour
-                    cv2.circle(image, (int(outX), int(outY)),
-                               int(outRadius), (0, 255, 0), 1)
-                    cv2.putText(image, str(int(outRadius)), (int(outX), int(
-                        outY)), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
+                    # Draw the outer contour
+                    # cv2.circle(image, (int(outX), int(outY)),
+                    #            int(outRadius), (0, 255, 0), 1)
+                    # cv2.putText(image, str(int(outRadius)), (int(outX), int(
+                    #     outY)), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
                 return (True, m)
             else:
                 return (False, None)
