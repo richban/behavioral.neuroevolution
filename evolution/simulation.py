@@ -2,7 +2,9 @@ import utility.visualize as visualize
 from robot.vrep_robot import VrepRobot
 from vision.tracker import Tracker
 from settings import Settings
-from utility.util_functions import vrep_ports, timeit, save_fitness_moea, euclidean_distance
+from utility.util_functions import vrep_ports, \
+    timeit, save_fitness_moea, \
+    euclidean_distance, save_moea_data
 from utility.visualize import plot_single_run
 from evolution.eval_genomes import \
     eval_genomes_simulation, \
@@ -12,7 +14,7 @@ from evolution.eval_genomes import \
 from subprocess import Popen
 from functools import partial
 from neat import ParallelEvaluator
-from keras.models import Sequential
+from keras.models import Sequential, load_model
 from keras.layers import Dense
 from keras.initializers import normal
 from keras.utils import plot_model
@@ -174,6 +176,7 @@ class Simulation(object):
         self.input_dim = input_dim
         self.neurons = neurons
         self.disparity = Disparity()
+        self.model = None
         self._init_vrep()
         self._init_network()
         self._init_agent()
@@ -299,14 +302,16 @@ class Simulation(object):
         self.agent_initialized = True
 
     def _init_genome(self):
-        def init_individual(cls, genome):
+        def init_individual(cls, model):
             """Concatenated weights of the Keras model
             Weights are concatenated into a single list of floating points.
             The weights than are reshaped and adjusted in the eval_function in
             order to update the model weights correctly.
             """
-            ind = cls(genome)
-            ind.weights_shape = [(7, 5), (5,), (5, 2), (2,)]
+            ind = cls(np.concatenate(tuple(weight.flatten()
+                                           for weight in model.get_weights())).tolist())
+            ind.weights_shape = [tuple(weights.shape)
+                                 for weights in model.get_weights()]
             ind.features = None
             ind.weights = None
             ind.str_disparity = None
@@ -320,23 +325,26 @@ class Simulation(object):
             return ind
 
         if self.genome_path:
-            with open(self.genome_path, 'rb') as f:
-                genome = pickle.load(f)
 
             if self.multiobjective:
+                self.model = load_model(self.genome_path)
                 # Creating the appropriate type of the problem
                 creator.create("FitnessMax", base.Fitness,
                                weights=(1.0, -1.0, 1.0))
                 creator.create("Individual", list,
-                               fitness=creator.FitnessMax, genome=None)
+                               fitness=creator.FitnessMax, model=None)
                 toolbox = base.Toolbox()
                 toolbox.register("individual", init_individual,
-                                 creator.Individual, genome=genome)
+                                 creator.Individual, model=self.model)
 
-                self.winner = toolbox.individual()
+                individual = toolbox.individual()
+                individual.key = 666
+                self.winner = individual
             else:
+                with open(self.genome_path, 'rb') as f:
+                    genome = pickle.load(f)
                 self.winner = genome
-            print(genome)
+            print(self.winner)
         return
 
     def _init_vision(self):
@@ -472,14 +480,13 @@ class Simulation(object):
 
             return ind
 
-        def init_individual(cls, model):
+        def init_individual(cls, model, size, imin, imax):
             """Concatenated weights of the Keras model
             Weights are concatenated into a single list of floating points.
             The weights than are reshaped and adjusted in the eval_function in
             order to update the model weights correctly.
             """
-            ind = cls(np.concatenate(tuple(weight.flatten()
-                                           for weight in model.get_weights())).tolist())
+            ind = cls(random.uniform(imin, imax) for _ in range(size))
             ind.weights_shape = [tuple(weights.shape)
                                  for weights in model.get_weights()]
             ind.features = None
@@ -523,12 +530,19 @@ class Simulation(object):
         toolbox = base.Toolbox()
         history = tools.History()
 
+        SIZE = np.concatenate(tuple(weight.flatten()
+                                    for weight in model.get_weights())).tolist()
+        WEIGHTS_MIN = -1.0
+        WEIGHTS_MAX = 1.0
+
+        # Attribute generator random
         toolbox.register("individual", init_individual,
-                         creator.Individual, model=model)
+                         creator.Individual, model, len(SIZE), WEIGHTS_MIN, WEIGHTS_MAX)
         # register the crossover operator
         toolbox.register('mate', tools.cxTwoPoint)
         # register the mutation operator
-        toolbox.register('mutate', tools.mutFlipBit, indpb=self.settings.MUTPB)
+        toolbox.register('mutate', tools.mutGaussian, mu=0.0,
+                         sigma=1, indpb=self.settings.MUTPB)
         # register the evaluation function
         if self.simulation_type == 'transferability':
             toolbox.register(
@@ -790,11 +804,6 @@ class Simulation(object):
         """restore genome and re-run simulation"""
 
         toolbox = base.Toolbox()
-        model = None
-
-        if self.multiobjective:
-            model = self.build_model(
-                self.n_layers, self.input_dim, self.neurons)
 
         for i in range(0, N):
             genome = toolbox.clone(self.winner)
@@ -807,13 +816,15 @@ class Simulation(object):
 
             if self.simulation_type == 'thymio':
                 _ = eval_genome_hardware(
-                    self.individual, self.settings, genome, model=model, config=self.config, generation=-1)
+                    self.individual, self.settings, genome, model=self.model, config=self.config, generation=-1)
             else:
                 fitness = eval_genome_simulation(
-                    self.individual, self.settings, model, self.config, -1, genome)
+                    self.individual, self.settings, self.model, self.config, -1, genome)
 
             result = np.concatenate(
                 ([int(genome.key)], [fitness], genome.features))
+
+            # save_moea_data(self.settings.restored_genomes, genome)
 
             with open(self.settings.restored_genomes + 'restored_genome_fitness_{}.dat'.format(genome.key), 'a') as w:
                 np.savetxt(w, (result,), delimiter=',', fmt='%s')

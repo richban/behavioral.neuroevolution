@@ -577,9 +577,9 @@ def eval_genome_simulation(individual, settings, model, config, generation, geno
             behavioral_features, position, len(position)))
 
     if type(genome).__name__ == 'Individual':
-        genome.features = behavioral_features
+        genome.features = np.array(behavioral_features)
         genome.task_fitness = fitness
-        genome.position = position
+        genome.position = np.array(position)
         genome.evaluation = 'VREP'
         genome.weights = network.get_weights()
 
