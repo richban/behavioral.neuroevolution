@@ -206,9 +206,26 @@ def save_debug_data(f_path,
                 norm_sensor_activation), fitness_t, robot_current_position))
 
 
+def save_moea_data(path, genome):
+    with open(path + 'genomes_moea.dat', 'a') as f:
+        try:
+            (fitness, transferability, diversity) = genome.fitness.values
+        except AttributeError:
+            (fitness, transferability, diversity) = genome.task_fitness, -1.0, -1.0
+        f.write('{0},{1},{2},{3},{4},{5},{6},{7}\n'.format(genome.gen, genome.key, genome.evaluation,
+                                                           fitness, transferability, diversity, np.array2string(
+                                                               np.array(genome.features), precision=4, formatter={'float_kind': lambda x: "%.4f" % x}),
+                                                           np.array2string(
+                                                               np.array(genome.position), precision=4, formatter={'float_kind': lambda x: "%.4f" % x})
+                                                           ))
+
+
 def save_fitness_moea(pop, gen, path):
     for ind in pop:
-        (fitness, disparity, diversity) = ind.fitness.values
+        try:
+            (fitness, disparity, diversity) = ind.fitness.values
+        except AttributeError:
+            (fitness, disparity, diversity) = ind.task_fitness, -1.0, -1.0
         with open(path + 'fitness.dat', 'a') as f:
             f.write('{0},{1},{2},{3},{4}\n'.format(
                 gen, ind.key, fitness, disparity, diversity))

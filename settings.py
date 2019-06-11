@@ -21,7 +21,7 @@ class Settings:
         self.base_path = './data/neat/'
         self.vrep_abspath = '~/Developer/vrep-edu/vrep.app/Contents/MacOS/vrep'
         self.logtime_data = {}
-        self.pop = 4
+        self.pop = 20
         self.CXPB = 0.4
         self.MUTPB = 0.5
         self.STR = 0.5
