@@ -664,7 +664,7 @@ class Simulation(object):
         logbook.record(gen=0, evals=len(invalid_ind), **record)
         print(logbook.stream)
         try:
-            report(logbook.stream)
+            report(logbook.__str__())
         except:
             print("Failed to send email! Continuing...")
         hof.update(pop)
@@ -764,7 +764,7 @@ class Simulation(object):
             logbook.record(gen=gen, evals=len(invalid_ind), **record)
             print(logbook.stream)
             try:
-                report(logbook.stream)
+                report(logbook.__str__())
             except:
                 print("Failed to send email! Continuing...")
             hof.update(pop)
@@ -800,16 +800,16 @@ class Simulation(object):
             fit_avgs,
             fit_maxs,
             ratio=0.35,
-            save=self.settings.path + 'evolved-obstacle.pdf')
+            save=self.settings.path + 'evolved-obstacle.pdf'
+        )
 
-        # plot the best individuals genealogy
+
         gen_best = history.getGenealogy(hof[0])
         graph = networkx.DiGraph(gen_best).reverse()
-        colors = [toolbox.evaluate(history.genealogy_history[i])[
-            0] for i in graph]
+        colors = [toolbox.evaluate(history.genealogy_history[i]) for i in graph]
         networkx.draw(graph, node_color=colors, node_size=100)
         plt.savefig(self.settings.path + 'genealogy_tree.pdf')
-
+        
         return pop, hof, logbook, best_inds, best_inds_fitness
 
     @timeit

@@ -435,7 +435,7 @@ def _save_or_show(save):
     else:
         plt.show()
 
-    exit()
+    # exit()
 
 
 def plot_single_run(gen, fit_mins, fit_avgs, fit_maxs, title=None, ratio=None, save=None):
