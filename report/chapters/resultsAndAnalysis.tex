@@ -1,3 +1,38 @@
 \chapter{Results and Analysis}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+\section{Simulation-based optimization}
+
+Our first application aims to explore the \emph{simulation-based optimization} approach to the reality gap problem. The first part of the experiments involve evolving a obstacle avoidance behavior in simulation. Finding the right parameters of the evolutionary strategy to achieve optimal obstacle avoidance behavior, like, number of generations, population number etc. The second part is focused on the transferability of controllers. Taking the best controllers evolved in simulation and validate how well they transfer to reality. Additionally, this approach is later compared to the reality-based optimization apprach on the same application.
+
+\subsection{Experimenal design}
+
+The first experiment is validated with an virtual thymio robot in the \emph{virtual arena} \ref{fig:virtual_arena}. The goal is to evolve obstacle avoidance behavior. The virtual thymio robot is modeled based on the physical thymio and its characteristics \ref{thymio_characteristics}. The robot is quipted with 7 infrared sensors and 2 two motors. The specifications of sensor readings and possible speed values, included normalization values are depicted in the following table \ref{fig:thymio_specs} both for the physical thymio and its virtual counterpart.
+
+\begin{table}[H]
+\begin{tabular}{llll}
+\hline
+\textbf{}                            & \textbf{Simulator}   & \textbf{Reality}  & \textbf{Normalized}  \hline
+\textbf{Speed Values}                & {[}-2.0, 2.0{]}       & {[}-200, 200{]}      & {[}0.0, 1.0{]} \\
+\textbf{Sensory Readings}            & {[}0.0, 1.0{]}        & {[}0, 4500{]}        & {[}0.0, 1.0{]} \\
+\end{tabular}
+\caption{The Thymio robot sensors and speed values specification.}
+\label{fig:thymio_specs}
+\end{table}
+
+The aforementioned evolutionary algorithm applied in this experiment is \emph{NEAT} \cite{stanley2002evolving}. A controller, in this case the genome, is represented as a neural network. The implementation is based on the python-neat\footnote{\url{https://neat-python.readthedocs.io/en/latest/}} library which has been modified to fit our requirements. The genome contains a list of \emph{connection genes} and list of \emph{node genes}. Node genes encodes the input, hidden nodes, and outputs of the neural network that can be connected. Whether a node is connected to other node is expressed in the connection gene. The initial neural network structure consists of 7 input nodes (each represents the IR sensors placed around the thymio), fully connected to the 2 motor neurons computing the speeds of the wheels. This way the algorithm starts with a fixed topology and by applying the biological operators over generations it may evolve. In the early stage of the experiments various parameters of the evolution have been tested (population size, generations, mutation rate etc.), but the most promosing results have been achieved by the parameters summarized in table \ref{neat_parameters}.
+
+\begin{table}[H]
+\begin{tabular}{llll}
+\hline
+\textbf{}                            & \textbf{Simulator}   & \textbf{Reality}  & \textbf{Normalized}  \hline
+\textbf{Speed Values}                & {[}-2.0, 2.0{]}       & {[}-200, 200{]}      & {[}0.0, 1.0{]} \\
+\textbf{Sensory Readings}            & {[}0.0, 1.0{]}        & {[}0, 4500{]}        & {[}0.0, 1.0{]} \\
+\end{tabular}
+\caption{The Thymio robot sensors and speed values specification.}
+\label{neat_parameters}
+\end{table}
+
+The evaluation of a single genome takes 60 simulation seconds from a fixed initial position each test. At each step (50ms), the thymio robot sensory readings are feeded to the neural network and the network outputs are multiplied by the maximal wheel speed and used to apply to the wheels of the thymio robot. The network outputs are in the range of 0.0 and 1.0, and since the thymio can move backward, the ouput values are transformed into a positive/negative range where 0.5 is the point of direction inversion. In order to speed up the optimization, the evaluation of a genome is stopped if the system detects that the robot collided with the walls or the enviromental objects. Furthemore, if the robot is not moving or spinning in one place the evaluation is stopped and the fitness is calculated over a reduced simulation time.
+
+The fitness function relies on a set of features that can be measured within the interaction between the robot and its environment. Hence the fitness function relies on 3 features, as follows: 
+
