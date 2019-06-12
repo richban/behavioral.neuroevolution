@@ -12,6 +12,7 @@ from evolution.eval_genomes import \
     eval_genome_hardware, \
     eval_genome_simulation
 from subprocess import Popen
+from utility.mail import report
 from functools import partial
 from neat import ParallelEvaluator
 from keras.models import Sequential, load_model
@@ -662,6 +663,10 @@ class Simulation(object):
         record = stats.compile(pop)
         logbook.record(gen=0, evals=len(invalid_ind), **record)
         print(logbook.stream)
+        try:
+            report(logbook.stream)
+        except:
+            print("Failed to send email! Continuing...")
         hof.update(pop)
 
         # Begin the generational process
@@ -758,6 +763,10 @@ class Simulation(object):
             record = stats.compile(pop)
             logbook.record(gen=gen, evals=len(invalid_ind), **record)
             print(logbook.stream)
+            try:
+                report(logbook.stream)
+            except:
+                print("Failed to send email! Continuing...")
             hof.update(pop)
 
         # dump transfered genemos
@@ -774,6 +783,10 @@ class Simulation(object):
         # save the best individual
         with open(self.settings.path + 'winner_{0}'.format(hof[0].key), 'wb') as winner:
             pickle.dump(hof[0], winner)
+
+        # save hof
+        with open(self.settings.path + 'hof', 'wb') as h:
+            pickle.dump(hof, h)
 
         # Evolution records as a chronological list of dictionaries
         gen = logbook.select('gen')
