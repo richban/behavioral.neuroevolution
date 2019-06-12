@@ -50,6 +50,37 @@ def compute_quartiles(dt):
     return q.sort_index()
 
 
+def process_best_quartiles(files):
+    gen_data = []
+
+    for f in files:
+        (_, _, sim, _) = f.parts
+        df = pd.read_csv(f, names=['gen', 'genome', 'fitness'])
+        df['sim'] = sim
+        gen_data.append(df)
+
+    # concat all data into one dataframe
+    gen_data = pd.concat(tuple(d for d in gen_data))
+
+    qt = (gen_data.groupby(['gen', 'sim'])
+          .agg('max')
+          .groupby('gen')
+          .quantile([.25, .5, .75, 1.])
+          .drop(columns='genome')
+          .rename(index=str, columns={'fitness': 'fitness'})
+          .unstack(level=-2)
+          .T
+          .reset_index()
+          .set_index('gen')
+          .drop(columns='level_0')
+          .rename(index=str, columns={'0.25': 'q1', '0.5': 'q2', '0.75': 'q3', '1.0': 'q4'})
+          )
+
+    qt.index = qt.index.astype(int)
+
+    return qt.sort_index()
+
+
 def read_behaviors(files):
     columns = [
         'gen',
