@@ -328,21 +328,24 @@ class Simulation(object):
         if self.genome_path:
 
             if self.multiobjective:
-                
+
                 # self.model = load_model(self.genome_path)
                 # toolbox = base.Toolbox()
                 # toolbox.register("individual", init_individual, creator.Individual, model=self.model)
                 # individual = toolbox.individual()
                 # individual.key = 666
-                
-                self.model = self.build_model(self.n_layers, self.input_dim, self.neurons)
-                creator.create("FitnessMax", base.Fitness, weights=(1.0, -1.0, 1.0))
-                creator.create("Individual", list, fitness=creator.FitnessMax, model=None)
+
+                self.model = self.build_model(
+                    self.n_layers, self.input_dim, self.neurons)
+                creator.create("FitnessMax", base.Fitness,
+                               weights=(1.0, -1.0, 1.0))
+                creator.create("Individual", list,
+                               fitness=creator.FitnessMax, model=None)
                 Individual = creator.Individual
-                
+
                 with open(self.genome_path, 'rb') as f:
                     genome = pickle.load(f)
-                
+
                 self.winner = genome
             else:
                 with open(self.genome_path, 'rb') as f:
@@ -395,7 +398,12 @@ class Simulation(object):
                         input_shape=(input_dim,),
                         activation=activation,
                         kernel_initializer=initializer,
-                        name='hidden_layer'))
+                        name='hidden_layer_1'))
+
+        # model.add(Dense(units=neurons[1],
+        #             activation=activation,
+        #             kernel_initializer=initializer,
+        #             name='hidden_layer_2'))
 
         # Adds output layer
         model.add(Dense(units=2, activation=activation,
@@ -488,7 +496,7 @@ class Simulation(object):
             """Concatenated weights of the Keras model
             Weights are concatenated into a single list of floating points.
             The weights than are reshaped and adjusted in the eval_function in
-            order to update the model weights correctly.
+            order to update the model weights correctly.sel
             """
             ind = cls(random.uniform(imin, imax) for _ in range(size))
             ind.weights_shape = [tuple(weights.shape)
@@ -546,7 +554,7 @@ class Simulation(object):
         toolbox.register('mate', tools.cxTwoPoint)
         # register the mutation operator
         toolbox.register('mutate', tools.mutGaussian, mu=0.0,
-                         sigma=0.5, indpb=self.settings.MUTPB)
+                         sigma=1.0, indpb=self.settings.MUTPB)
         # register the evaluation function
         if self.simulation_type == 'transferability':
             toolbox.register(
@@ -806,13 +814,12 @@ class Simulation(object):
             save=self.settings.path + 'evolved-obstacle.pdf'
         )
 
+        # gen_best = history.getGenealogy(hof[0])
+        # graph = networkx.DiGraph(gen_best).reverse()
+        # colors = [toolbox.evaluate(history.genealogy_history[i]) for i in graph]
+        # networkx.draw(graph, node_color=colors, node_size=100)
+        # plt.savefig(self.settings.path + 'genealogy_tree.pdf')
 
-        gen_best = history.getGenealogy(hof[0])
-        graph = networkx.DiGraph(gen_best).reverse()
-        colors = [toolbox.evaluate(history.genealogy_history[i]) for i in graph]
-        networkx.draw(graph, node_color=colors, node_size=100)
-        plt.savefig(self.settings.path + 'genealogy_tree.pdf')
-        
         return pop, hof, logbook, best_inds, best_inds_fitness
 
     @timeit
