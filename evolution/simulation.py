@@ -328,19 +328,22 @@ class Simulation(object):
         if self.genome_path:
 
             if self.multiobjective:
-                self.model = load_model(self.genome_path)
-                # Creating the appropriate type of the problem
-                creator.create("FitnessMax", base.Fitness,
-                               weights=(1.0, -1.0, 1.0))
-                creator.create("Individual", list,
-                               fitness=creator.FitnessMax, model=None)
-                toolbox = base.Toolbox()
-                toolbox.register("individual", init_individual,
-                                 creator.Individual, model=self.model)
-
-                individual = toolbox.individual()
-                individual.key = 666
-                self.winner = individual
+                
+                # self.model = load_model(self.genome_path)
+                # toolbox = base.Toolbox()
+                # toolbox.register("individual", init_individual, creator.Individual, model=self.model)
+                # individual = toolbox.individual()
+                # individual.key = 666
+                
+                self.model = self.build_model(self.n_layers, self.input_dim, self.neurons)
+                creator.create("FitnessMax", base.Fitness, weights=(1.0, -1.0, 1.0))
+                creator.create("Individual", list, fitness=creator.FitnessMax, model=None)
+                Individual = creator.Individual
+                
+                with open(self.genome_path, 'rb') as f:
+                    genome = pickle.load(f)
+                
+                self.winner = genome
             else:
                 with open(self.genome_path, 'rb') as f:
                     genome = pickle.load(f)
@@ -543,18 +546,18 @@ class Simulation(object):
         toolbox.register('mate', tools.cxTwoPoint)
         # register the mutation operator
         toolbox.register('mutate', tools.mutGaussian, mu=0.0,
-                         sigma=1, indpb=self.settings.MUTPB)
+                         sigma=0.5, indpb=self.settings.MUTPB)
         # register the evaluation function
         if self.simulation_type == 'transferability':
             toolbox.register(
                 'evaluate',
                 partial(
                     self.eval_function,
-                    self.vrep_bot,
-                    self.settings,
-                    model,
-                    None,
-                    None
+                    individual=self.vrep_bot,
+                    settings=self.settings,
+                    model=model,
+                    config=None,
+                    generation=None
                 )
             )
         else:
@@ -721,7 +724,7 @@ class Simulation(object):
                     ind.fitness.values = (fit, 0.0, diversity)
 
                 # Save Deap Individual
-                with open(self.settings.path + 'deap_inds/' + str(ind.key) + "_genome_.pkl", "wb") as ind_file:
+                with open(self.settings.path + 'deap_inds/' + str(ind.key) + "_genome.pkl", "wb") as ind_file:
                     pickle.dump(ind, ind_file)
 
             # transfer controllers to reality based on diversity threshold
