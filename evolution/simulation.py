@@ -4,7 +4,8 @@ from vision.tracker import Tracker
 from settings import Settings
 from utility.util_functions import vrep_ports, \
     timeit, save_fitness_moea, \
-    euclidean_distance, save_moea_data
+    euclidean_distance, save_moea_data \
+    calc_str_disparity
 from utility.visualize import plot_single_run
 from evolution.eval_genomes import \
     eval_genomes_simulation, \
@@ -915,8 +916,8 @@ class Disparity(object):
         self.disparity_value = 0.0
 
     def add(self, transfer_controller, controller_sim):
-        transfer_controller.str_disparity = euclidean_distance(
-            controller_sim.position, transfer_controller.position)
+        transfer_controller.str_disparity = calc_str_disparity(transfer_controller.position,
+                                                               controller_sim.position)
         self.transfered_set.append(transfer_controller)
 
     def comptute(self, controller):
