@@ -562,11 +562,11 @@ class Simulation(object):
                 'evaluate',
                 partial(
                     self.eval_function,
-                    individual=self.vrep_bot,
-                    settings=self.settings,
-                    model=model,
-                    config=None,
-                    generation=None
+                    self.vrep_bot,
+                    self.settings,
+                    model,
+                    None,
+                    None
                 )
             )
         else:
@@ -814,13 +814,7 @@ class Simulation(object):
             ratio=0.35,
             save=self.settings.path + 'evolved-obstacle.pdf'
         )
-
-        # gen_best = history.getGenealogy(hof[0])
-        # graph = networkx.DiGraph(gen_best).reverse()
-        # colors = [toolbox.evaluate(history.genealogy_history[i]) for i in graph]
-        # networkx.draw(graph, node_color=colors, node_size=100)
-        # plt.savefig(self.settings.path + 'genealogy_tree.pdf')
-
+        
         return pop, hof, logbook, best_inds, best_inds_fitness
 
     @timeit
