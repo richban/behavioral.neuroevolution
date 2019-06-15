@@ -511,7 +511,7 @@ def eval_genome_simulation(individual, settings, model, config, generation, geno
         # every 10 seconds the robot is in the same position given a threshold stop the simulation
         if round(runtime, 2) % 10.0 == 0.0:
             # print(euclidean_distance(position[0], position[-1]))
-            if (euclidean_distance(position[0], position[-1])) < .01:
+            if (euclidean_distance(position[0], position[-1])) < .05:
                 collision = True
 
         #  fitness_t at time stamp
@@ -618,12 +618,36 @@ def init_network(genome, config=None, model=None):
     if type(genome).__name__ == 'Individual':
         if True:
             # TODO the sizeing is hardcoded.
+            # 7 NEURONS
+            # weights = [
+            #     np.array(genome[:35]).reshape(genome.weights_shape[0]),
+            #     np.array(genome[35:40]).reshape(genome.weights_shape[1]),
+            #     np.array(genome[40:50]).reshape(genome.weights_shape[2]),
+            #     np.array(genome[-2:]).reshape(genome.weights_shape[3]),
+            # ]
+            # 14 NEURONS
             weights = [
-                np.array(genome[:35]).reshape(genome.weights_shape[0]),
-                np.array(genome[35:40]).reshape(genome.weights_shape[1]),
-                np.array(genome[40:50]).reshape(genome.weights_shape[2]),
+                np.array(genome[:98]).reshape(genome.weights_shape[0]),
+                np.array(genome[98:112]).reshape(genome.weights_shape[1]),
+                np.array(genome[112:140]).reshape(genome.weights_shape[2]),
                 np.array(genome[-2:]).reshape(genome.weights_shape[3]),
             ]
+            # 2 HIDDEN LAYERS AND 14 NEURONS
+            # weights = [
+            #     np.array(genome[:98]).reshape(genome.weights_shape[0]),
+            #     np.array(genome[98:112]).reshape(genome.weights_shape[1]),
+            #     np.array(genome[112:308]).reshape(genome.weights_shape[2]),
+            #     np.array(genome[308:322]).reshape(genome.weights_shape[3]),
+            #     np.array(genome[322:350]).reshape(genome.weights_shape[4]),
+            #     np.array(genome[-2:]).reshape(genome.weights_shape[5]),
+            # ]
+            # 10 NEURONS
+            # weights = [
+            #     np.array(genome[:70]).reshape(genome.weights_shape[0]),
+            #     np.array(genome[70:80]).reshape(genome.weights_shape[1]),
+            #     np.array(genome[80:100]).reshape(genome.weights_shape[2]),
+            #     np.array(genome[-2:]).reshape(genome.weights_shape[3]),
+            # ]
 
             model.set_weights(weights)
         else:

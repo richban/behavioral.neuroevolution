@@ -42,7 +42,7 @@ For each evaluated controller, we extract certain \emph{behavioral feautures} \r
 	\caption{12-dimensional behavarioral features}
 \end{equation}
 
-Additionally, we extract the position of the Thymio robot during evaluation. The vision system is used to extract the position from reality and the client is responsible for the position from the simulation. This feature is used to qualify a given controllers transfer from simulation to reality.
+Additionally, we extract the position of the Thymio robot during evaluation. The vision system is used to extract the position from reality and the system is responsible for the position from the simulation. This feature measure is used to qualify a given controllers transfer from simulation to reality.
 
 \section{Simulation-based optimization}
 
@@ -50,7 +50,7 @@ Our first application aims to explore the \emph{simulation-based optimization} a
 
 \subsection{Experimenal design}
 
-The first experiment takes place fully in simulation using the simulation model mentioned earlier \ref{fig:virtual_arena}. The aforementioned evolutionary algorithm applied in this experiment is \emph{NEAT} \cite{stanley2002evolving}. A controller, in this case, the genome, is represented as a neural network. The implementation is based on the python-neat \footnote{\url{https://neat-python.readthedocs.io/en/latest/}} library which has been modified to fit our requirements. The genome contains a list of \emph{connection genes} and list of \emph{node genes}. Node genes encode the input, hidden nodes, and outputs of the neural network that can be connected. Whether a node is connected to other node is expressed in the connection gene. The initial neural network structure consists of 7 input nodes (each represents the infrared sensors placed around the Thymio), fully connected to the 2 motor neurons computing the speeds of the wheels. This way the algorithm starts with a fixed topology and by applying the biological operators over generations it may evolve. In the early stage of the experiments various parameters of the evolution have been tested (population size, generations, mutation rate, etc.), but the most promising results have been achieved by the parameters summarized in table \ref{neat_parameters}.
+The first experiment takes place fully in simulation using the simulation model mentioned earlier \ref{fig:virtual_arena}. The aforementioned evolutionary algorithm applied in this experiment is \emph{NEAT} \cite{stanley2002evolving}. A controller, in this case, the genome, is represented as a neural network. The implementation is based on the python-neat \footnote{\url{https://neat-python.readthedocs.io/en/latest/}} library which has been modified to fit our requirements. The genome contains a list of \emph{connection genes} and list of \emph{node genes}. Node genes encode the input, hidden nodes, and outputs of the neural network that can be connected. Whether a node is connected to other node is expressed in the connection gene. The initial neural network structure consists of 7 input nodes (each represents the infrared sensors placed around the Thymio), fully connected to the 2 motor neurons computing the speeds of the wheels. This way the algorithm starts with a fixed topology and by applying the biological operators over generations it may evolve. In the early stage of the experiments various parameters of the evolution have been tested (population size, generations, mutation rate, etc.), but the most promising results have been achieved by the parameters summarized in table \ref{neat_parameters}. The experiment have been reproduced 10 times.
 
 \begin{table}[H]
 \begin{tabular}{llll}
@@ -63,4 +63,30 @@ The first experiment takes place fully in simulation using the simulation model 
 \caption{The Thymio robot sensors and speed values specification.}
 \label{neat_parameters}
 \end{table}
+
+\subsection{Results}
+
+\subsection{Discussion}
+
+\section{Reality-based optimization}
+
+\subsection{Experimenal design}
+
+For comparison to the simulation-based optimization, we conduct a reality-based optimization directly on the physical robot. The experimental set-up is the same as in the previous application. The size of the population is 20 and the number of generations is 20. Again, NEAT is used as the underlying evolutionary strategy with the same parameters summarized in table \ref{neat_parameters}. It has been reproduced 10 times, which implies 4000 evaluations, to have the same amount of experiments in reality as in simulation. The experiment completely relies on the entire robotic platform including the vision system, simulation, and the Thymio robot.
+
+\subsection{Results}
+
+\subsection{Discussion}
+
+\section{Transferability Approach}.
+
+This series of experiments falls into the \emph{robot-in-the-loop simulation-based optimization}. 
+
+\subsection{Experimenal design}
+
+\subsection{Results}
+
+\subsection{Discussion}
+
+
 
