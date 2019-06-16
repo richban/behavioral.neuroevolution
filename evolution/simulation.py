@@ -4,7 +4,7 @@ from vision.tracker import Tracker
 from settings import Settings
 from utility.util_functions import vrep_ports, \
     timeit, save_fitness_moea, \
-    euclidean_distance, save_moea_data \
+    euclidean_distance, save_moea_data, \
     calc_str_disparity
 from utility.visualize import plot_single_run
 from evolution.eval_genomes import \
@@ -854,8 +854,8 @@ class Simulation(object):
     def post_eval(self):
         """post evalution of genome"""
         self.individual = self.eval_function(
-            self.individual, self.settings, self.winner, self.config)
-        return self.individual
+            self.individual, self.settings, self.winner, self.model, self.config)
+        return self.individual      
 
     def log_statistics(self):
         """log results and save best/winner genomes"""
