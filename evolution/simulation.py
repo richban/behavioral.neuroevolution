@@ -4,7 +4,7 @@ from vision.tracker import Tracker
 from settings import Settings
 from utility.util_functions import vrep_ports, \
     timeit, save_fitness_moea, \
-    euclidean_distance, save_moea_data \
+    euclidean_distance, save_moea_data, \
     calc_str_disparity
 from utility.visualize import plot_single_run
 from evolution.eval_genomes import \
@@ -562,11 +562,11 @@ class Simulation(object):
                 'evaluate',
                 partial(
                     self.eval_function,
-                    individual=self.vrep_bot,
-                    settings=self.settings,
-                    model=model,
-                    config=None,
-                    generation=None
+                    self.vrep_bot,
+                    self.settings,
+                    model,
+                    None,
+                    None
                 )
             )
         else:
@@ -814,13 +814,7 @@ class Simulation(object):
             ratio=0.35,
             save=self.settings.path + 'evolved-obstacle.pdf'
         )
-
-        # gen_best = history.getGenealogy(hof[0])
-        # graph = networkx.DiGraph(gen_best).reverse()
-        # colors = [toolbox.evaluate(history.genealogy_history[i]) for i in graph]
-        # networkx.draw(graph, node_color=colors, node_size=100)
-        # plt.savefig(self.settings.path + 'genealogy_tree.pdf')
-
+        
         return pop, hof, logbook, best_inds, best_inds_fitness
 
     @timeit
@@ -860,8 +854,8 @@ class Simulation(object):
     def post_eval(self):
         """post evalution of genome"""
         self.individual = self.eval_function(
-            self.individual, self.settings, self.winner, self.config)
-        return self.individual
+            self.individual, self.settings, self.winner, self.model, self.config)
+        return self.individual      
 
     def log_statistics(self):
         """log results and save best/winner genomes"""

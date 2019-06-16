@@ -130,6 +130,8 @@ if __name__ == '__main__':
         if args.restore_genome and args.post_eval:
             kwargs.update({'genome_path': args.restore_genome})
             kwargs.update({'eval_function': post_eval_genome})
+            kwargs.update({'multiobjective': args.multiobjective})
+            kwargs.update({'neurons': args.neurons})
             simulation = 'post_eval'
 
         if args.checkpoint:
