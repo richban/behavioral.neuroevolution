@@ -13,7 +13,7 @@ The robot is quipted with 7 infrared sensors and 2 two motors. The virtual thymi
 \textbf{Sensory Readings}            & {[}0.0, 1.0{]}        & {[}0, 4500{]}        & {[}0.0, 1.0{]} \\
 \end{tabular}
 \caption{The Thymio robot sensors and speed values specification.}
-\label{fig:thymio_specs}
+\label{tab:thymio_specs}
 \end{table}
 
 The evaluation of a single genome takes 60 simulation seconds for the simulation-based approaches and 60 wall clock seconds for the reality-based approaches from a fixed initial position each test. At each step (50ms), the Thymio robot sensory readings are fed to the neural network and the network outputs are multiplied by the maximal wheel speed and used to apply to the wheels of the Thymio robot. The network outputs are in the range of \emph{0.0} and \emph{1.0}, and since the Thymio can move backward, the output values are transformed into a positive/negative range where \emph{0.5} is the point of direction inversion. In order to speed up the optimization, the evaluation of a genome is stopped if the system detects that the robot collided with the walls or the environmental objects. Furthermore, if the robot is not moving or spinning in one place the evaluation is stopped and the fitness is calculated over reduced simulation time.
@@ -26,19 +26,19 @@ The fitness function relies on a set of features that can be measured within the
 	\item \((1 - P_{t})\) \textbf{Max Sensor activation} the activation value of the proximity sensor with the highest activity. The closer the robot is to the walls or obstacles the less fitness it accumulates.
 \end{enumerate}
 
-The fitness function \ref{fitness_function} is defined as a dot product of all these features divided by the fixed simulation time. 
+The fitness function \ref{eq:fitness_function} is defined as a dot product of all these features divided by the fixed simulation time. 
 
 \begin{equation}
 	\[ f = \sum_{t=1}^{t_{max}} \frac{V_{t} (1 - \sqrt{\Delta v}) (1 - P_{t})}{60} \]
-	\label{fitness_function}
+	\label{eq:fitness_function}
 	\caption{Task dependent fitness function}
 \end{equation}
 
-For each evaluated controller, we extract certain \emph{behavioral feautures} \ref{behavioral_features} during the optimization process. These features allow us to describe/quantify the behavior of each controller. Moreover, it allows us to compare controllers in a simple manner without any dependency on the evolutionary strategy applied or the controller's genotype. The 12-dimensional features are defined as 1) the average left and right wheel speeds 2) the average value of each sensor activation 3) percentage of time spent in each section of the arena throughout the evaluation. These features are normalized in the range of \emph{0.0} and \emph{1.0}.
+For each evaluated controller, we extract certain \emph{behavioral feautures} \ref{eq:behavioral_features} during the optimization process. These features allow us to describe/quantify the behavior of each controller. Moreover, it allows us to compare controllers in a simple manner without any dependency on the evolutionary strategy applied or the controller's genotype. The 12-dimensional features are defined as 1) the average left and right wheel speeds 2) the average value of each sensor activation 3) percentage of time spent in each section of the arena throughout the evaluation. These features are normalized in the range of \emph{0.0} and \emph{1.0}.
 
 \begin{equation}
 	\[ b_{controller} = [avg_{left}, avg_{right}, s_{1}, s_{2}, s_{3}, s_{4}, s_{5}, s_{6}, s_{7}, area_{0}, area_{1}, area_{2}]\]
-	\label{behavioral_features}
+	\label{eq:behavioral_features}
 	\caption{12-dimensional behavarioral features}
 \end{equation}
 
@@ -50,7 +50,7 @@ Our first application aims to explore the \emph{simulation-based optimization} a
 
 \subsection{Experimenal design}
 
-The first experiment takes place fully in simulation using the simulation model mentioned earlier \ref{fig:virtual_arena}. The aforementioned evolutionary algorithm applied in this experiment is \emph{NEAT} \cite{stanley2002evolving}. A controller, in this case, the genome, is represented as a neural network. The implementation is based on the python-neat \footnote{\url{https://neat-python.readthedocs.io/en/latest/}} library which has been modified to fit our requirements. The genome contains a list of \emph{connection genes} and list of \emph{node genes}. Node genes encode the input, hidden nodes, and outputs of the neural network that can be connected. Whether a node is connected to other node is expressed in the connection gene. The initial neural network structure consists of 7 input nodes (each represents the infrared sensors placed around the Thymio), fully connected to the 2 motor neurons computing the speeds of the wheels. This way the algorithm starts with a fixed topology and by applying the biological operators over generations it may evolve. In the early stage of the experiments various parameters of the evolution have been tested (population size, generations, mutation rate, etc.), but the most promising results have been achieved by the parameters summarized in table \ref{neat_parameters}. The experiment have been reproduced 10 times.
+The first experiment takes place fully in simulation using the simulation model mentioned earlier \ref{fig:virtual_arena}. The aforementioned evolutionary algorithm applied in this experiment is \emph{NEAT} \cite{stanley2002evolving}. A controller, in this case, the genome, is represented as a neural network. The implementation is based on the python-neat \footnote{\url{https://neat-python.readthedocs.io/en/latest/}} library which has been modified to fit our requirements. The genome contains a list of \emph{connection genes} and list of \emph{node genes}. Node genes encode the input, hidden nodes, and outputs of the neural network that can be connected. Whether a node is connected to other node is expressed in the connection gene. The initial neural network structure consists of 7 input nodes (each represents the infrared sensors placed around the Thymio), fully connected to the 2 motor neurons computing the speeds of the wheels. This way the algorithm starts with a fixed topology and by applying the biological operators over generations it may evolve. In the early stage of the experiments various parameters of the evolution have been tested (population size, generations, mutation rate, etc.), but the most promising results have been achieved by the parameters summarized in table \ref{tab:neat_parameters}. The experiment have been reproduced 10 times.
 
 \begin{table}[H]
 \begin{tabular}{llll}
@@ -61,7 +61,7 @@ The first experiment takes place fully in simulation using the simulation model 
 \textbf{Sensory Readings}            & {[}0.0, 1.0{]}        & {[}0, 4500{]}        & {[}0.0, 1.0{]} \\
 \end{tabular}
 \caption{The Thymio robot sensors and speed values specification.}
-\label{neat_parameters}
+\label{tab:neat_parameters}
 \end{table}
 
 \subsection{Results}
@@ -80,9 +80,81 @@ For comparison to the simulation-based optimization, we conduct a reality-based 
 
 \section{Transferability Approach}.
 
-This series of experiments falls into the \emph{robot-in-the-loop simulation-based optimization}. 
+This series of experiments falls into the \emph{robot-in-the-loop simulation-based optimization}. Our aim is to validate the transferability approach to obstacle avoidance task based on \cite{koos2012transferability}. We assume that more transfers from simulation to reality allow to approximate the surrogate model better which could guide the evolutionary search to more transferable controllers.
 
 \subsection{Experimenal design}
+
+The transferability approach relies on a multi-objective formulation of the evolutionary strategy where the two main objectives are optimized with Pareto-based ranking scheme. Our implementation relies on the \cite{deb200fast} evolutionary algorithm implemented via the \emph{DEAP}\footnote{\url{https://deap.readthedocs.io/en/master/}} library. Each controller is evaluated by three objectives:
+
+\begin{enumerate}
+	\item the \emph{task-dependent fitness}\ref{eq:fitness_function}, to find controllers with obstacle avoidance behavior. 	The algorithm maximizes this objective.
+	\item the corresponding \emph{simulation-to-reality disparity} (STR disparity), which is minimized, to find optimal transferable controllers.
+	\item the \emph{behavioral diversity} objective, which is maximized, to find more diverse set controllers.
+\end{enumerate}
+
+\emph{STR disparity and the surrogate model}. The transferability of a given controller is evaluated by the  STR disparity measure \(D^{*}_{{c}}\), which directly quantify the behavioral disparities between any possible controller observed in simulation and in reality. The same STR disparity measure is used in our experiment as in the original implementation. Its computed as the mean square error between the corresponding trajectories between simulation and in reality during evaluation. The exact STR disparity \(D^{*}_{{c}}\) of a controller is defined as:
+
+\begin{equation}
+	\[ D^{*}_{{c}} = \sum_{t=1}^{t_{max}} \frac{(x^{i}_{S} - x^{i}_{R})^{2}}{\bar{x_{S}}\bar{x_{R}}} + 							  \sum_{t=1}^{t_{max}} \frac{(y^{i}_{S} - y^{i}_{R})^{2}}{\bar{y_{S}}\bar{y_{R}}} \]
+	\label{eq:The exact STR disparity measure.}
+\end{equation}
+
+Where $ S_{t_{max}} = \{{x_{S}, y_{S}} \}$  and $R_{t_{max}} = \{ {x_{R}, y_{R}} \} $ is a set of positions extracted in simulation and reality, $\bar{x_{S}}$ (resp. $ \bar{y_{S}}, \bar{x_{R}}, \bar{y_{R}} $) is the mean of $ x^{t_{max}}_{S}$ (resp. $ y^{t_{max}}_{S}, x^{t_{max}}_{R}, x^{t_{max}}_{R} $). The exact STR disparity measure cannot be used directly for the optimization scheme for each controller, because it would require to transfer each controller during the evaluation, therefore the approach relies on a so called \emph{surrogate model} which approximates this measure. The surrogate model is approximated by Inverse Distance Weightining interpolation method \cite{shepard1968two}. The \emph{surrogate model of the STR disparity} is defined:
+
+\begin{equation}
+	
+	\[ \forall{c}\in\chi, \hat{D}_{(c)} = \frac{\sum_{c_i\in\chi_T} {D^{*}_{(c)} b_{dist}(c_{i}, c)^{-2}}}
+										{\sum_{c_i\in\chi_T} {b_{dist}(c_{i}, c)^{-2} }} \]
+	\label{eq:surrogate_model}
+\end{equation}
+
+Where $\chi$ is the set of all controllers in the population, $\chi_T \subset \chi$ is the set of the already transferred controllers and $D^{*}_{(c)}$ is the exact STR disparity value corresponding to each controller $c_i \in \chi_T$.
+
+The last evaluation objective of the optmization scheme is the \emph{behavioral diversity}, which quantify the diversity of a controller from the already transfered ones. For a given controller the diversity $ diversity_{(c)}$ is:
+
+\begin{equation}
+	\[ diversity = \min_{\forall c_i \in \chi_T } b_{dist}(c, c_i) \]
+	\label{eq:behavioral_diversity}
+\end{equation}
+
+$b_{dist}$ is the euclidean distance between the \emph{12th} dimensional behavioral features\ref{eq:behavioral_features}.
+
+For this approach we use a feed-forward neural network with static structure. The network is fully connected, containing 7 input neurons, 1 hidden layer with 14 neurons, and 2 motor neurons calculating the wheel speeds. The activation function is the same as in the previous experiments. In this case the genome encodes the weights of the neural network as a vector of floating point values. All genomes are bound to two genetic operators. Two point crossover is applied with probability 0.5 and a gaussian mutation with probability 0.7 mutating each attribute of the genome. The experimental configuration can be seen in table \ref{tab:moea_parameters}
+
+\begin{table}[H]
+\begin{tabular}{ll}
+\hline
+\textbf{}                      & \textbf{} \\ \hline
+\textbf{Population Size}       & 80        \\
+\textbf{Number of Generations} & 40        \\
+\textbf{Simulation time}       & 40 sec    \\
+\textbf{Crossover}             & 0.2       \\
+\textbf{Mutation}              & 0.1       \\
+\textbf{Tournament Selection}  & 3        
+\end{tabular}
+\caption{Parameters of the Multi-objective optmization procedure.}
+\label{tab:moea_parameters}
+\end{table}
+
+
+\emph{Algorithm outline}. The multiobjective evolutionary strategy starts by initialzing the surrogate model of the STR disparity function by randomly selecting a $c_{(0)}$ controller among the first population. The $c_{(0)}$ controller is evaluated in simulation and then transfered to reality. The corresponding STR disparity $ D^{*}_{(c_0)}$ value, behavioral features are obtained and the surrogate model is computed/initialized. Afterwards, each generation of the algorithm follows as:
+
+\begin{description}
+	\item[1. Evaluation] of each controller
+		\begin{description}
+			\item[STEP 1] Computation of the task-dependent fitness, behavioral features in simulation. Respectively, aggregating the path traveled.
+			\item[STEP 2] Evaluation of the approximated STR disparity (surrogate model) and behavioral diversity, based on the already transfered controllers.
+		\end{description}
+	\item[2. Transferability selection] 
+		\begin{description}
+			\item[STEP 1] Controllers with high enough diversity are selected from the current population and transferred to reality.
+			\item[STEP 2] Computation of the exact STR disparity measure between the simulation and reality. Updating the surrogate model based on obtained results.
+		\end{description}
+	\item[3. Genetic Operators] Application of the genetic operators (crossover & mutation)
+\end{description}
+
+s
+
 
 \subsection{Results}
 
