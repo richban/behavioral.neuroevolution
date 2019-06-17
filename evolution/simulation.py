@@ -348,11 +348,12 @@ class Simulation(object):
                     genome = pickle.load(f)
 
                 self.winner = genome
+                print(self.winner.key)
+                print(self.winner.fitness.values)
             else:
                 with open(self.genome_path, 'rb') as f:
                     genome = pickle.load(f)
                 self.winner = genome
-            print(self.winner)
         return
 
     def _init_vision(self):
@@ -746,7 +747,7 @@ class Simulation(object):
                     map(lambda x: toolbox.clone(x), transfer_simulation))
 
                 for sim, trans in zip(transfer_simulation, transfered_controllers):
-                    del trans.features, trans.task_fitness, trans.diversity, trans.evaluation
+                    del trans.features, trans.task_fitness, trans.diversity, trans.evaluation, trans.position
                     # evaluation on the thymio
                     _ = eval_genome_hardware(
                         self.thymio_bot,
@@ -814,7 +815,7 @@ class Simulation(object):
             ratio=0.35,
             save=self.settings.path + 'evolved-obstacle.pdf'
         )
-        
+
         return pop, hof, logbook, best_inds, best_inds_fitness
 
     @timeit
@@ -855,7 +856,7 @@ class Simulation(object):
         """post evalution of genome"""
         self.individual = self.eval_function(
             self.individual, self.settings, self.winner, self.model, self.config)
-        return self.individual      
+        return self.individual
 
     def log_statistics(self):
         """log results and save best/winner genomes"""

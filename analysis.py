@@ -1,5 +1,6 @@
 from pathlib import Path, PurePath
 from utility.path_tracking import create_grid
+from deap import creator, base
 import numpy as np
 import pandas as pd
 import pickle
@@ -159,6 +160,29 @@ def read_restored_behaviors(files):
     return features
 
 
+def read_moea_fitness(files):
+    columns = [
+        'gen',
+        'genome_id',
+        'fitness',
+        'str_disparity',
+        'diversity'
+    ]
+
+    converters = {
+        0: lambda x: int(x),
+        1: lambda x: int(x),
+        2: lambda x: float(x),
+        3: lambda x: float(x),
+        4: lambda x: float(x),
+    }
+
+    fitness = [pd.read_csv(f, names=columns, converters=converters)
+               for f in files]
+
+    return fitness
+
+
 def obstacle_grid():
     obstacle_markers = [
         dict([(9, dict(dimension=[80, 400]))]),
@@ -206,3 +230,16 @@ def simulation_dt(genome):
     df['genome_id'] = df['genome_id'].astype(int)
 
     return df
+
+
+def unpickle_moea(path):
+    creator.create("FitnessMax", base.Fitness,
+                   weights=(1.0, -1.0, 1.0))
+    creator.create("Individual", list,
+                   fitness=creator.FitnessMax, model=None)
+    Individual = creator.Individual
+
+    with open(path, 'rb') as f:
+        unpickled = pickle.load(f)
+
+    return unpickled
