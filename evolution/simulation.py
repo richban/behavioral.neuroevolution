@@ -820,7 +820,7 @@ class Simulation(object):
         return pop, hof, logbook, best_inds, best_inds_fitness
 
     @timeit
-    def restore_genome(self, N=10):
+    def restore_genome(self, N=2):
         """restore genome and re-run simulation"""
 
         toolbox = base.Toolbox()
@@ -931,7 +931,7 @@ class Disparity(object):
 
     def diversity(self, controller):
         diversity = np.amin([euclidean_distance(
-            t.features, controller.features) for t in self.transfered_set])
+            controller.features, t.features) for t in self.transfered_set])
         controller.diversity = diversity
         return diversity
 
