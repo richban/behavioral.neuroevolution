@@ -348,11 +348,12 @@ class Simulation(object):
                     genome = pickle.load(f)
 
                 self.winner = genome
+                print(self.winner.fitness.values)
             else:
                 with open(self.genome_path, 'rb') as f:
                     genome = pickle.load(f)
                 self.winner = genome
-            print(self.winner)
+                print(self.winner.key, self.winner.fitness)
         return
 
     def _init_vision(self):
