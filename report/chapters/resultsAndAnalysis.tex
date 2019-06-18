@@ -53,20 +53,93 @@ Our first application aims to explore the \emph{simulation-based optimization} a
 The first experiment takes place fully in simulation using the simulation model mentioned earlier \ref{fig:virtual_arena}. The aforementioned evolutionary algorithm applied in this experiment is \emph{NEAT} \citep{stanley2002evolving}. A controller, in this case, the genome, is represented as a neural network. The implementation is based on the python-neat \footnote{\url{https://neat-python.readthedocs.io/en/latest/}} library which has been modified to fit our requirements. The genome contains a list of \emph{connection genes} and list of \emph{node genes}. Node genes encode the input, hidden nodes, and outputs of the neural network that can be connected. Whether a node is connected to other node is expressed in the connection gene. The initial neural network structure consists of 7 input nodes (each represents the infrared sensors placed around the Thymio), fully connected to the 2 motor neurons computing the speeds of the wheels. This way the algorithm starts with a fixed topology and by applying the biological operators over generations it may evolve. In the early stage of the experiments various parameters of the evolution have been tested (population size, generations, mutation rate, etc.), but the most promising results have been achieved by the parameters summarized in table \ref{tab:neat_parameters}. The experiment have been reproduced 10 times.
 
 \begin{table}[H]
-\begin{tabular}{llll}
 \centering
+\begin{tabular}{ll}
 \hline
-\textbf{}                            & \textbf{Simulator}   & \textbf{Reality}  & \textbf{Normalized}  \\ \hline
-\textbf{Speed Values}                & {[}-2.0, 2.0{]}       & {[}-200, 200{]}      & {[}0.0, 1.0{]} \\
-\textbf{Sensory Readings}            & {[}0.0, 1.0{]}        & {[}0, 4500{]}        & {[}0.0, 1.0{]} \\
+\textbf{}                      & \textbf{} \\ \hline
+\textbf{Population size}       & 20        \\
+\textbf{Number of generations} & 20        \\
+\textbf{Simulation time}       & 60 sec    \\
+\textbf{Activation function}             & sigmoid       \\
+\textbf{Connection add probability}              & 0.5       \\
+\textbf{Connection delete probability}              & 0.5       \\
+\textbf{Node add probability}              & 0.2       \\
+\textbf{Node delete probability}              & 0.2       \\
+\textbf{Elitism}  & 1      
 \end{tabular}
-\caption{The Thymio robot sensors and speed values specification.}
+\caption{Parameters of the NEAT algorithm.}
 \label{tab:neat_parameters}
 \end{table}
 
+
 \subsection{Results}
 
-\subsection{Discussion}
+Figure \ref{fig:sim_avg_fitness} shows the average fitness performance of 10 simulation runs in simulation. The optimality of any given controller is hard to determine since the fitness is simply maximized. However, it is clear from the figure that the fitness is progressing towards some optimum. Furthermore, figure \ref{fig:sim_best_genomes_percentile} shows the performance of the best genomes in each generation across all simulation runs. In addition, it shows the median and 25\%/75\% percentiles. The smooth max curve in some generations is the evidence of elitism in the NEAT algorithm set up. 
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.8\textwidth}
+    	\centering
+        \includegraphics[width=5cm]{include/images/sim_avg_fitness.PNG}
+        \caption{Average fitness of 10 simulation runs}
+        \label{fig:sim_avg_fitness}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.8\textwidth}
+    	\centering
+        \includegraphics[width=5cm]{include/images/sim_best_genomes_percentile.PNG}
+        \caption{Best controllers each generation over all the runs.}
+        \label{fig:sim_best_genomes_percentile}
+    \end{subfigure}
+    \caption{Simulation based results I.}
+	\label{fig:sim_based_resultsI}
+\end{figure}
+
+Figure \ref{fig:sim_fitness_distribution} shows the distribution of each individual in the population for a single simulation run. Each evolutionary run took on average \~4 hours, thus \~40 hours in total. The objective was to evolve controllers that exhibit obstacle avoidance behavior. The visual manifestation of behaviors is depicted in figure \ref{fig:sim_path_travelled}. It shows the path taken by the best genomes in each simulation run. It is noticeable that each controller moves forward until it makes a sharp turn to the left to avoid a collision with an obstacle. To further validate the robustness of best controllers, the obstacles in the simulation where randomly misplaced from their initial positions, and each genome was post-evaluated in a slightly new environmental set-up. Again all the genomes exhibited the desired obstacle avoidance behavior. This showcase that the evolved controllers are able to generalize.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.8\textwidth}
+    	\centering
+        \includegraphics[width=8cm]{include/images/sim_path_travelled.PNG}
+        \caption{Path travelled by the best genomes.}
+        \label{fig:sim_path_travelled}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.8\textwidth}
+    	\centering
+        \includegraphics[width=8cm]{include/images/sim_fitness_distribution.PNG}
+        \caption{Fitness distribution of population individuals for a single run.}
+        \label{fig:sim_fitness_distribution}
+    \end{subfigure}
+    \caption{Simulation based results II.}
+	\label{fig:sim_based_resultsII}
+\end{figure}
+
+Another interesting result concerns the behavioral features of the best genomes. As can be seen in figure \ref{fig:sim_behavioral_features_best}, it appears that all the genomes have almost the same behavioral values. The average wheel speed values indicates that the robots right wheel is set at full speed at evaluation while the right motor is not. This explains while the robot takes always left turns. Since the left motor is set to lower values than the right motor. Additionally, the front horizontal sensors (s1-s5) are the most active, while the back sensors (s6 and s7) are least active.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=8cm]{include/images/sim_behavioral_features_best.PNG}
+    \caption{Behavioral features of the best genomes.}
+    \label{fig:sim_behavioral_features_best}
+\end{figure}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ccc}
+\includegraphics[scale=0.4]{include/images/sim_network_1.PNG} & \includegraphics[scale=0.4]{include/images/sim_network_2.PNG} & \includegraphics[scale=0.4]{include/images/sim_network_3.PNG} \\
+$Genome \;  \; 376$  & $Genome \;  \; 309$  & $Genome \;  \; 310$  \\
+\includegraphics[scale=0.4]{include/images/sim_network_4.PNG} & \includegraphics[scale=0.4]{include/images/sim_network_5.PNG} & \includegraphics[scale=0.4]{include/images/sim_network_6.PNG} \\
+$Genome \;  \; 260$  & $Genome \;  \; 373$  & $Genome \;  \; 375$  \\
+\includegraphics[scale=0.4]{include/images/sim_network_1.PNG} & \includegraphics[scale=0.4]{include/images/sim_network_1.PNG} & \includegraphics[scale=0.4]{include/images/sim_network_1.PNG} \\
+$Genome \;  \; 376$  & $Genome \;  \; 376$  & $Genome \;  \; 376$ \\
+\end{tabular}
+\caption{Evolved topology of the best controllers.}
+\label{fig:sim_network_topologies} % 
+\end{table}
+
+The evolved topologies of the neural networks can be seen in figure \ref{fig:sim_network_topologies}. The green and red color connections represent positive/negative weight values. Notice that not all the connections are enabled. The doted connections refer to connections that were disabled over time. In addition, the evolutionary process has evolved a hidden layer with 1 or 2 neurons in some cases (Genome 375, Genome 373 or Genome 309).
+
+\emph{Transferability.}
 
 \section{Reality-based optimization}
 
@@ -75,8 +148,6 @@ The first experiment takes place fully in simulation using the simulation model 
 For comparison to the simulation-based optimization, we conduct a reality-based optimization directly on the physical robot. The experimental set-up is the same as in the previous application. The size of the population is 20 and the number of generations is 20. Again, NEAT is used as the underlying evolutionary strategy with the same parameters summarized in table \ref{neat_parameters}. It has been reproduced 10 times, which implies 4000 evaluations, to have the same amount of experiments in reality as in simulation. The experiment completely relies on the entire robotic platform including the vision system, simulation, and the Thymio robot.
 
 \subsection{Results}
-
-\subsection{Discussion}
 
 \section{Transferability Approach}.
 
@@ -156,7 +227,7 @@ For this approach we use a feed-forward neural network with static structure. Th
 
 \subsection{Results}
 
-\subsection{Discussion}
+\section{Discussion}
 
 
 

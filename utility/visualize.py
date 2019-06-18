@@ -871,8 +871,8 @@ def plot_path(genomes):
 
     data = [
         go.Scatter(
-            x=genome.position[:, 0],
-            y=genome.position[:, 1],
+            x=np.array(genome.position)[:, 0],
+            y=np.array(genome.position)[:, 1],
             mode='lines',
             name='path{}'.format(genome.key),
             marker=dict(color=color)
@@ -880,7 +880,7 @@ def plot_path(genomes):
     ]
 
     layout = go.Layout(
-        title='Path travelled by genome {0}'.format(genomes[0].key),
+        title='Path travelled by best genomes of the simulation.', #.format(genomes[0].key),
         xaxis=dict(
             zeroline=True,
             showline=True,
