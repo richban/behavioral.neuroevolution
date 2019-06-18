@@ -50,7 +50,7 @@ Our first application aims to explore the \emph{simulation-based optimization} a
 
 \subsection{Experimenal design}
 
-The first experiment takes place fully in simulation using the simulation model mentioned earlier \ref{fig:virtual_arena}. The aforementioned evolutionary algorithm applied in this experiment is \emph{NEAT} \cite{stanley2002evolving}. A controller, in this case, the genome, is represented as a neural network. The implementation is based on the python-neat \footnote{\url{https://neat-python.readthedocs.io/en/latest/}} library which has been modified to fit our requirements. The genome contains a list of \emph{connection genes} and list of \emph{node genes}. Node genes encode the input, hidden nodes, and outputs of the neural network that can be connected. Whether a node is connected to other node is expressed in the connection gene. The initial neural network structure consists of 7 input nodes (each represents the infrared sensors placed around the Thymio), fully connected to the 2 motor neurons computing the speeds of the wheels. This way the algorithm starts with a fixed topology and by applying the biological operators over generations it may evolve. In the early stage of the experiments various parameters of the evolution have been tested (population size, generations, mutation rate, etc.), but the most promising results have been achieved by the parameters summarized in table \ref{tab:neat_parameters}. The experiment have been reproduced 10 times.
+The first experiment takes place fully in simulation using the simulation model mentioned earlier \ref{fig:virtual_arena}. The aforementioned evolutionary algorithm applied in this experiment is \emph{NEAT} \citep{stanley2002evolving}. A controller, in this case, the genome, is represented as a neural network. The implementation is based on the python-neat \footnote{\url{https://neat-python.readthedocs.io/en/latest/}} library which has been modified to fit our requirements. The genome contains a list of \emph{connection genes} and list of \emph{node genes}. Node genes encode the input, hidden nodes, and outputs of the neural network that can be connected. Whether a node is connected to other node is expressed in the connection gene. The initial neural network structure consists of 7 input nodes (each represents the infrared sensors placed around the Thymio), fully connected to the 2 motor neurons computing the speeds of the wheels. This way the algorithm starts with a fixed topology and by applying the biological operators over generations it may evolve. In the early stage of the experiments various parameters of the evolution have been tested (population size, generations, mutation rate, etc.), but the most promising results have been achieved by the parameters summarized in table \ref{tab:neat_parameters}. The experiment have been reproduced 10 times.
 
 \begin{table}[H]
 \begin{tabular}{llll}
@@ -80,11 +80,11 @@ For comparison to the simulation-based optimization, we conduct a reality-based 
 
 \section{Transferability Approach}.
 
-This series of experiments falls into the \emph{robot-in-the-loop simulation-based optimization}. Our aim is to validate the transferability approach to obstacle avoidance task based on \cite{koos2012transferability}. We assume that more transfers from simulation to reality allow to approximate the surrogate model better which could guide the evolutionary search to more transferable controllers.
+This series of experiments falls into the \emph{robot-in-the-loop simulation-based optimization}. Our aim is to validate the transferability approach to obstacle avoidance task based on \citep{koos2012transferability}. We assume that more transfers from simulation to reality allow to approximate the surrogate model better which could guide the evolutionary search to more transferable controllers.
 
 \subsection{Experimenal design}
 
-The transferability approach relies on a multi-objective formulation of the evolutionary strategy where the two main objectives are optimized with Pareto-based ranking scheme. Our implementation relies on the \cite{deb200fast} evolutionary algorithm implemented via the \emph{DEAP}\footnote{\url{https://deap.readthedocs.io/en/master/}} library. Each controller is evaluated by three objectives:
+The transferability approach relies on a multi-objective formulation of the evolutionary strategy where the two main objectives are optimized with Pareto-based ranking scheme. Our implementation relies on the \citep{deb200fast} evolutionary algorithm implemented via the \emph{DEAP}\footnote{\url{https://deap.readthedocs.io/en/master/}} library. Each controller is evaluated by three objectives:
 
 \begin{enumerate}
 	\item the \emph{task-dependent fitness}\ref{eq:fitness_function}, to find controllers with obstacle avoidance behavior. 	The algorithm maximizes this objective.
@@ -99,7 +99,7 @@ The transferability approach relies on a multi-objective formulation of the evol
 	\label{eq:The exact STR disparity measure.}
 \end{equation}
 
-Where $ S_{t_{max}} = \{{x_{S}, y_{S}} \}$  and $R_{t_{max}} = \{ {x_{R}, y_{R}} \} $ is a set of positions extracted in simulation and reality, $\bar{x_{S}}$ (resp. $ \bar{y_{S}}, \bar{x_{R}}, \bar{y_{R}} $) is the mean of $ x^{t_{max}}_{S}$ (resp. $ y^{t_{max}}_{S}, x^{t_{max}}_{R}, x^{t_{max}}_{R} $). The exact STR disparity measure cannot be used directly for the optimization scheme for each controller, because it would require to transfer each controller during the evaluation, therefore the approach relies on a so called \emph{surrogate model} which approximates this measure. The surrogate model is approximated by Inverse Distance Weightining interpolation method \cite{shepard1968two}. The \emph{surrogate model of the STR disparity} is defined:
+Where $ S_{t_{max}} = \{{x_{S}, y_{S}} \}$  and $R_{t_{max}} = \{ {x_{R}, y_{R}} \} $ is a set of positions extracted in simulation and reality, $\bar{x_{S}}$ (resp. $ \bar{y_{S}}, \bar{x_{R}}, \bar{y_{R}} $) is the mean of $ x^{t_{max}}_{S}$ (resp. $ y^{t_{max}}_{S}, x^{t_{max}}_{R}, x^{t_{max}}_{R} $). The exact STR disparity measure cannot be used directly for the optimization scheme for each controller, because it would require to transfer each controller during the evaluation, therefore the approach relies on a so called \emph{surrogate model} which approximates this measure. The surrogate model is approximated by Inverse Distance Weightining interpolation method \citep{shepard1968two}. The \emph{surrogate model of the STR disparity} is defined:
 
 \begin{equation}
 	
@@ -152,8 +152,6 @@ For this approach we use a feed-forward neural network with static structure. Th
 		\end{description}
 	\item[3. Genetic Operators] Application of the genetic operators (crossover & mutation)
 \end{description}
-
-s
 
 
 \subsection{Results}
