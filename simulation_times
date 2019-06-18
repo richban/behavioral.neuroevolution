@@ -1,3 +1,5 @@
-simulation_multiobjective  31194.80 seconds
-simulation_multiobjective  14695.41 seconds
-simulation_multiobjective  14405.33 seconds
+simulation_multiobjective  31194.80 seconds 20 gen
+simulation_multiobjective  14695.41 seconds 20 gen
+simulation_multiobjective  14405.33 seconds 20 gen
+simulation_multiobjective  18239.66 seconds 30 gen 1.5 Disparity
+simulation_multiobjective  19442.92 seconds 30 gen 0.8 Disparity
