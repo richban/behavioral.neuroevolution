@@ -149,6 +149,27 @@ For comparison to the simulation-based optimization, we conduct a reality-based 
 
 \subsection{Results}
 
+The summary of results are depicted in figure \ref{fig:real_based_resultsI}. The thymio evolved an obstacle avoidance behavior in less than 20 generations. Each simulation run taking  approximately 16 hours, thus 160 hours in total. Most of the best thymio controllers maintain a straight trajectory and perform right turns when necessaary. Like in the previous experiment, there is no clear way to differentiate between optimal solutions and non-optimal ones, the fitness is simply maximized. Looking at the figure \ref{fig:real_best_genomes_percentile} of the best controllers, it indicates that controllers with high fitness emerge by the 10th generation, even though the progress is not smooth as in the simulation-based optmization. However, the dips in the curves are the result of noise.
+
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.8\textwidth}
+    	\centering
+        \includegraphics[width=5cm]{include/images/real_avg_fitness.PNG}
+        \caption{Average fitness of 10 simulation runs.}
+        \label{fig:real_avg_fitness}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.8\textwidth}
+    	\centering
+        \includegraphics[width=5cm]{include/images/real_best_genomes_percentile.PNG}
+        \caption{Best controllers each generation over all the runs.}
+        \label{fig:real_best_genomes_percentile}
+    \end{subfigure}
+    \caption{Reality-based simulation results I.}
+	\label{fig:real_based_resultsI}
+\end{figure}
+
 \section{Transferability Approach}.
 
 This series of experiments falls into the \emph{robot-in-the-loop simulation-based optimization}. Our aim is to validate the transferability approach to obstacle avoidance task based on \citep{koos2012transferability}. We assume that more transfers from simulation to reality allow to approximate the surrogate model better which could guide the evolutionary search to more transferable controllers.

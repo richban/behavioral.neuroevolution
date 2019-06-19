@@ -637,7 +637,7 @@ def plot_scatter(dt, title):
         l.append(trace0)
 
     layout = go.Layout(
-        title='Fitness of Population Individuals - {}'.format(title),
+        title='Fitness  of Population Individuals - {}'.format(title),
         hovermode='closest',
         xaxis=dict(
             title='Generations',
@@ -670,7 +670,7 @@ def plot_grid(grid):
     return py.iplot(data, filename='grid-heatmap', layout=layout)
 
 
-def plot_fitness(dt):
+def plot_fitness(dt, title):
 
     upper_bound = go.Scatter(
         name='75%',
@@ -688,7 +688,7 @@ def plot_fitness(dt):
         y=dt.loc[:, 'q2'],
         mode='lines',
         line=dict(color='rgb(31, 119, 180)'),
-        fillcolor='rgba(68, 68, 68, 0.3)',
+        fillcolor='rgba(68, 68, 68, 0.3)',  
         fill='tonexty')
 
     lower_bound = go.Scatter(
@@ -716,7 +716,7 @@ def plot_fitness(dt):
     data = [lower_bound, trace, upper_bound, trace_max]
 
     layout = go.Layout(
-        title='Fitness of Population Individuals',
+        title=title,
         hovermode='closest',
         xaxis=dict(
             title='Generations',
