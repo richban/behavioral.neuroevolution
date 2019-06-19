@@ -256,7 +256,7 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None, 
     now = datetime.now()
 
     # while datetime.now() - now < timedelta(seconds=settings.run_time):
-    while not collision and datetime.now() - now < timedelta(seconds=settings.run_time):
+    while not collision and datetime.now() - now < timedelta(seconds=genome.sim_time):
         schedule.run_pending()
         # get robot marker
         robot_m = get_marker_object(7)
@@ -582,7 +582,7 @@ def eval_genome_simulation(individual, settings, model, config, generation, geno
         genome.position = np.array(position)
         genome.evaluation = 'VREP'
         genome.weights = network.get_weights()
-
+        genome.sim_time = runtime
         # Save the neural network model
         model.save(settings.path + 'keras_models/' +
                    str(individual.id) + '_model.h5')

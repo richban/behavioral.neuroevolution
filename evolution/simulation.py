@@ -207,7 +207,7 @@ class Simulation(object):
 
         elif self.simulation_type == 'transferability':
             self.vrep_bot_scene = os.getcwd() + '/scenes/thymio_v_infrared.ttt'
-            self.thymio_bot_scene = os.getcwd() + '/scenes/thymio_hw.ttt'
+            self.thymio_bot_scene = os.getcwd() + '/scenes/thymio_hw_2.ttt'
             self.scenes = [self.vrep_bot_scene, self.thymio_bot_scene]
         else:
             self.vrep_scene = os.getcwd() + '/scenes/thymio_v_infrared.ttt'
@@ -323,6 +323,7 @@ class Simulation(object):
             ind.position = None
             ind.gen = None
             ind.key = None
+            ind.sim_time = None
 
             return ind
 
@@ -513,6 +514,7 @@ class Simulation(object):
             ind.position = None
             ind.gen = None
             ind.key = None
+            ind.sim_time = None
 
             return ind
 
@@ -742,7 +744,7 @@ class Simulation(object):
             if self.simulation_type == 'transferability':
                 # filter controllers that we transfer to thymio
                 transfer_simulation = list(
-                    filter(lambda x: x.diversity > self.settings.STR, invalid_ind))
+                    filter(lambda x: x.diversity > self.settings.DIVERSITY, invalid_ind))
                 # clone simulation controllers
                 transfered_controllers = list(
                     map(lambda x: toolbox.clone(x), transfer_simulation))
