@@ -207,7 +207,7 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None, 
     individual.id = genome.key
 
     # simulation specific props
-    thymio_position = []
+    thymio_position = [[0.19, 0.22]]
     schedule.every(2).seconds.do(thymio_get_position_every_2s, thymio_position)
 
     collision = False

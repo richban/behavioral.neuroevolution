@@ -206,7 +206,7 @@ class Simulation(object):
             self.vrep_scene = os.getcwd() + '/scenes/thymio_hw.ttt'
 
         elif self.simulation_type == 'transferability':
-            self.vrep_bot_scene = os.getcwd() + '/scenes/thymio_v_infrared.ttt'
+            self.vrep_bot_scene = os.getcwd() + '/scenes/thymio_sim_moea.ttt'
             self.thymio_bot_scene = os.getcwd() + '/scenes/thymio_hw_2.ttt'
             self.scenes = [self.vrep_bot_scene, self.thymio_bot_scene]
         else:
