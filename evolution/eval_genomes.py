@@ -509,7 +509,7 @@ def eval_genome_simulation(individual, settings, model, config, generation, geno
         steps += 1
 
         # every 10 seconds the robot is in the same position given a threshold stop the simulation
-        if round(runtime, 2) % 10.0 == 0.0:
+        if round(runtime, 2) % 5.0 == 0.0:
             # print(euclidean_distance(position[0], position[-1]))
             if (euclidean_distance(position[0], position[-1])) < .05:
                 collision = True

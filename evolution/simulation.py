@@ -559,7 +559,7 @@ class Simulation(object):
         toolbox.register('mate', tools.cxTwoPoint)
         # register the mutation operator
         toolbox.register('mutate', tools.mutGaussian, mu=0.0,
-                         sigma=1.0, indpb=self.settings.MUTPB)
+                         sigma=self.settings.SIGMA, indpb=self.settings.MUTPB)
         # register the evaluation function
         if self.simulation_type == 'transferability':
             toolbox.register(
