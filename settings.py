@@ -25,7 +25,7 @@ class Settings:
         self.CXPB = 0.5
         self.MUTPB = 0.7
         self.DIVERSITY = 0.5
-        self.SIGMA = 0.3
+        self.SIGMA = 1.0
         self.multiobjective = multiobjective
         # Obstacle Markers IDs and dimensions in mm
         self.obstacle_markers = [

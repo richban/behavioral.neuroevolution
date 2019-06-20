@@ -1,7 +1,9 @@
 simulation_multiobjective     31194.80 seconds 20 gen
 simulation_multiobjective     14695.41 seconds 20 gen
 simulation_multiobjective     14405.33 seconds 20 gen
-simulation_multiobjective_8   18239.66 seconds 30 gen 1.5 Diversity
-simulation_multiobjective_9   19442.92 seconds 30 gen 0.8 Diversity
-simulation_multiobjective_10  28125.65 seconds 30 gen 0.5 Diversity
-simulation_multiobjective_11  25391.56 seconds 30 gen 0.5 Diversity
+simulation_multiobjective_8   18239.66 seconds 30 gen 1.5 Diversity Sigma 1.0
+simulation_multiobjective_9   19442.92 seconds 30 gen 0.8 Diversity Sigma 1.0
+simulation_multiobjective_10  28125.65 seconds 30 gen 0.5 Diversity Sigma 1.0
+simulation_multiobjective_11  25391.56 seconds 30 gen 0.5 Diversity Simga 1.0
+simulation_multiobjective_12  8779.07  seconds 30 gen 0.5 Diversity Sigma 0.3
+simulation_multiobjective_13  11166.49 seconds 30 gen 0.5 Diversity Sigma 1.0
