@@ -874,7 +874,7 @@ def plot_path(genomes):
             x=np.array(genome.position)[:, 0],
             y=np.array(genome.position)[:, 1],
             mode='lines',
-            name='path{}'.format(genome.key),
+            name='path {0}'.format(genome.key),
             marker=dict(color=color)
         ) for (color, genome) in zip(colors, genomes)
     ]
@@ -900,8 +900,48 @@ def plot_path(genomes):
             linecolor='#636363',
             linewidth=6,
             range=[0.0, 0.8]
-        )
+        ),
+        shapes=[
+            # filled Rectangle
+            dict(
+                type='rect',
+                x0=0.82,
+                y0=0.0,
+                x1= 0.88,
+                y1= 0.22,
+                line=dict(
+                        color="rgba(128, 0, 128, 1)",
+                        width=2,
+                    ),
+                fillcolor='rgba(128, 0, 128, 0.7)',
+            ),
+            dict(
+                type='rect',
+                x0=0.0,
+                y0=0.40,
+                x1= 0.28,
+                y1= 0.48,
+                line=dict(
+                        color="rgba(128, 0, 128, 1)",
+                        width=2,
+                    ),
+                fillcolor='rgba(128, 0, 128, 0.7)',
+            ),
+            dict(
+                type='rect',
+                x0=0.58,
+                y0=0.40,
+                x1= 0.68,
+                y1= 0.8,
+                line=dict(
+                        color="rgba(128, 0, 128, 1)",
+                        width=2,
+                    ),
+                fillcolor='rgba(128, 0, 128, 0.7)',
+            )  
+        ]
     )
+
     fig = go.Figure(data=data, layout=layout)
 
     return py.iplot(fig, filename='path-traveled-genomes')
@@ -986,3 +1026,159 @@ def plot_thymio_behaviors(thymio1, thymio2):
 
     fig = go.Figure(data=data, layout=layout)
     return py.iplot(fig)
+
+
+def plot_moea_fitness(fitness_data, hof, title='Evaluation objectives. MOEA. Transferability.'):
+    trace1 = go.Scatter3d(
+        x=fitness_data.loc[:, 'fitness'],
+        y=fitness_data.loc[:, 'str_disparity'],
+        z=fitness_data.loc[:, 'diversity'],
+        mode='markers',
+        marker=dict(
+            size=4,
+            # color=fitness_data.loc[:, 'diversity'], # set color to an array/list of desired values
+            # colorscale='Viridis',   # choose a colorscale
+            opacity=0.8
+        ),
+        text=fitness_data.loc[:, 'genome_id'],
+    )
+
+    data = [trace1]
+    layout = go.Layout(
+        title=title,
+        margin=dict(
+            l=0,
+            r=0,
+            b=0,
+            t=0
+        ),
+        scene = dict(
+            xaxis = dict(
+                title='Task-fitness'),
+            yaxis = dict(
+                title='STR Disparity'),
+            zaxis = dict(
+                title='Diversity'),
+            annotations= [dict(
+                showarrow = True,
+                x = ind.fitness.values[0],
+                y = ind.fitness.values[1],
+                z = ind.fitness.values[2],
+                text = ind.key,
+                xanchor = "left",
+                xshift = 10,
+                opacity = 0.7,
+                textangle = 0,
+                ax = 0,
+                ay = -75,
+                font = dict(
+                color = "black",
+                size = 12
+                ),
+                arrowcolor = "black",
+                arrowsize = 3,
+                arrowwidth = 1,
+                arrowhead = 1
+            ) for ind in hof
+            ]
+        ),
+        showlegend=True
+    )
+    fig = go.Figure(data=data, layout=layout)
+    return py.iplot(fig, filename='3d-scatter-colorscale')
+
+
+def plot_surrogate_model(fitness_data, title='STR Disparity Over Generations'):
+    dt = fitness_data[['gen', 'str_disparity']].groupby('gen').first()
+
+    trace0 = go.Scatter(
+        x=dt.index,
+        y=dt.loc[:, 'str_disparity'],
+        mode='lines',
+        name='STR Disparity',
+        line=dict(
+            color="rgb(204, 51, 51)",
+            dash="solid",
+            shape="spline",
+            smoothing=0.0,
+            width=2
+        ),
+    )
+
+    layout = go.Layout(
+        showlegend=True,
+        hovermode='closest',
+        title=title,
+        xaxis=dict(
+            autorange=False,
+            range=[0, 20],
+            showspikes=False,
+            title="Generations",
+            ticklen=5,
+            gridwidth=1,
+        ),
+        yaxis=dict(     
+            autorange=True,
+            title="Approximated STR Disparity",
+            ticklen=5,
+            gridwidth=1,
+        ),
+    )
+
+    data = [trace0]
+    fig = go.Figure(data, layout=layout)
+
+    return py.iplot(fig, filename=title)
+
+
+def plot_str_disparity(str_disparities, title='STR Disparities of transfered controllers'):
+    genome_id = np.array([str_disparity[0] for str_disparity in str_disparities])
+    str_disparity = np.array([str_disparity[1] for str_disparity in str_disparities])
+    real_disparity = np.array([real_disparity[2] for real_disparity in str_disparities])
+
+    trace0 = go.Scatter(
+        x=str_disparity,
+        y=real_disparity,
+        mode='markers',
+        name='STR Disparity',
+        line=dict(
+            color="rgb(204, 51, 51)",
+            dash="solid",
+            shape="spline",
+            smoothing=0.0,
+            width=2
+        ),
+        text=genome_id
+    )
+    
+    trace1 = go.Scatter(
+                  x=np.arange(0, 11),
+                  y=np.arange(0, 11),
+                  mode='lines',
+                  line=dict(color='rgb(31, 119, 180)'),
+    )
+
+    layout = go.Layout(
+        showlegend=True,
+        hovermode='closest',
+        title=title,
+        xaxis=dict(
+            autorange=False,
+            range=[0, 20],
+            showspikes=False,
+            title="Approximated STR Disparity",
+            ticklen=5,
+            gridwidth=1,
+        ),
+        yaxis=dict(     
+            autorange=True,
+            title="Actual Disparity",
+            ticklen=5,
+            gridwidth=1,
+        ),
+    )
+
+    data = [trace0, trace1]
+    fig = go.Figure(data, layout=layout)
+
+    return py.iplot(fig, filename=title)
