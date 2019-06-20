@@ -29,17 +29,17 @@ The fitness function relies on a set of features that can be measured within the
 The fitness function \ref{eq:fitness_function} is defined as a dot product of all these features divided by the fixed simulation time. 
 
 \begin{equation}
-	\[ f = \sum_{t=1}^{t_{max}} \frac{V_{t} (1 - \sqrt{\Delta v}) (1 - P_{t})}{60} \]
-	\label{eq:fitness_function}
+	f = \sum_{t=1}^{t_{max}} \frac{V_{t} (1 - \sqrt{\Delta v}) (1 - P_{t})}{60}
 	\caption{Task dependent fitness function}
+	\label{eq:fitness_function}
 \end{equation}
 
 For each evaluated controller, we extract certain \emph{behavioral feautures} \ref{eq:behavioral_features} during the optimization process. These features allow us to describe/quantify the behavior of each controller. Moreover, it allows us to compare controllers in a simple manner without any dependency on the evolutionary strategy applied or the controller's genotype. The 12-dimensional features are defined as 1) the average left and right wheel speeds 2) the average value of each sensor activation 3) percentage of time spent in each section of the arena throughout the evaluation. These features are normalized in the range of \emph{0.0} and \emph{1.0}.
 
 \begin{equation}
-	\[ b_{controller} = [avg_{left}, avg_{right}, s_{1}, s_{2}, s_{3}, s_{4}, s_{5}, s_{6}, s_{7}, area_{0}, area_{1}, area_{2}]\]
-	\label{eq:behavioral_features}
+	b_{controller} = [avg_{left}, avg_{right}, s_{1}, s_{2}, s_{3}, s_{4}, s_{5}, s_{6}, s_{7}, area_{0}, area_{1}, area_{2}]
 	\caption{12-dimensional behavarioral features}
+	\label{eq:behavioral_features}
 \end{equation}
 
 Additionally, we extract the position of the Thymio robot during evaluation. The vision system is used to extract the position from reality and the system is responsible for the position from the simulation. This feature measure is used to qualify a given controllers transfer from simulation to reality.
@@ -127,7 +127,7 @@ Another interesting result concerns the behavioral features of the best genomes.
 \centering
 \begin{tabular}{ccc}
 \includegraphics[scale=0.4]{include/images/sim_network_1.PNG} & \includegraphics[scale=0.4]{include/images/sim_network_2.PNG} & \includegraphics[scale=0.4]{include/images/sim_network_3.PNG} \\
-$Genome \;  \; 376$  & $Genome \;  \; 309$  & $Genome \;  \; 310$  \\
+$$Genome \;  \; 376$$  & $$Genome \;  \; 309$$  & $Genome \;  \; 310$  \\
 \includegraphics[scale=0.4]{include/images/sim_network_4.PNG} & \includegraphics[scale=0.4]{include/images/sim_network_5.PNG} & \includegraphics[scale=0.4]{include/images/sim_network_6.PNG} \\
 $Genome \;  \; 260$  & $Genome \;  \; 373$  & $Genome \;  \; 375$  \\
 \includegraphics[scale=0.4]{include/images/sim_network_1.PNG} & \includegraphics[scale=0.4]{include/images/sim_network_1.PNG} & \includegraphics[scale=0.4]{include/images/sim_network_1.PNG} \\
@@ -187,11 +187,11 @@ The transferability approach relies on a multi-objective formulation of the evol
 \emph{STR disparity and the surrogate model}. The transferability of a given controller is evaluated by the  STR disparity measure \(D^{*}_{{c}}\), which directly quantify the behavioral disparities between any possible controller observed in simulation and in reality. The same STR disparity measure is used in our experiment as in the original implementation. Its computed as the mean square error between the corresponding trajectories between simulation and in reality during evaluation. The exact STR disparity \(D^{*}_{{c}}\) of a controller is defined as:
 
 \begin{equation}
-	\[ D^{*}_{{c}} = \sum_{t=1}^{t_{max}} \frac{(x^{i}_{S} - x^{i}_{R})^{2}}{\bar{x_{S}}\bar{x_{R}}} + 							  \sum_{t=1}^{t_{max}} \frac{(y^{i}_{S} - y^{i}_{R})^{2}}{\bar{y_{S}}\bar{y_{R}}} \]
+	D^{*}_{{c}} = \sum_{t=1}^{t_{max}} \frac{(x^{i}_{S} - x^{i}_{R})^{2}}{\bar{x_{S}}\bar{x_{R}}} + 							  \sum_{t=1}^{t_{max}} \frac{(y^{i}_{S} - y^{i}_{R})^{2}}{\bar{y_{S}}\bar{y_{R}}}
 	\label{eq:The exact STR disparity measure.}
 \end{equation}
 
-Where $ S_{t_{max}} = \{{x_{S}, y_{S}} \}$  and $R_{t_{max}} = \{ {x_{R}, y_{R}} \} $ is a set of positions extracted in simulation and reality, $\bar{x_{S}}$ (resp. $ \bar{y_{S}}, \bar{x_{R}}, \bar{y_{R}} $) is the mean of $ x^{t_{max}}_{S}$ (resp. $ y^{t_{max}}_{S}, x^{t_{max}}_{R}, x^{t_{max}}_{R} $). The exact STR disparity measure cannot be used directly for the optimization scheme for each controller, because it would require to transfer each controller during the evaluation, therefore the approach relies on a so called \emph{surrogate model} which approximates this measure. The surrogate model is approximated by Inverse Distance Weightining interpolation method \citep{shepard1968two}. The \emph{surrogate model of the STR disparity} is defined:
+Where $ S_{t_{max}} = \{{x_{S}, y_{S}} \}$  and $ R_{t_{max}} = \{ {x_{R}, y_{R}} \} $ is a set of positions extracted in simulation and reality, $ \bar{x_{S}} $ (resp. $ \bar{y_{S}}, \bar{x_{R}}, \bar{y_{R}} $) is the mean of $ x^{t_{max}}_{S} $ (resp. $ y^{t_{max}}_{S}, x^{t_{max}}_{R}, x^{t_{max}}_{R} $). The exact STR disparity measure cannot be used directly for the optimization scheme for each controller, because it would require to transfer each controller during the evaluation, therefore the approach relies on a so called \emph{surrogate model} which approximates this measure. The surrogate model is approximated by Inverse Distance Weightining interpolation method \citep{shepard1968two}. The \emph{surrogate model of the STR disparity} is defined:
 
 \begin{equation}
 	
@@ -205,7 +205,7 @@ Where $\chi$ is the set of all controllers in the population, $\chi_T \subset \c
 The last evaluation objective of the optmization scheme is the \emph{behavioral diversity}, which quantify the diversity of a controller from the already transfered ones. For a given controller the diversity $ diversity_{(c)}$ is:
 
 \begin{equation}
-	\[ diversity = \min_{\forall c_i \in \chi_T } b_{dist}(c, c_i) \]
+	diversity = \min_{\forall c_i \in \chi_T } b_{dist}(c, c_i)
 	\label{eq:behavioral_diversity}
 \end{equation}
 
