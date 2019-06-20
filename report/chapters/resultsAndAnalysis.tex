@@ -139,7 +139,25 @@ $Genome \;  \; 376$  & $Genome \;  \; 376$  & $Genome \;  \; 376$ \\
 
 The evolved topologies of the neural networks can be seen in figure \ref{fig:sim_network_topologies}. The green and red color connections represent positive/negative weight values. Notice that not all the connections are enabled. The doted connections refer to connections that were disabled over time. In addition, the evolutionary process has evolved a hidden layer with 1 or 2 neurons in some cases (Genome 375, Genome 373 or Genome 309).
 
-\emph{Transferability.}
+\emph{Transferability.} To validate and examine whether the evolved controllers in a simulation are transferable we took the best controllers from each simulation run and transferred them directly to the Thymio robot. For example, a behavior of the best controller transferred to reality is depicted in figure \ref{fig:sim_bad_transfer}. The trajectory of the controller in the simulator is shown with a dark green color. The transferred controller is post evaluated 10 times and its typical behavior consists of going straight without taking into account the obstacle in front. Among one of them (red) attempts to avoid the obstacle, however unsuccessfully as it afterward turns to directly to the obstacle and keeps colliding with it. It undoubtedly highlights that there is a reality-gap problem between simulation and reality. However, as it turned out this gap can be convoluted. Among the best-transfered controllers, we have identified ones that are transferable and able to avoid obstacles. A typical behavior of a transferable controller is picture on \ref{fig:sim_good_transfer}. This lead to a conclusion that there is a clear gap between simulation and reality, however, sometimes good solutions can be evolved in simulators that are transferable to reality.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.8\textwidth}
+    	\centering
+        \includegraphics[width=8cm]{include/images/sim_bad_transfer.PNG}
+        \caption{Controller that is not transferable.}
+        \label{fig:sim_bad_transfer}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.8\textwidth}
+    	\centering
+        \includegraphics[width=8cm]{include/images/sim_good_transfer.PNG}
+        \caption{Controller that transfered well to reality.}
+        \label{fig:sim_good_transfer}
+    \end{subfigure}
+    \caption{Typical behaviors of the best controllers transferred to reality. Each of them post-evaluated 10 times in reality.}
+	\label{fig:transferred_controllers}
+\end{figure}
 
 \section{Reality-based optimization}
 
