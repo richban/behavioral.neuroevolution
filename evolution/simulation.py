@@ -822,7 +822,7 @@ class Simulation(object):
         return pop, hof, logbook, best_inds, best_inds_fitness
 
     @timeit
-    def restore_genome(self, N=2):
+    def restore_genome(self, N=5):
         """restore genome and re-run simulation"""
 
         toolbox = base.Toolbox()
@@ -837,7 +837,7 @@ class Simulation(object):
             )
 
             if self.simulation_type == 'thymio':
-                _ = eval_genome_hardware(
+                fitness = eval_genome_hardware(
                     self.individual, self.settings, genome, model=self.model, config=self.config, generation=-1)
             else:
                 fitness = eval_genome_simulation(
