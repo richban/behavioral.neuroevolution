@@ -129,7 +129,7 @@
 % documentos
 \if\OptimizaTikZ 1
 \usepgfplotslibrary{external}
-\tikzexternalize[prefix=images/] % Ruta
+\tikzexternalize[prefix=include/images/] % Ruta
 \tikzset{%
     external/system call ={xelatex -enable-write18 -halt-on-error -interaction=batchmode -jobname "\image" "\texsource"},
 }

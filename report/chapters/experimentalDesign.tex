@@ -36,7 +36,7 @@ The outlook of the experiments is to validate different reality gap approaches o
 
 \subsection{Obstacles}
 
-Each arena (\emph{physical arena} and \emph{virtual arena}), contains 3 different cuboids in sizes. These are the only environmental objects that the robots interact with. Obstacles in the \emph{physical arena} are heavy enough, therefore they are not knocked over by \tmph{Thymio} robot during a collision. Additionally, each obstacle is marked with a fiducial marker, in order to set the position of its counterpart \emph{virtual obstacle}\ref{fig:virtual_obstacle} in the \emph{virtual arena}.
+Each arena (\emph{physical arena} and \emph{virtual arena}), contains 3 different cuboids in sizes. These are the only environmental objects that the robots interact with. Obstacles in the \emph{physical arena} are heavy enough, therefore they are not knocked over by \emph{Thymio} robot during a collision. Additionally, each obstacle is marked with a fiducial marker, in order to set the position of its counterpart \emph{virtual obstacle}\ref{fig:virtual_obstacle} in the \emph{virtual arena}.
 
 \begin{figure}[h]
     \centering
@@ -151,7 +151,7 @@ One of the most pivotal points of the computer vision is to track the Thymio rob
 
 \subsubsection{Fiducial tracking}
 
-The \epmh{ReacTIVision Fiducials} \ref{fig:fiducial_markers} comes in 3 different set of sizes \emph{small, medium, large} and each individual marker has it's own unique id. Furthermore, each of them is purely identified by its unique topological structure. The system employs the topological fiducial recognition, which enables detection and identification. In this approach, a region adjacency graph is computed from a binary image. The adjacency graph can be understood as a tree. By recognizing the graphs representing the fiducials, markers can be detected and identified. Moreover, the location is computed as the weighted average of all leaf centers (black and white). The vector from this centroid to a point given by the weighted average of all black (or white) leaf centers is used to compute the orientation of the fiducial \citep{bencina2005improved}.
+The \emph{ReacTIVision Fiducials} \ref{fig:fiducial_markers} comes in 3 different set of sizes \emph{small, medium, large} and each individual marker has it's own unique id. Furthermore, each of them is purely identified by its unique topological structure. The system employs the topological fiducial recognition, which enables detection and identification. In this approach, a region adjacency graph is computed from a binary image. The adjacency graph can be understood as a tree. By recognizing the graphs representing the fiducials, markers can be detected and identified. Moreover, the location is computed as the weighted average of all leaf centers (black and white). The vector from this centroid to a point given by the weighted average of all black (or white) leaf centers is used to compute the orientation of the fiducial \citep{bencina2005improved}.
 
 \begin{figure}[H]
   \centering
