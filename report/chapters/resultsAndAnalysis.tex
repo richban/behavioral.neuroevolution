@@ -130,16 +130,14 @@ Another interesting result concerns the behavioral features of the best genomes.
 $$Genome \;  \; 376$$  & $$Genome \;  \; 309$$  & $Genome \;  \; 310$  \\
 \includegraphics[scale=0.4]{include/images/sim_network_4.PNG} & \includegraphics[scale=0.4]{include/images/sim_network_5.PNG} & \includegraphics[scale=0.4]{include/images/sim_network_6.PNG} \\
 $Genome \;  \; 260$  & $Genome \;  \; 373$  & $Genome \;  \; 375$  \\
-\includegraphics[scale=0.4]{include/images/sim_network_1.PNG} & \includegraphics[scale=0.4]{include/images/sim_network_1.PNG} & \includegraphics[scale=0.4]{include/images/sim_network_1.PNG} \\
-$Genome \;  \; 376$  & $Genome \;  \; 376$  & $Genome \;  \; 376$ \\
 \end{tabular}
-\caption{Evolved topology of the best controllers.}
+\caption{Evolved topology of the best controllers in simulation.}
 \label{fig:sim_network_topologies} % 
 \end{table}
 
 The evolved topologies of the neural networks can be seen in figure \ref{fig:sim_network_topologies}. The green and red color connections represent positive/negative weight values. Notice that not all the connections are enabled. The doted connections refer to connections that were disabled over time. In addition, the evolutionary process has evolved a hidden layer with 1 or 2 neurons in some cases (Genome 375, Genome 373 or Genome 309).
 
-\emph{Transferability.} To validate and examine whether the evolved controllers in a simulation are transferable we took the best controllers from each simulation run and transferred them directly to the Thymio robot. For example, a behavior of the best controller transferred to reality is depicted in figure \ref{fig:sim_bad_transfer}. The trajectory of the controller in the simulator is shown with a dark green color. The transferred controller is post evaluated 10 times and its typical behavior consists of going straight without taking into account the obstacle in front. Among one of them (red) attempts to avoid the obstacle, however unsuccessfully as it afterward turns to directly to the obstacle and keeps colliding with it. It undoubtedly highlights that there is a reality-gap problem between simulation and reality. However, as it turned out this gap can be convoluted. Among the best-transfered controllers, we have identified ones that are transferable and able to avoid obstacles. A typical behavior of a transferable controller is picture on \ref{fig:sim_good_transfer}. This lead to a conclusion that there is a clear gap between simulation and reality, however, sometimes good solutions can be evolved in simulators that are transferable to reality.
+\emph{Transferability.} To validate and examine whether the evolved controllers in a simulation are transferable we took the best controllers from each simulation run and transferred them directly to the Thymio robot. For example, a behavior of the best controller transferred to reality is depicted in figure \ref{fig:sim_bad_transfer}. The trajectory of the controller in the simulator is shown with a dark green color. The transferred controller is post evaluated 10 times and its typical behavior consists of going straight without taking into account the obstacle in front. Among one of them (red) attempts to avoid the obstacle, however unsuccessfully as it afterward turns to directly to the obstacle and keeps colliding with it. It undoubtedly highlights that there is a reality-gap problem between simulation and reality. However, as it turned out this gap can be convoluted. Among the transfered controllers (10), we have identified 2 controllers that are transferable and able to avoid obstacles. A typical behavior of a transferable controller is picture on \ref{fig:sim_good_transfer}. This lead to a conclusion that there is a clear gap between simulation and reality, however, sometimes good solutions can be evolved in simulators that are transferable to reality.
 
 \begin{figure}[H]
     \centering
@@ -167,7 +165,7 @@ For comparison to the simulation-based optimization, we conduct a reality-based 
 
 \subsection{Results}
 
-The summary of results are depicted in figure \ref{fig:real_based_resultsI}. The thymio evolved an obstacle avoidance behavior in less than 20 generations. Each simulation run taking  approximately 16 hours, thus 160 hours in total. Most of the best thymio controllers maintain a straight trajectory and perform right turns when necessaary. Like in the previous experiment, there is no clear way to differentiate between optimal solutions and non-optimal ones, the fitness is simply maximized. Looking at the figure \ref{fig:real_best_genomes_percentile} of the best controllers, it indicates that controllers with high fitness emerge by the 10th generation, even though the progress is not smooth as in the simulation-based optmization. However, the dips in the curves are the result of noise.
+The summary of results are depicted in figure \ref{fig:real_based_resultsI}. The thymio evolved an obstacle avoidance behavior in less than 20 generations. Each simulation run taking  approximately 16 hours, thus 160 hours in total. Most of the best thymio controllers maintain a straight trajectory and perform right turns when necessaary. Like in the previous experiment, there is no clear way to differentiate between optimal solutions and non-optimal ones, the fitness is simply maximized. Looking at the figure \ref{fig:real_best_genomes_percentile} of the best controllers, it indicates that controllers with high fitness emerge by the 10th generation, even though the progress is not smooth as in the simulation-based optmization. However, the dips in the curves are the result of noise. Figure \ref{fig:thymio_network_topologies} shows the evolved topologies of the best 6 controllers.
 
 
 \begin{figure}[H]
@@ -187,6 +185,20 @@ The summary of results are depicted in figure \ref{fig:real_based_resultsI}. The
     \caption{Reality-based simulation results I.}
 	\label{fig:real_based_resultsI}
 \end{figure}
+
+
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ccc}
+\includegraphics[scale=0.4]{include/images/thymio_network_379.PNG} & \includegraphics[scale=0.4]{include/images/thymio_network_78.PNG} & \includegraphics[scale=0.4]{include/images/thymio_network_73.PNG} \\
+$$Genome \;  \; 379$$  & $$Genome \;  \; 78$$  & $Genome \;  \; 73$  \\
+\includegraphics[scale=0.4]{include/images/thymio_network_343.PNG} & \includegraphics[scale=0.4]{include/images/thymio_network_50.PNG} & \includegraphics[scale=0.4]{include/images/thymio_network_189.PNG} \\
+$Genome \;  \; 343$  & $Genome \;  \; 50$  & $Genome \;  \; 189$  \\
+\end{tabular}
+\caption{Evolved topology of the best controllers in reality.}
+\label{fig:thymio_network_topologies} % 
+\end{table}
 
 \section{Transferability Approach}.
 

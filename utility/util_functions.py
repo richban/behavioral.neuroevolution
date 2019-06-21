@@ -231,13 +231,38 @@ def save_fitness_moea(pop, gen, path):
                 gen, ind.key, fitness, disparity, diversity))
 
 
+# def calc_str_disparity(transfered, simulation):
+#     if len(transfered) > len(simulation):
+#         t = np.array(transfered[:len(simulation)])
+#         s = np.array(simulation)
+#     elif len(simulation) > len(transfered):
+#         t = np.array(transfered)
+#         s = np.array(simulation[:len(transfered)])
+#     else:
+#         t = np.array(transfered)
+#         s = np.array(simulation)
+
+#     t_mean = np.mean(t, axis=0)
+#     s_mean = np.mean(s, axis=0)
+
+#     x = np.sum((np.power(s.T[0] - t.T[0], 2) / (s_mean[0] * t_mean[0])))
+#     y = np.sum((np.power(s.T[1] - t.T[1], 2) / (s_mean[1] * t_mean[1])))
+
+#     return x + y
+
+
 def calc_str_disparity(transfered, simulation):
+
     if len(transfered) > len(simulation):
-        t = np.array(transfered[:len(simulation)])
-        s = np.array(simulation)
-    elif len(simulation) > len(transfered):
+        diff = (len(transfered)-len(simulation))
         t = np.array(transfered)
-        s = np.array(simulation[:len(transfered)])
+        s = np.append(simulation, np.tile(simulation[-1], (diff, 1)), axis=0)
+
+    elif len(simulation) > len(transfered):
+        diff = (len(simulation)-len(transfered))
+        t = np.append(transfered, np.tile(transfered[-1], (diff, 1)), axis=0)
+        s = np.array(simulation)
+
     else:
         t = np.array(transfered)
         s = np.array(simulation)
