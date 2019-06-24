@@ -9,4 +9,5 @@ simulation_multiobjective_12  8779.07  seconds 30 gen 0.5 Diversity Sigma 0.3
 simulation_multiobjective_13  11166.49 seconds 30 gen 0.5 Diversity Sigma 1.0
 simulation_multiobjective_14  12079.94 seconds 30 gen 0.5 Diversity Sigma 1.0
 simulation_multiobjective_15  9603.64  seconds 30 gen 0.5 Diversity Sigma 1.0 diff str_disparity calc
-simulation_multiobjective_15  11710.30 seconds 30 gen 0.5 Diversity Sigma 1.0 diff str_disparity calc + run thymio sim for genome.sim_time; no collision detection applied
+simulation_multiobjective_16  11710.30 seconds 30 gen 0.5 Diversity Sigma 1.0 diff str_disparity calc + run thymio sim for genome.sim_time; no collision detection applied
+simulation_multiobjective_17  15705.24 seconds 30 gen 3.0 Fitness   Sigma 1.0 use fitness instead of diversity
