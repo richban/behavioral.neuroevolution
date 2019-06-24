@@ -912,7 +912,7 @@ def plot_path(genomes):
             zerolinewidth=4,
             linecolor='#636363',
             linewidth=6,
-            range=[0.0, 1.19]
+            range=[0.06, 1.10]
         ),
         yaxis=dict(
             zeroline=True,
@@ -922,16 +922,16 @@ def plot_path(genomes):
             zerolinewidth=4,
             linecolor='#636363',
             linewidth=6,
-            range=[0.0, 0.8]
+            range=[0.0, 0.78]
         ),
         shapes=[
             # filled Rectangle
             dict(
                 type='rect',
-                x0=0.82,
+                x0=0.80,
                 y0=0.0,
-                x1= 0.88,
-                y1= 0.22,
+                x1= 0.86,
+                y1= 0.3,
                 line=dict(
                         color="rgba(128, 0, 128, 1)",
                         width=2,
@@ -940,10 +940,10 @@ def plot_path(genomes):
             ),
             dict(
                 type='rect',
-                x0=0.0,
+                x0=0.06,
                 y0=0.40,
-                x1= 0.28,
-                y1= 0.48,
+                x1= 0.33,
+                y1= 0.46,
                 line=dict(
                         color="rgba(128, 0, 128, 1)",
                         width=2,
@@ -952,10 +952,10 @@ def plot_path(genomes):
             ),
             dict(
                 type='rect',
-                x0=0.58,
+                x0=0.57,
                 y0=0.40,
                 x1= 0.68,
-                y1= 0.8,
+                y1= 0.78,
                 line=dict(
                         color="rgba(128, 0, 128, 1)",
                         width=2,
@@ -1197,8 +1197,8 @@ def plot_str_disparity(str_disparities, title='STR Disparities of transfered con
     )
     
     trace1 = go.Scatter(
-                  x=np.arange(0, 11),
-                  y=np.arange(0, 11),
+                  x=np.arange(0, 15),
+                  y=np.arange(0, 15),
                   mode='lines',
                   line=dict(color='rgb(31, 119, 180)'),
     )
@@ -1215,7 +1215,7 @@ def plot_str_disparity(str_disparities, title='STR Disparities of transfered con
             ticklen=5,
             gridwidth=1,
         ),
-        yaxis=dict(     
+        yaxis=dict(
             autorange=True,
             title="Actual Disparity",
             ticklen=5,

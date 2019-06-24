@@ -207,7 +207,7 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None, 
     individual.id = genome.key
 
     # simulation specific props
-    thymio_position = [[0.19, 0.22]]
+    thymio_position = [np.array([0.19, 0.22])]
     schedule.every(2).seconds.do(thymio_get_position_every_2s, thymio_position)
 
     collision = False
@@ -256,7 +256,7 @@ def eval_genome_hardware(individual, settings, genome, model=None, config=None, 
     now = datetime.now()
 
     while datetime.now() - now < timedelta(seconds=genome.sim_time):
-    # while not collision and datetime.now() - now < timedelta(seconds=genome.sim_time):
+        # while not collision and datetime.now() - now < timedelta(seconds=genome.sim_time):
         schedule.run_pending()
         # get robot marker
         robot_m = get_marker_object(7)
@@ -456,6 +456,7 @@ def eval_genome_simulation(individual, settings, model, config, generation, geno
     areas_counter = dict([(area, dict(count=0, percentage=0.0, total=0))
                           for area in areas_name])
 
+    # while settings.run_time > runtime:
     while not collision and settings.run_time > runtime:
         # The first simulation step waits for a trigger before being executed
         vrep.simxSynchronousTrigger(individual.client_id)
