@@ -743,6 +743,7 @@ def plot_n_fitness(dt_list, title):
         "rgb(255, 153, 204)",
         "rgb(255, 204, 102)",
         "rgb(102, 204, 0)",
+        "rgb(51, 51, 255)"
     ]
 
     data = [
@@ -817,18 +818,40 @@ def plot_boxplot_sensors(dt):
     return py.iplot(fig)
 
 
-def plot_boxplot_wheels(dt_list):
-
+def plot_boxplot_fitness(dt_list):
+    
     colors = [
         "#3D9970",
         "#FF4136",
         "#ff9933",
         "#6666ff",
-        # "#33cccc",
-        # "#39e600",
-        # "#3333cc"
+        "#33cccc",
+        "#39e600",
+        "#3333cc"
     ]
 
+    data = [
+        go.Box(
+            y=dt.loc[:, 'fitness'],
+            name='Individual {}'.format(dt.loc[:, 'genome_id'].iloc[0]),
+            marker=dict(color=color)
+        )
+        for (color, dt) in zip(colors, dt_list)
+    ]
+
+    layout = go.Layout(
+        yaxis=dict(
+            title='Fitness',
+            zeroline=False
+        ),
+        title='Noise in fitness performance of best controllers.',
+    )
+
+    fig = go.Figure(data=data, layout=layout)
+    return py.iplot(fig)
+
+
+def plot_boxplot_wheels(dt_list):
     data = [
         go.Box(
             x=['individual {0}'.format(genome_id)
@@ -836,15 +859,15 @@ def plot_boxplot_wheels(dt_list):
             y=dt.loc[:, '{}'.format(wheel)],
             name='individual {0} {1}'.format(
                 dt.loc[:, 'genome_id'].iloc[0], wheel),
-            marker=dict(color=color)
+            marker=dict(color=color),
         )
         for dt in dt_list
-        for (color, wheel) in zip(['#3D9970', '#FF4136'], ['avg_left', 'avg_right'])
+        for (color, wheel) in zip(['#FF9933', '#6666FF'], ['avg_left', 'avg_right'])
     ]
 
     layout = go.Layout(
         yaxis=dict(
-            title='Sensors Activations',
+            title='Wheel Speed Activation Values',
             zeroline=False
         ),
         boxmode='group'
@@ -1000,28 +1023,50 @@ def plot_thymio_fitness(thymio1, thymio2, title):
     return py.iplot(fig, filename='fitness-difference-thymio1-thymio2')
 
 
-def plot_thymio_behaviors(thymio1, thymio2):
+def plot_thymio_behaviors(behaviors_list):
 
-    thymio1 = go.Box(
-        y=thymio1,
-        name='Behavioral Features Thymio 1',
-        marker=dict(color="#FF4136")
-    )
+    colors = [
+        "#3D9970",
+        "#FF4136",
+        "#ff9933",
+        "#6666ff",
+        "#33cccc",
+        "#39e600",
+        "#3333cc",
+        "#42f498",
+        "#3c506d",
+        "#ada387"
+    ]
 
-    thymio2 = go.Box(
-        y=thymio2,
-        name='Behavioral Features Thymio 2',
-        marker=dict(color="#39e600")
-    )
+    data = [
+            go.Box(
+                y=dt.iloc[:, 2:].sum(axis=1),
+                name='Behavioral Features {0}'.format(dt.loc[:, 'genome_id'].iloc[0]),
+                marker=dict(color=color)
+            )
+            for (color, dt) in zip(colors, behaviors_list)
+    ]
 
-    data = [thymio1, thymio2]
+    # thymio1 = go.Box(
+    #     y=thymio1,
+    #     name='Behavioral Features Thymio 1',
+    #     marker=dict(color="#FF4136")
+    # )
+
+    # thymio2 = go.Box(
+    #     y=thymio2,
+    #     name='Behavioral Features Thymio 2',
+    #     marker=dict(color="#39e600")
+    # )
+
+    # data = [thymio1, thymio2]
 
     layout = go.Layout(
         yaxis=dict(
             title='Summed Behavioral Featuers of 10 runs',
             zeroline=False
         ),
-        title='Thymio 1 and Thymio 2 Behavioral Features'
+        title='Behavioral differences of controllers'
     )
 
     fig = go.Figure(data=data, layout=layout)
@@ -1132,9 +1177,9 @@ def plot_surrogate_model(fitness_data, title='STR Disparity Over Generations'):
 
 
 def plot_str_disparity(str_disparities, title='STR Disparities of transfered controllers'):
-    genome_id = np.array([str_disparity[0] for str_disparity in str_disparities])
-    str_disparity = np.array([str_disparity[1] for str_disparity in str_disparities])
-    real_disparity = np.array([real_disparity[2] for real_disparity in str_disparities])
+    genome_id = np.array([str_disparity[1] for str_disparity in str_disparities])
+    str_disparity = np.array([str_disparity[3] for str_disparity in str_disparities])
+    real_disparity = np.array([real_disparity[4] for real_disparity in str_disparities])
 
     trace0 = go.Scatter(
         x=str_disparity,
