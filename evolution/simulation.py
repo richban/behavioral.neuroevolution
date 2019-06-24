@@ -159,7 +159,7 @@ class Simulation(object):
                  multiobjective=False,
                  n_layers=1,
                  input_dim=7,
-                 neurons=5
+                 neurons=14
                  ):
 
         self.config_file = config_file
@@ -329,33 +329,26 @@ class Simulation(object):
 
         if self.genome_path:
 
-            if self.multiobjective:
+            # self.model = load_model(self.genome_path)
+            # toolbox = base.Toolbox()
+            # toolbox.register("individual", init_individual, creator.Individual, model=self.model)
+            # individual = toolbox.individual()
+            # individual.key = 666
 
-                # self.model = load_model(self.genome_path)
-                # toolbox = base.Toolbox()
-                # toolbox.register("individual", init_individual, creator.Individual, model=self.model)
-                # individual = toolbox.individual()
-                # individual.key = 666
+            self.model = self.build_model(
+                self.n_layers, self.input_dim, self.neurons)
+            creator.create("FitnessMax", base.Fitness,
+                           weights=(1.0, -1.0, 1.0))
+            creator.create("Individual", list,
+                           fitness=creator.FitnessMax, model=None)
+            Individual = creator.Individual
 
-                self.model = self.build_model(
-                    self.n_layers, self.input_dim, self.neurons)
-                creator.create("FitnessMax", base.Fitness,
-                               weights=(1.0, -1.0, 1.0))
-                creator.create("Individual", list,
-                               fitness=creator.FitnessMax, model=None)
-                Individual = creator.Individual
+            with open(self.genome_path, 'rb') as f:
+                genome = pickle.load(f)
 
-                with open(self.genome_path, 'rb') as f:
-                    genome = pickle.load(f)
-
-                self.winner = genome
-                print(self.winner.key)
-                print(self.winner.fitness.values)
-            else:
-                with open(self.genome_path, 'rb') as f:
-                    genome = pickle.load(f)
-                self.winner = genome
-                print(self.winner.key, self.winner.fitness)
+            self.winner = genome
+            print(self.winner.key)
+        
         return
 
     def _init_vision(self):
@@ -822,7 +815,7 @@ class Simulation(object):
         return pop, hof, logbook, best_inds, best_inds_fitness
 
     @timeit
-    def restore_genome(self, N=5):
+    def restore_genome(self, N=1):
         """restore genome and re-run simulation"""
 
         toolbox = base.Toolbox()
