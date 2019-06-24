@@ -167,7 +167,6 @@ For comparison to the simulation-based optimization, we conduct a reality-based 
 
 The summary of results are depicted in figure \ref{fig:real_based_resultsI}. The thymio evolved an obstacle avoidance behavior in less than 20 generations. Each simulation run taking  approximately 16 hours, thus 160 hours in total. Most of the best thymio controllers maintain a straight trajectory and perform right turns when necessaary. Like in the previous experiment, there is no clear way to differentiate between optimal solutions and non-optimal ones, the fitness is simply maximized. Looking at the figure \ref{fig:real_best_genomes_percentile} of the best controllers, it indicates that controllers with high fitness emerge by the 10th generation, even though the progress is not smooth as in the simulation-based optmization. However, the dips in the curves are the result of noise. Figure \ref{fig:thymio_network_topologies} shows the evolved topologies of the best 6 controllers.
 
-
 \begin{figure}[H]
     \centering
     \begin{subfigure}[b]{0.8\textwidth}
@@ -186,6 +185,7 @@ The summary of results are depicted in figure \ref{fig:real_based_resultsI}. The
 	\label{fig:real_based_resultsI}
 \end{figure}
 
+The corresponding behavior of 5 best controllers is depicted in figure \ref{fig:path_traveled_thymio_reality_based}. 2 of them have similar behavior, going straight and making a sharp \emph{U} turn after they sense the obstacle in front of them. On the other hand \emph{Genomes 189, 73, 24}, are taking a left turn and keep moving around in the the second area most of the time.
 
 
 \begin{table}[h]
