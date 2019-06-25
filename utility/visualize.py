@@ -877,7 +877,7 @@ def plot_boxplot_wheels(dt_list):
     return py.iplot(fig)
 
 
-def plot_path(genomes):
+def plot_path(genomes, title):
 
     colors = [
         "#3D9970",
@@ -897,13 +897,13 @@ def plot_path(genomes):
             x=np.array(genome.position)[:, 0],
             y=np.array(genome.position)[:, 1],
             mode='lines',
-            name='path {0}'.format(genome.key),
+            name='path {0} {1}'.format(genome.key, genome.evaluation),
             marker=dict(color=color)
         ) for (color, genome) in zip(colors, genomes)
     ]
 
     layout = go.Layout(
-        title='Path travelled by best genomes of the simulation.', #.format(genomes[0].key),
+        title=title, #.format(genomes[0].key),
         xaxis=dict(
             zeroline=True,
             showline=True,
@@ -928,9 +928,9 @@ def plot_path(genomes):
             # filled Rectangle
             dict(
                 type='rect',
-                x0=0.80,
+                x0=0.83,
                 y0=0.0,
-                x1= 0.86,
+                x1= 0.89,
                 y1= 0.3,
                 line=dict(
                         color="rgba(128, 0, 128, 1)",
@@ -1227,3 +1227,67 @@ def plot_str_disparity(str_disparities, title='STR Disparities of transfered con
     fig = go.Figure(data, layout=layout)
 
     return py.iplot(fig, filename=title)
+
+
+def plot_moea_fitness_2d(fitness_data, hof, title='Evaluation objectives. MOEA. Transferability.'):
+    trace1 = go.Scatter(
+        x=fitness_data.loc[:, 'fitness'],
+        y=fitness_data.loc[:, 'str_disparity'],
+        mode='markers',
+        marker=dict(
+            size=6,
+            opacity=0.8
+        ),
+        text=fitness_data.loc[:, 'genome_id'],
+        name='Individuals'
+    )
+
+    pareto_x = [ind.fitness.values[0] for ind in hof]
+    pareto_y = [ind.fitness.values[1] for ind in hof]
+    pareto_ids = [ind.key for ind in hof]
+
+    pareto_front = go.Scatter(
+        x=pareto_x,
+        y=pareto_y,
+        mode='lines+markers',
+        marker=dict(
+            size=6,
+            opacity=0.8,
+            color="red"
+        ),
+        text=pareto_ids,
+        name='Pareto-front'
+    )
+
+    data = [trace1, pareto_front]
+
+    layout = go.Layout(
+        title=title,
+        xaxis = dict(
+            title='Task-fitness'),
+        yaxis = dict(
+            title='STR Disparity'),
+        # annotations= [dict(
+        #     showarrow = True,
+        #     x = ind.fitness.values[0],
+        #     y = ind.fitness.values[1],
+        #     xref = 'x',
+        #     yref = 'y',
+        #     text = ind.key,
+        #     ax = 0,
+        #     ay = -40,
+        #     font = dict(
+        #     color = "black",
+        #     size = 12
+        #     ),
+        #     arrowcolor = "#636363",
+        #     arrowsize = 1,
+        #     arrowwidth = 1,
+        #     arrowhead = 7
+        # ) for ind in hof
+        # ],
+        showlegend=True
+    )
+    fig = go.Figure(data=data, layout=layout)
+    
+    return py.iplot(fig, filename='moea-scatter-colorscale')
