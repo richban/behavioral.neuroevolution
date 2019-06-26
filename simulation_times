@@ -13,3 +13,4 @@ simulation_multiobjective_16  11710.30 seconds 30 gen 0.5 Diversity Sigma 1.0 di
 simulation_multiobjective_17  15705.24 seconds 30 gen 3.0 Fitness   Sigma 1.0 use fitness instead of diversity optimization of fitness + transferability + diversity
 simulation_multiobjective_18  23213.40 seconds 30 gen 3.0 Fitness   Sigma 1.0 use fitness instead of diversity optimization of fitness + transferability
 simulation_multiobjective_19  15705.24 seconds 30 gen 0.5 Diversity Sigma 1.0 use fitness instead of diversity optimization of fitness + transferability
+simulation_multiobjective_20  17705.24 seconds 30 gen 3.0 Fitness   Sigma 1.0 use fitness instead of diversity optimization of fitness + transferability
