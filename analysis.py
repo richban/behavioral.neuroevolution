@@ -243,3 +243,10 @@ def unpickle_moea(path):
         unpickled = pickle.load(f)
 
     return unpickled
+
+
+def disparity_mse(approximated, actual):
+    a = np.array(approximated)
+    b = np.array(actual)
+
+    return ((a - b)**2).mean(axis=None)
