@@ -651,7 +651,7 @@ class Simulation(object):
             if self.simulation_type == 'transferability':
                 diversity = self.disparity.diversity(ind)
                 ind.fitness.values = (
-                    fit, self.disparity.disparity_value, diversity)
+                    fit, self.disparity.disparity_value, 1.0)
                 print('fitness: {:.4f} disparity: {:.4f} diversity: {:.4f}'.format(
                     fit, self.disparity.disparity_value, diversity))
             else:
@@ -721,7 +721,7 @@ class Simulation(object):
                     diversity = self.disparity.diversity(ind)
                     ind.diversity = diversity
                     ind.fitness.values = (
-                        fit, self.disparity.disparity_value, diversity)
+                        fit, self.disparity.disparity_value, 1.0)
                     print('fitness: {:.4f} disparity: {:.4f} diversity: {:.4f}'.format(
                         fit, self.disparity.disparity_value, diversity))
                 else:
@@ -737,7 +737,7 @@ class Simulation(object):
             if self.simulation_type == 'transferability':
                 # filter controllers that we transfer to thymio
                 transfer_simulation = list(
-                    filter(lambda x: x.diversity > self.settings.DIVERSITY, invalid_ind))
+                    filter(lambda x: x.fitness.values[0] > 3.0, invalid_ind))
                 # clone simulation controllers
                 transfered_controllers = list(
                     map(lambda x: toolbox.clone(x), transfer_simulation))
@@ -815,7 +815,7 @@ class Simulation(object):
         return pop, hof, logbook, best_inds, best_inds_fitness
 
     @timeit
-    def restore_genome(self, N=1):
+    def restore_genome(self, N=3):
         """restore genome and re-run simulation"""
 
         toolbox = base.Toolbox()
