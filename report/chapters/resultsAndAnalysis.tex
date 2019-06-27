@@ -276,7 +276,33 @@ For this approach we use a feed-forward neural network with static structure. Th
 \end{description}
 
 
-\emph{Complications of the implementation.} In order order to obtain controllers that transfer well from simulation to reality we tried to implement the original implementation with all its perks. Neverthless, 
+\emph{Complications of the implementation.} In order order to obtain controllers that transfer well from simulation to reality we tried to implement the original implementation with all its perks. Nevertheless, we have discovered/encountered the following issues:
+
+\begin{description}
+	
+    \item{STR Disparity Measure}. In the initial experiments, we have defined the exact STR disparity measure as the Euclidean distance between the corresponding trajectories observed in simulation and in reality. It has been changed to the mean square error from the original implementation, which also turned out to evaluate more accurately the error between simulated and real trajectories. As it can be seen on a sample \ref{fig:trajectory_discrepancy}, the traveled discrepancies between simulation and reality computed with the Euclidean distance is \textit{1.958}, on the other hand, the discrepancy computed with the mean squared error is \textit{26.596}. This turned out to be problematic when comparing trajectories that are highly diverse, which resulted in a badly modeled surrogate model. Relying on the mean square error had the benefit of penalizing large errors more, which was appropriate to accurately model the surrogate model. 
+    
+    \item{Calculation of the exact Disparity Measure}. As one can assume from figure \ref{fig:trajectory_discrepancy}, it is clear that the Thymio (transferred controller in reality) behaves differently than its counterpart in simulation. In simulation the robot is keep facing the wall and stay still the rest of the simulation time, on the other hand the transfered controller goes straing until it hits the obstacle, this is the result of a reality gap. In consequence with our initial constraints of measuring the disparity lead to inaccurate results of the exact disparity between simulation and reality, likewise inaccurate surrogate model. Since our implementation was concerned of taking always the N-M (or vice versa) size of \[ [(x_1,y_1), (x_2, y_2), ...] \] coordinate samples both from simulation/reality, thus calculating the mean square error based on only N-M samples. It notably means that the exact str disparity measure is over-fitting, therefore not sufficient to describe the disparities. Furthermore, the collision detection was also applied for the transferred controllers, which also skewed the values. This miscalculation is depicted in figure \ref{fig:trajectory_discrepancy_wrong_measure}. To cope with these potential miscalculations, this constraint was removed and later on the entire trajectory is used to correctly calculate the exact STR disparity.
+	
+\end{description}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.8\textwidth}
+    	\centering
+        \includegraphics[width=5cm]{include/images/trajectory_discrepancy.PNG}
+        \caption{The discrepancy of traveled trajectories in simulation and reality.}
+        \label{fig:trajectory_discrepancy}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.8\textwidth}
+    	\centering
+        \includegraphics[width=5cm]{include/images/trajectory_discrepancy_wrong_measure.PNG}
+        \caption{Potential miscalculations of the exact STR Disparity.}
+        \label{fig:trajectory_discrepancy_wrong_measure}
+    \end{subfigure}
+    % \caption{Reality-based simulation results I.}
+	\label{fig:real_based_resultsI}
+\end{figure}
 
 
 
