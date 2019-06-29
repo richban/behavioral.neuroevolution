@@ -163,7 +163,7 @@ The \emph{ReacTIVision Fiducials} \ref{fig:fiducial_markers} comes in 3 differen
 
 \subsubsection{Computer Vision Implementation}
 
-The original implementation of the \emph{reacTIVision} system has been re-implemented using \emph{OpenCV}\footnote{\url{https://opencv.org/}} by Faina, in \citep{faina2017automating}. The actual implementation is written in Python, and have been slightly modified, concretely, have been made thread-safe. The entire vision system operates on pixel-coordinates, which is turned into a base coordinate system. Transformation...
+The original implementation of the \emph{reacTIVision} system has been re-implemented using \emph{OpenCV}\footnote{\url{https://opencv.org/}} by Faina, in \citep{faina2017automating}. The actual implementation is written in Python, and have been slightly modified, concretely, have been made thread-safe. The entire vision system operates on pixel-coordinates, which is turned into a base coordinate system.
 
 The video frame is captured by using an HD camera \footnote{Logitech 1980x1080 pixels}, which is placed on top of the physical arena \ref{fig:test_bed}. Processing a single frame consist of the following steps: 
 
@@ -203,4 +203,46 @@ Figure \ref{fig:follow_the_carrot} describes the basic principles. The most impo
 
 \section{Automation Control}
 
+\emph{Simulation Initialization}. The system is initialized based on a configuration file, which is passed as an argument from the command line. From the configuration file, the system (python client) initialize the evolutionary algorithm to run with all the necessary parameters. Furthermore, it spawns all the \emph{vrep} instances and initializes the connections with the servers. Additionally, spawns the \emph{assebamedulla} network and initialize the connection with the Thymio robot.
+
+\emph{Vistion System Initialization}. The vision system is spawned in another thread, which is initialized with a transformation matrix that turns the pixel-coordinates into base coordinates. Afterward, the vision system takes the image frame and locates all four corner markers. Both the camera and the corner markers are fixed throughout the entire evaluation time.
+
+\emph{Environment Configuration}. The system accepts a list of marker objects that represents the identified fiducial markers to track in the environment. Each marker object that represents an obstacle its position is retrieved and used to set up its position in the simulation.
+
+\emph{Evaluation}. The evaluation of a given controller is performed. In this step, the Thymios sensory readings are streamed to the python client over D-BUS, the sensory readings are further processed and fed to the neural network and the resulted output is sent back to set up the wheel speeds of the Thymio robot. The vision system is continuously tracking the Thymio robot and feeding its position coordinates to the client which is then responsible to process and stream the data to the \emph{vrep} simulation. This means that the physical world is augmenting in virtual reality.
+
+\emph{Collision Detection}. The collision detection is registered in the simulation and every control loop the client repeatedly ask the \emph{vrep} server whether a collision occurred. The collision detection is visualized by the red color of the collider object.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.4\textwidth}
+    	\centering
+        \includegraphics[width=6cm]{include/images/collision.PNG}
+        \caption{Collision detection in the simulator.}
+        \label{fig:thymio_collision_sim}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.4\textwidth}
+    	\centering
+        \includegraphics[width=6cm]{include/images/collision_reality.PNG}
+        \caption{Thymio robot collision in reality.}
+        \label{fig:thymio_collision_reality}
+    \end{subfigure}
+    % \caption{Environmental objects.}\label{sistemass1}
+\end{figure}
+
+\emph{Simulation Restart}. If a collision occurred the evaluation is stopped and the Thymio robot is commanded to return to its initial position. The path following module together with the vision system is used to guide the Thymio robot to its initial position. Afterward, the evaluation of the next controller is performed.
+
+
 \subsection{Evaluation of the robotic platform}
+
+In order to test the robotic platform we performed several experiments to evaluate the robustness and performance of the system:
+
+\emph{General performance evaluation and collision detection}. The vision system is able to extract the spatial information of the Thymio robot while moving. Taking into consideration the accuracy of the position readings and the speed of the Thymio, accurate position readings are provided by the vision system when the Thymio travelers with a max speed of 8 cm/s. However, once in a while the quality of the frame captured by the camera is not sufficient enough to locate the Thymio marker because of variations of the lighting conditions. In this scenario, the system will retry until it locates it. The system is capable to accurately position the virtual robot based on the extracted coordinates, in reality, moreover, register a collision. Even though, it is worth noting that the collision detection sometimes might not be that precise. In some cases, the Thymio robot is so close to the obstacles that it is hard to determine whether it's colliding or not in reality, which become registered as a collision in the simulator. But this is still satisfactory within our application since it would enhance more robust controllers.
+
+\emph{Path Following}. To evaluate the simulation restart functionality, we have placed the Thymio robot randomly to different locations in the environment and commanded to return to its initial position. The path following module proved to be useful to guide the Thymio to its initial position. Within one simulation run of a reality-based optimization approach, the average time to restart the simulation and place the Thymio to its initial position was around 28 seconds.
+
+\emph{General reality-based optimization}. We performed around 6000 evaluations entirely on the Thymio. Including the initial test experiments and the intended experiments. In 8 out of 10 reality-based optimization evaluations were performed completely autonomously without human intervention.
+
+\emph{Co-evolution in simulation and reality}. 
+
+In summary, the automated robotic platform 
