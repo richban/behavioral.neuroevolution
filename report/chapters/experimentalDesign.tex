@@ -37,7 +37,7 @@ The outlook of the experiments is to validate different reality gap approaches o
 
 \subsection{Obstacles}
 
-Each arena (\emph{physical arena} and \emph{virtual arena}), contains 3 different cuboids in sizes. These are the only environmental objects that the robots interact with. Obstacles in the \emph{physical arena} are heavy enough, therefore they are not knocked over by \emph{Thymio} robot during a collision. Additionally, each obstacle is marked with a fiducial marker, in order to set the position of its counterpart \emph{virtual obstacle}\ref{fig:virtual_obstacle} in the \emph{virtual arena}.
+Each arena (\emph{physical arena} and \emph{virtual arena}), contains 3 different cuboids in sizes. These are the only environmental objects that the robots interact with. Obstacles in the \emph{physical arena} are heavy enough, therefore they are not knocked over by \emph{Thymio} robot during a collision. Additionally, each obstacle is marked with a fiducial marker, in order to set the position of its counterpart \emph{virtual obstacle} \ref{fig:virtual_obstacle} in the \emph{virtual arena}.
 
 \begin{figure}[h]
     \centering
@@ -136,7 +136,7 @@ interface ch.epfl.mobots.AsebaNetwork {
 }
 \end{lstlisting}
 
-The \emph{AsebaNetwork} interface allows working with all of the nodes (robots) in the same network. There are methods to retrieve a list of the connected nodes ( \emph{GetNodesList} ) and to broadcast a global event, like \emph{SendEvent}. Global events are events that aseba nodes exchange within the aseba network. On the other hand, events that are internal to the node are called \emph{local events}. \emph{SetVariable} and \emph{GetVariable}, which write and read respectively native variables of the Aseba scripting language.
+The \emph{AsebaNetwork} interface allows working with all of the nodes (robots) in the same network. There are methods to retrieve a list of the connected nodes ()\emph{GetNodesList}) and to broadcast a global event, like \emph{SendEvent}. Global events are events that aseba nodes exchange within the aseba network. On the other hand, events that are internal to the node are called \emph{local events}. \emph{SetVariable} and \emph{GetVariable}, which write and read respectively native variables of the Aseba scripting language.
 
 Asebamedulla exposes the interface \emph{EventFilter} which allows managing events. An application that wants to listen to events have register events with \emph{ListenEventName} or \emph{ListenEvent} be notified when an event occurs. The application can receive these events through the \emph{Event} signal, these events correspond to the global events of the Aseba language.
 
@@ -203,15 +203,15 @@ Figure \ref{fig:follow_the_carrot} describes the basic principles. The most impo
 
 \section{Automation Control}
 
-\emph{Simulation Initialization}. The system is initialized based on a configuration file, which is passed as an argument from the command line. From the configuration file, the system (python client) initialize the evolutionary algorithm to run with all the necessary parameters. Furthermore, it spawns all the \emph{vrep} instances and initializes the connections with the servers. Additionally, spawns the \emph{assebamedulla} network and initialize the connection with the Thymio robot.
+\textbf{\emph{Simulation Initialization}}. The system is initialized based on a configuration file, which is passed as an argument from the command line. From the configuration file, the system (python client) initialize the evolutionary algorithm to run with all the necessary parameters. Furthermore, it spawns all the \emph{vrep} instances and initializes the connections with the servers. Additionally, spawns the \emph{assebamedulla} network and initialize the connection with the Thymio robot.
 
-\emph{Vistion System Initialization}. The vision system is spawned in another thread, which is initialized with a transformation matrix that turns the pixel-coordinates into base coordinates. Afterward, the vision system takes the image frame and locates all four corner markers. Both the camera and the corner markers are fixed throughout the entire evaluation time.
+\textbf{\emph{Vistion System Initialization}}. The vision system is spawned in another thread, which is initialized with a transformation matrix that turns the pixel-coordinates into base coordinates. Afterward, the vision system takes the image frame and locates all four corner markers. Both the camera and the corner markers are fixed throughout the entire evaluation time.
 
-\emph{Environment Configuration}. The system accepts a list of marker objects that represents the identified fiducial markers to track in the environment. Each marker object that represents an obstacle its position is retrieved and used to set up its position in the simulation.
+\textbf{\emph{Environment Configuration}}. The system accepts a list of marker objects that represents the identified fiducial markers to track in the environment. Each marker object that represents an obstacle its position is retrieved and used to set up its position in the simulation.
 
-\emph{Evaluation}. The evaluation of a given controller is performed. In this step, the Thymios sensory readings are streamed to the python client over D-BUS, the sensory readings are further processed and fed to the neural network and the resulted output is sent back to set up the wheel speeds of the Thymio robot. The vision system is continuously tracking the Thymio robot and feeding its position coordinates to the client which is then responsible to process and stream the data to the \emph{vrep} simulation. This means that the physical world is augmenting in virtual reality.
+\textbf{\emph{Evaluation}}. The evaluation of a given controller is performed. In this step, the Thymios sensory readings are streamed to the python client over D-BUS, the sensory readings are further processed and fed to the neural network and the resulted output is sent back to set up the wheel speeds of the Thymio robot. The vision system is continuously tracking the Thymio robot and feeding its position coordinates to the client which is then responsible to process and stream the data to the \emph{vrep} simulation. This means that the physical world is augmenting in virtual reality.
 
-\emph{Collision Detection}. The collision detection is registered in the simulation and every control loop the client repeatedly ask the \emph{vrep} server whether a collision occurred. The collision detection is visualized by the red color of the collider object.
+\textbf{\emph{Collision Detection}}. The collision detection is registered in the simulation and every control loop the client repeatedly ask the \emph{vrep} server whether a collision occurred. The collision detection is visualized by the red color of the collider object.
 
 \begin{figure}[H]
     \centering
@@ -230,7 +230,7 @@ Figure \ref{fig:follow_the_carrot} describes the basic principles. The most impo
     % \caption{Environmental objects.}\label{sistemass1}
 \end{figure}
 
-\emph{Simulation Restart}. If a collision occurred the evaluation is stopped and the Thymio robot is commanded to return to its initial position. The path following module together with the vision system is used to guide the Thymio robot to its initial position. Afterward, the evaluation of the next controller is performed.
+\textbf{\emph{Simulation Restart}}. If a collision occurred the evaluation is stopped and the Thymio robot is commanded to return to its initial position. The path following module together with the vision system is used to guide the Thymio robot to its initial position. Afterward, the evaluation of the next controller is performed.
 
 
 \subsection{Evaluation of the robotic platform}
@@ -243,6 +243,6 @@ In order to test the robotic platform we performed several experiments to evalua
 
 \emph{General reality-based optimization}. We performed around 6000 evaluations entirely on the Thymio. Including the initial test experiments and the intended experiments. In 8 out of 10 reality-based optimization evaluations were performed completely autonomously without human intervention.
 
-\emph{Co-evolution in simulation and reality}. 
+\emph{Co-evolution in simulation and reality}. We have also performed 25 simulations runs of the transferability approach, which involved the cooperation of the simulation and reality. On average we have performed 118 transfers from simulation to reality, in all cases, the system demonstrated completely autonomous operation without any error.
 
-In summary, the automated robotic platform 
+In short, the automated robotic platform operates as intended per design. It provides the ability to perform completely autonomous optimization. Moreover, it is able to seamlessly automate \emph{robot-in-the-loop} type optimization procedures.

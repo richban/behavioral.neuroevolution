@@ -331,7 +331,7 @@ $Genome \;  \; 343$  & $Genome \;  \; 50$  & $Genome \;  \; 189$  \\
 
 \subsection{Results with the Transferability approach}
 
-The transferability approach works well for all the 5 runs. At the end of the multi-objective evolutionary run, we obtain on average a set of 5 non-dominated solutions. A typical fitness landscape obtained with transferability approach is depicted in figure \ref{fig:best_pareto}. It shows the 2 parameters that are optimized along with the non-dominated solutions on the Pareto front.
+The transferability approach with the heuristic update function based on the fitness threshold criteria works well for all the 5 runs. At the end of the multi-objective evolutionary run, we obtain on average a set of 5 non-dominated solutions. On average the best solutions achieve \textit{10.65} fitness value. A typical fitness landscape obtained with transferability approach is depicted in figure \ref{fig:best_pareto}. It shows the 2 parameters that are optimized along with the non-dominated solutions on the Pareto front.
 
 \begin{figure}[H]
 	\centering
@@ -360,10 +360,20 @@ Altought the non-dominated set contains the best solutions of the run, in some c
 	\label{fig:comparison_efficiency_transferability}
 \end{figure}
 
+\subsection{Summary of the results}
 
-\section{Discussion}
+The fitness of the best solutions found with all approaches can be seen in figure \ref{fig:fitness_comparison}. Means and quartiles are computed on 10 runs, except for the transferability approach with 5 runs. Although the transferability approach has lower fitness values than the simulation-based approach, it clearly behaves the best and always find solutions that are both optimal in reality and transferable. Even though, sometimes using advanced simulation tools might lead to transferable controllers that perform efficiently. The lower fitness values of the transferability approach might be the cause of the different evolutionary algorithm utilized. Since the NEAT algorithm has the advantage of evolving both the topology and the weights of the artificial neural network, moreover the network weights values are initialized by the algorithm itself. This in contrast to MOEA where we had to construct explicitly the topology of the neural network, initialize and encode every connection weights as a list of floating points numbers to represent the genomes would require more evaluations to explore efficiently the solution space. As it was also the case in the preliminary experiments, where we had to extend the number of generations from 20 to 30 in order to evolve obstacle avoidance behavior with MOEA. Compared to the reality-based optimization approach, the transferability approach behaves better, considering also the time to evolve the given behavior which is 3x less time-consuming.
 
-\emph{Surrogate Model}. As described in the section \emph{Complications of the implementation}, in the initial experiments we transferred controllers based on a diversity threshold of 0.5, that corresponded to an average of 80 transfer by run (5 runs in total). Within this selection criteria, we have obtained a surrogate model with a larger error. Despite the lack of time, we have decided to change the selection criteria based on a fitness threshold. To determine if the surrogate model is more accurate with the fitness threshold approach we compared the approximated STR disparity values to the exact STR disparity values. Figure \ref{fig:str_disparities} shows the corresponding approximated STR disparity values and the exact STR disparity values of all the non-dominated solutions from the Pareto-Front for each run. Figure \ref{fig:bad_str_disparity} corresponds to disparity values obtained with diversity threshold 0.5, while figure \ref{fig:good_str_disparity} corresponds disparity values obtained with the fitness threshold 3.0.
+\begin{figure}[H]
+	\centering
+  	\includegraphics[width=9cm]{include/images/fig:fitness_comparison.PNG}
+  	\caption{Fitness of the best solutions found with all the approaches.}
+  	\label{fig:best_pareto}
+\end{figure}
+
+\section{Furthere Discusion on the Transferability approach}
+
+As described in the section \emph{Complications of the implementation}, in the initial experiments we transferred controllers based on a diversity threshold of 0.5, that corresponded to an average of 80 transfer by run (5 runs in total). Within this selection criteria, we have obtained a surrogate model with a larger error. Despite the lack of time, we have decided to change the selection criteria based on a fitness threshold. To determine if the surrogate model is more accurate with the fitness threshold approach we compared the approximated STR disparity values to the exact STR disparity values. Figure \ref{fig:str_disparities} shows the corresponding approximated STR disparity values and the exact STR disparity values of all the non-dominated solutions from the Pareto-Front for each run. Figure \ref{fig:bad_str_disparity} corresponds to disparity values obtained with diversity threshold 0.5, while figure \ref{fig:good_str_disparity} corresponds disparity values obtained with the fitness threshold 3.0.
 
 \begin{figure}[H]
     \centering
