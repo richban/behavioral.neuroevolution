@@ -12,6 +12,7 @@ import matplotlib.pylab as pylab
 import copy
 import warnings
 import matplotlib as mpl
+from plotly.offline import download_plotlyjs, plot, iplot
 mpl.use('TkAgg')
 
 plotly.tools.set_credentials_file(username=os.environ['PLOTLY_USERNAME'],
@@ -967,7 +968,7 @@ def plot_path(genomes, title):
 
     fig = go.Figure(data=data, layout=layout)
 
-    return py.iplot(fig, filename='path-traveled-genomes')
+    return iplot(fig, filename='path-traveled-genomes')
 
 
 def plot_thymio_fitness(thymio1, thymio2, title):
@@ -1173,7 +1174,7 @@ def plot_surrogate_model(fitness_data, title='STR Disparity Over Generations'):
     data = [trace0]
     fig = go.Figure(data, layout=layout)
 
-    return py.iplot(fig, filename=title)
+    return iplot(fig, filename=title)
 
 
 def plot_str_disparity(str_disparities, title='STR Disparities of transfered controllers'):
@@ -1226,7 +1227,7 @@ def plot_str_disparity(str_disparities, title='STR Disparities of transfered con
     data = [trace0, trace1]
     fig = go.Figure(data, layout=layout)
 
-    return py.iplot(fig, filename=title)
+    return iplot(fig, filename=title)
 
 
 def plot_moea_fitness_2d(fitness_data, hof, title='Evaluation objectives. MOEA. Transferability.'):
@@ -1290,4 +1291,4 @@ def plot_moea_fitness_2d(fitness_data, hof, title='Evaluation objectives. MOEA. 
     )
     fig = go.Figure(data=data, layout=layout)
     
-    return py.iplot(fig, filename='moea-scatter-colorscale')
+    return iplot(fig, filename='moea-scatter-colorscale')

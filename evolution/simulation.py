@@ -348,7 +348,7 @@ class Simulation(object):
 
             self.winner = genome
             print(self.winner.key)
-        
+
         return
 
     def _init_vision(self):
@@ -815,7 +815,7 @@ class Simulation(object):
         return pop, hof, logbook, best_inds, best_inds_fitness
 
     @timeit
-    def restore_genome(self, N=3):
+    def restore_genome(self, N=1):
         """restore genome and re-run simulation"""
 
         toolbox = base.Toolbox()
