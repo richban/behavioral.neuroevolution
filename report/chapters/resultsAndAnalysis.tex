@@ -2,11 +2,11 @@
 
 All our reality gap approaches have been validated on a robotic application with the Thymio robot on an obstacle avoidance task. The experimental set up among all approaches mainly differ in the evolutionary strategy used or whether the optimization happened fully or partially in simulation and reality. The following next paragraphs describe the common set-up used in our experiments.
 
-The robot is quipted with 7 infrared sensors and 2 two motors. The virtual thymio robot is modeled based on the physical thymio and its characteristics \ref{thymio_characteristics}. The specifications of sensor readings and possible speed values, included normalization values are depicted in the following table \ref{fig:thymio_specs} both for the physical thymio and its virtual counterpart.
+The robot is quipted with 7 infrared sensors and 2 two motors. The virtual thymio robot is modeled based on the physical thymio and its characteristics \ref{thymio_characteristics}. The specifications of sensor readings and possible speed values, included normalization values are depicted in the following table \ref{tab:thymio_specs} both for the physical thymio and its virtual counterpart.
 
 \begin{table}[H]
-\begin{tabular}{llll}
 \centering
+\begin{tabular}{llll}
 \hline
 \textbf{}                            & \textbf{Simulator}    & \textbf{Reality}  & \textbf{Normalized}  \\ \hline
 \textbf{Speed Values}                & {[}-2.0, 2.0{]}       & {[}-200, 200{]}      & {[}0.0, 1.0{]} \\
@@ -75,7 +75,7 @@ The first experiment takes place fully in simulation using the simulation model 
 
 \subsection{Experimenal design}
 
-For comparison to the simulation-based optimization, we conduct a reality-based optimization directly on the physical robot. The experimental set-up is the same as in the previous application. The size of the population is 20 and the number of generations is 20. Again, NEAT is used as the underlying evolutionary strategy with the same parameters summarized in table \ref{neat_parameters}. It has been reproduced 10 times, which implies 4000 evaluations, to have the same amount of experiments in reality as in simulation. The experiment completely relies on the entire robotic platform including the vision system, simulation, and the Thymio robot.
+For comparison to the simulation-based optimization, we conduct a reality-based optimization directly on the physical robot. The experimental set-up is the same as in the previous application. The size of the population is 20 and the number of generations is 20. Again, NEAT is used as the underlying evolutionary strategy with the same parameters summarized in table \ref{tab:neat_parameters}. It has been reproduced 10 times, which implies 4000 evaluations, to have the same amount of experiments in reality as in simulation. The experiment completely relies on the entire robotic platform including the vision system, simulation, and the Thymio robot.
 
 \section{Transferability Approach}.
 
@@ -83,10 +83,10 @@ This series of experiments falls into the \emph{robot-in-the-loop simulation-bas
 
 \subsection{Experimenal design}
 
-The transferability approach relies on a multi-objective formulation of the evolutionary strategy where the two main objectives are optimized with Pareto-based ranking scheme. Our implementation relies on the \citep{deb200fast} evolutionary algorithm implemented via the \emph{DEAP}\footnote{\url{https://deap.readthedocs.io/en/master/}} library. Each controller is evaluated by three objectives:
+The transferability approach relies on a multi-objective formulation of the evolutionary strategy where the two main objectives are optimized with Pareto-based ranking scheme. Our implementation relies on the \citep{deb2000fast} evolutionary algorithm implemented via the \emph{DEAP}\footnote{\url{https://deap.readthedocs.io/en/master/}} library. Each controller is evaluated by three objectives:
 
 \begin{enumerate}
-	\item the \emph{task-dependent fitness}\ref{eq:fitness_function}, to find controllers with obstacle avoidance behavior. 	The algorithm maximizes this objective.
+	\item the \emph{task-dependent fitness} \ref{eq:fitness_function}, to find controllers with obstacle avoidance behavior. 	The algorithm maximizes this objective.
 	\item the corresponding \emph{simulation-to-reality disparity} (STR disparity), which is minimized, to find optimal transferable controllers.
 	\item the \emph{behavioral diversity} objective, which is maximized, to find more diverse set controllers.
 \end{enumerate}
@@ -112,7 +112,7 @@ Where $\chi$ is the set of all controllers in the population, $\chi_T \subset \c
 The last evaluation objective of the optmization scheme is the \emph{behavioral diversity}, which quantify the diversity of a controller from the already transfered ones. For a given controller the diversity $ diversity_{(c)}$ is:
 
 \begin{equation}
-	diversity = \min_{\forall c_i \in \chi_T } b_{dist}(c, c_i)
+	diversity_{c} = \min_{\forall c_i \in \chi_T } b_{dist}(c, c_i)
 	\label{eq:behavioral_diversity}
 \end{equation}
 
@@ -121,15 +121,15 @@ $b_{dist}$ is the euclidean distance between the \emph{12th} dimensional behavio
 For this approach we use a feed-forward neural network with static structure. The network is fully connected, containing 7 input neurons, 1 hidden layer with 14 neurons, and 2 motor neurons calculating the wheel speeds. The activation function is the same as in the previous experiments. In this case the genome encodes the weights of the neural network as a vector of floating point values. All genomes are bound to two genetic operators. Two point crossover is applied with probability 0.5 and a gaussian mutation with probability 0.7 mutating each attribute of the genome. The experimental configuration can be seen in table \ref{tab:moea_parameters}
 
 \begin{table}[H]
+\centering
 \begin{tabular}{ll}
 \hline
 \textbf{}                      & \textbf{} \\ \hline
-\textbf{Population Size}       & 80        \\
-\textbf{Number of Generations} & 40        \\
-\textbf{Simulation time}       & 40 sec    \\
-\textbf{Crossover}             & 0.2       \\
-\textbf{Mutation}              & 0.1       \\
-\textbf{Tournament Selection}  & 3        
+\textbf{Population Size}       & 20        \\
+\textbf{Number of Generations} & 30        \\
+\textbf{Simulation time}       & 60 sec    \\
+\textbf{Crossover Probability}             & 0.5      \\
+\textbf{Mutation Probability}              & 0.7       \\
 \end{tabular}
 \caption{Parameters of the Multi-objective optmization procedure.}
 \label{tab:moea_parameters}
@@ -149,19 +149,19 @@ For this approach we use a feed-forward neural network with static structure. Th
 			\item[STEP 1] Controllers with high enough diversity are selected from the current population and transferred to reality.
 			\item[STEP 2] Computation of the exact STR disparity measure between the simulation and reality. Updating the surrogate model based on obtained results.
 		\end{description}
-	\item[3. Genetic Operators] Application of the genetic operators (crossover & mutation)
+	\item[3. Genetic Operators] Application of the genetic operators (crossover, mutation)
 \end{description}
 
 
-\subsection{Complications of the implementation and the experiments.} 
+\subsection{Complications of the implementation and with the experiments.} 
 
 In order order to obtain controllers that transfer well from simulation to reality we tried to implement the original implementation with all its perks. Nevertheless, we have discovered/encountered the following issues:
 
 \begin{description}
 	
-    \item{STR Disparity Measure}. In the initial experiments, we have defined the exact STR disparity measure as the Euclidean distance between the corresponding trajectories observed in simulation and in reality. It has been changed to the mean square error from the original implementation, which also turned out to evaluate more accurately the error between simulated and real trajectories. As it can be seen on a sample \ref{fig:trajectory_discrepancy}, the traveled discrepancies between simulation and reality computed with the Euclidean distance is \textit{1.958}, on the other hand, the discrepancy computed with the mean squared error is \textit{26.596}. This turned out to be problematic when comparing trajectories that are highly diverse, which resulted in a badly modeled surrogate model. Relying on the mean square error had the benefit of penalizing large errors more, which was appropriate to accurately model the surrogate model. 
+    \item{\textbf{STR Disparity Measure}}. In the initial experiments, we have defined the exact STR disparity measure as the Euclidean distance between the corresponding trajectories observed in simulation and in reality. It has been changed to the mean square error from the original implementation, which also turned out to evaluate more accurately the error between simulated and real trajectories. As it can be seen on a sample \ref{fig:trajectory_discrepancy}, the traveled discrepancies between simulation and reality computed with the Euclidean distance is \textit{1.958}, on the other hand, the discrepancy computed with the mean squared error is \textit{26.596}. This turned out to be problematic when comparing trajectories that are highly diverse, which resulted in a badly modeled surrogate model. Relying on the mean square error had the benefit of penalizing large errors more, which was appropriate to accurately model the surrogate model. 
     
-    \item{Calculation of the exact Disparity Measure}. As one can assume from figure \ref{fig:trajectory_discrepancy}, it is clear that the Thymio (transferred controller in reality) behaves differently than its counterpart in simulation. In simulation the robot is keep facing the wall and stay still the rest of the simulation time, on the other hand the transfered controller goes straing until it hits the obstacle, this is the result of a reality gap. In consequence with our initial constraints of measuring the disparity lead to inaccurate results of the exact disparity between simulation and reality, likewise inaccurate surrogate model. Since our implementation was concerned of taking always the N-M (or vice versa) size of \[ [(x_1,y_1), (x_2, y_2), ...] \] coordinate samples both from simulation/reality, thus calculating the mean square error based on only N-M samples. It notably means that the exact str disparity measure is over-fitting, therefore not sufficient to describe the disparities. Furthermore, the collision detection was also applied for the transferred controllers, which also skewed the values. This miscalculation is depicted in figure \ref{fig:trajectory_discrepancy_wrong_measure}. To cope with these potential miscalculations, this constraint was removed and later on the entire trajectory is used to correctly calculate the exact STR disparity.
+    \item{\textbf{Calculation of the exact Disparity Measure}}. As one can assume from figure \ref{fig:trajectory_discrepancy}, it is clear that the Thymio (transferred controller in reality) behaves differently than its counterpart in simulation. In simulation the robot is keep facing the wall and stay still the rest of the simulation time, on the other hand the transfered controller goes straing until it hits the obstacle, this is the result of a reality gap. In consequence with our initial constraints of measuring the disparity lead to inaccurate results of the exact disparity between simulation and reality, likewise inaccurate surrogate model. Since our implementation was concerned of taking always the N-M (or vice versa) size of \[ [(x_1,y_1), (x_2, y_2), ...] \] coordinate samples both from simulation/reality, thus calculating the mean square error based on only N-M samples. It notably means that the exact str disparity measure is over-fitting, therefore not sufficient to describe the disparities. Furthermore, the collision detection was also applied for the transferred controllers, which also skewed the values. This miscalculation is depicted in figure \ref{fig:trajectory_discrepancy_wrong_measure}. To cope with these potential miscalculations, this constraint was removed and later on the entire trajectory is used to correctly calculate the exact STR disparity.
 	
 \end{description}
 
@@ -169,13 +169,13 @@ In order order to obtain controllers that transfer well from simulation to reali
     \centering
     \begin{subfigure}[b]{0.8\textwidth}
     	\centering
-        \includegraphics[width=5cm]{include/images/trajectory_discrepancy.PNG}
+        \includegraphics[width=8cm]{include/images/trajectory_discrepancy.PNG}
         \caption{The discrepancy of traveled trajectories in simulation and reality.}
         \label{fig:trajectory_discrepancy}
     \end{subfigure}
     \begin{subfigure}[b]{0.8\textwidth}
     	\centering
-        \includegraphics[width=5cm]{include/images/trajectory_discrepancy_wrong_measure.PNG}
+        \includegraphics[width=8cm]{include/images/trajectory_discrepancy_wrong_measure.PNG}
         \caption{Potential miscalculations of the exact STR Disparity.}
         \label{fig:trajectory_discrepancy_wrong_measure}
     \end{subfigure}
@@ -183,9 +183,6 @@ In order order to obtain controllers that transfer well from simulation to reali
 	\label{fig:real_based_resultsI}
 \end{figure}
 
-\item{Defects in Thymio Robot}.
-
-\item{Diversity & Surrogate Model}.
 
 \section{Results}
 
@@ -215,13 +212,13 @@ Figure \ref{fig:sim_avg_fitness} shows the average fitness performance of 10 sim
     \centering
     \begin{subfigure}[b]{0.8\textwidth}
     	\centering
-        \includegraphics[width=5cm]{include/images/sim_avg_fitness.PNG}
+        \includegraphics[width=14cm]{include/images/sim_avg_fitness.PNG}
         \caption{Average fitness of 10 simulation runs}
         \label{fig:sim_avg_fitness}
     \end{subfigure}
     \begin{subfigure}[b]{0.8\textwidth}
     	\centering
-        \includegraphics[width=5cm]{include/images/sim_best_genomes_percentile.PNG}
+        \includegraphics[width=14cm]{include/images/sim_best_genomes_percentile.PNG}
         \caption{Best controllers each generation over all the runs.}
         \label{fig:sim_best_genomes_percentile}
     \end{subfigure}
@@ -235,13 +232,13 @@ Figure \ref{fig:sim_fitness_distribution} shows the distribution of each individ
     \centering
     \begin{subfigure}[b]{0.8\textwidth}
     	\centering
-        \includegraphics[width=8cm]{include/images/sim_path_travelled.PNG}
+        \includegraphics[width=14cm]{include/images/sim_path_travelled.PNG}
         \caption{Path travelled by the best genomes.}
         \label{fig:sim_path_travelled}
     \end{subfigure}
     \begin{subfigure}[b]{0.8\textwidth}
     	\centering
-        \includegraphics[width=8cm]{include/images/sim_fitness_distribution.PNG}
+        \includegraphics[width=14cm]{include/images/sim_fitness_distribution.PNG}
         \caption{Fitness distribution of population individuals for a single run.}
         \label{fig:sim_fitness_distribution}
     \end{subfigure}
@@ -253,7 +250,7 @@ Another interesting result concerns the behavioral features of the best genomes.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=8cm]{include/images/sim_behavioral_features_best.PNG}
+    \includegraphics[width=12cm]{include/images/sim_behavioral_features_best.PNG}
     \caption{Behavioral features of the best genomes.}
     \label{fig:sim_behavioral_features_best}
 \end{figure}
@@ -278,13 +275,13 @@ The evolved topologies of the neural networks can be seen in figure \ref{fig:sim
     \centering
     \begin{subfigure}[b]{0.8\textwidth}
     	\centering
-        \includegraphics[width=8cm]{include/images/sim_bad_transfer.PNG}
+        \includegraphics[width=10cm]{include/images/sim_bad_transfer.PNG}
         \caption{Controller that is not transferable.}
         \label{fig:sim_bad_transfer}
     \end{subfigure}
     \begin{subfigure}[b]{0.8\textwidth}
     	\centering
-        \includegraphics[width=8cm]{include/images/sim_good_transfer.PNG}
+        \includegraphics[width=10cm]{include/images/sim_good_transfer.PNG}
         \caption{Controller that transfered well to reality.}
         \label{fig:sim_good_transfer}
     \end{subfigure}
@@ -300,13 +297,13 @@ The summary of results are depicted in figure \ref{fig:real_based_resultsI}. The
     \centering
     \begin{subfigure}[b]{0.8\textwidth}
     	\centering
-        \includegraphics[width=5cm]{include/images/real_avg_fitness.PNG}
+        \includegraphics[width=14cm]{include/images/real_avg_fitness.PNG}
         \caption{Average fitness of 10 simulation runs.}
         \label{fig:real_avg_fitness}
     \end{subfigure}
     \begin{subfigure}[b]{0.8\textwidth}
     	\centering
-        \includegraphics[width=5cm]{include/images/real_best_genomes_percentile.PNG}
+        \includegraphics[width=14cm]{include/images/real_best_genomes_percentile.PNG}
         \caption{Best controllers each generation over all the runs.}
         \label{fig:real_best_genomes_percentile}
     \end{subfigure}
@@ -314,20 +311,41 @@ The summary of results are depicted in figure \ref{fig:real_based_resultsI}. The
 	\label{fig:real_based_resultsI}
 \end{figure}
 
-The corresponding behavior of 5 best controllers is depicted in figure \ref{fig:path_traveled_thymio_reality_based}. 2 of them have similar behavior, going straight and making a sharp \emph{U} turn after they sense the obstacle in front of them. On the other hand \emph{Genomes 189, 73, 24}, are taking a left turn and keep moving around in the the second area most of the time.
+The corresponding behavior of 5 best controllers is depicted in figure \ref{fig:path_traveled_thymio_reality_based}. 2 of them have similar behavior, going straight and making a sharp \emph{U} turn after they sense the obstacle in front of them. On the other hand \emph{Genomes 189, 73, 24}, are taking a left turn and keep moving around in the the second area most of the time. The amount of noise in the fitness performance for these controllers is depicted in figure \ref{fig:thymio_fitness_noise}. Additionaly, a typical behavioral features can be seen in figure \ref{fig:thymio_best_behavioral_features}.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm]{include/images/thymio_fitness_noise.PNG}
+    \caption{The amount of noise in fitness for the 5 best controllers evolved in reality.}
+    \label{fig:thymio_fitness_noise}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm]{include/images/thymio_379_sensors.PNG}
+    \caption{Behavioral features of genome 379.}
+    \label{fig:thymio_best_behavioral_features}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm]{include/images/reality_path_traveled.PNG}
+    \caption{A typical behavior of the 5 best controllers.}
+    \label{fig:path_traveled_thymio_reality_based}
+\end{figure}
 
 \begin{table}[h]
 \centering
 \begin{tabular}{ccc}
-\includegraphics[scale=0.4]{include/images/thymio_network_379.PNG} & \includegraphics[scale=0.4]{include/images/thymio_network_78.PNG} & \includegraphics[scale=0.4]{include/images/thymio_network_73.PNG} \\
+\includegraphics[scale=0.3]{include/images/thymio_network_379.PNG} & \includegraphics[scale=0.3]{include/images/thymio_network_78.PNG} & \includegraphics[scale=0.3]{include/images/thymio_network_73.PNG} \\
 $$Genome \;  \; 379$$  & $$Genome \;  \; 78$$  & $Genome \;  \; 73$  \\
-\includegraphics[scale=0.4]{include/images/thymio_network_343.PNG} & \includegraphics[scale=0.4]{include/images/thymio_network_50.PNG} & \includegraphics[scale=0.4]{include/images/thymio_network_189.PNG} \\
+\includegraphics[scale=0.3]{include/images/thymio_network_343.PNG} & \includegraphics[scale=0.3]{include/images/thymio_network_50.PNG} & \includegraphics[scale=0.3]{include/images/thymio_network_189.PNG} \\
 $Genome \;  \; 343$  & $Genome \;  \; 50$  & $Genome \;  \; 189$  \\
 \end{tabular}
 \caption{Evolved topology of the best controllers in reality.}
 \label{fig:thymio_network_topologies} % 
 \end{table}
+
 
 \subsection{Results with the Transferability approach}
 
@@ -335,7 +353,7 @@ The transferability approach with the heuristic update function based on the fit
 
 \begin{figure}[H]
 	\centering
-  	\includegraphics[width=6cm]{include/images/pareto_best_moea.PNG}
+  	\includegraphics[width=14cm]{include/images/pareto_best_moea.PNG}
   	\caption{A typical fitness landscape obtained with transferability approach.}
   	\label{fig:best_pareto}
 \end{figure}
@@ -347,7 +365,7 @@ Altought the non-dominated set contains the best solutions of the run, in some c
     \begin{subfigure}[b]{0.8\textwidth}
     	\centering
         \includegraphics[width=8cm]{include/images/fit_not_transferable.PNG}
-        \caption{Controller with the highest fitness from a simulation run.}
+        \caption{Controller with the highest fitness from a typical simulation run.}
         \label{fig:sim_bad_transfer}
     \end{subfigure}
     \begin{subfigure}[b]{0.8\textwidth}
@@ -366,26 +384,26 @@ The fitness of the best solutions found with all approaches can be seen in figur
 
 \begin{figure}[H]
 	\centering
-  	\includegraphics[width=9cm]{include/images/fig:fitness_comparison.PNG}
-  	\caption{Fitness of the best solutions found with all the approaches.}
-  	\label{fig:best_pareto}
+  	\includegraphics[width=14cm]{include/images/fitness_comparison.PNG}
+  	\caption{Fitness of the best individuals found with all the approaches.}
+  	\label{fig:fitness_comparison}
 \end{figure}
 
 \section{Furthere Discusion on the Transferability approach}
 
-As described in the section \emph{Complications of the implementation}, in the initial experiments we transferred controllers based on a diversity threshold of 0.5, that corresponded to an average of 80 transfer by run (5 runs in total). Within this selection criteria, we have obtained a surrogate model with a larger error. Despite the lack of time, we have decided to change the selection criteria based on a fitness threshold. To determine if the surrogate model is more accurate with the fitness threshold approach we compared the approximated STR disparity values to the exact STR disparity values. Figure \ref{fig:str_disparities} shows the corresponding approximated STR disparity values and the exact STR disparity values of all the non-dominated solutions from the Pareto-Front for each run. Figure \ref{fig:bad_str_disparity} corresponds to disparity values obtained with diversity threshold 0.5, while figure \ref{fig:good_str_disparity} corresponds disparity values obtained with the fitness threshold 3.0.
+As described in the section \emph{Complications of the implementation and with the experiments.}, in the initial experiments we transferred controllers based on a diversity threshold of \textit{0.5}, that corresponded to an average of 80 transfer by run (5 runs in total). Within this selection criteria, we have obtained a surrogate model with a larger error. Despite the lack of time, we have decided to change the selection criteria based on a fitness threshold. To determine if the surrogate model is more accurate with the fitness threshold approach we compared the approximated STR disparity values to the exact STR disparity values. Figure \ref{fig:str_disparities} shows the corresponding approximated STR disparity values and the exact STR disparity values of all the non-dominated solutions from the Pareto-Front for each run. Figure \ref{fig:bad_str_disparity} corresponds to disparity values obtained with diversity threshold \itemit{0.5}, while figure \ref{fig:good_str_disparity} corresponds disparity values obtained with the fitness threshold \textit{3.0}.
 
 \begin{figure}[H]
     \centering
     \begin{subfigure}[b]{0.8\textwidth}
     	\centering
-        \includegraphics[width=5cm]{include/images/moea_worst_hofs.PNG}
+        \includegraphics[width=10cm]{include/images/moea_worst_hofs.PNG}
         \caption{Results with the diversity threshold.}
         \label{fig:bad_str_disparity}
     \end{subfigure}
     \begin{subfigure}[b]{0.8\textwidth}
     	\centering
-        \includegraphics[width=5cm]{include/images/moea_best_hofs.PNG}
+        \includegraphics[width=10cm]{include/images/moea_best_hofs.PNG}
         \caption{Results with the fitness threshold.}
         \label{fig:good_str_disparity}
     \end{subfigure}
@@ -395,7 +413,7 @@ As described in the section \emph{Complications of the implementation}, in the i
 
 In general, the surrogate models of the approximated STR disparity tends to underestimate the exact values for very high disparity values. However, this is the side effect of the Inverse Distance Weighing interpolation technique, which is highly sensitive to outliers. According to figure \ref{fig:str_disparities} it is clear that the surrogate model obtained with the fitness threshold selection criteria is better at approximating the exact STR disparities. When computing the mean square error between the approximated STR disparity and the exact STR disparity, we obtain \textit{79.128} with the fitness selection method and \textit{143.951} with the diversity selection method for 43 individuals from the Pareto front and 44 individuals. Even though the mean square error values are high in both cases, which is the result of heavily weighting large errors of the function, we can conclude that the surrogate model is of better quality with the fitness selection method. From our observation, we assume that the main reason for the higher error of the surrogate model using the diversity selection method is caused by choosing the inappropriate behavioral features and behavioral distances calculation.
 
-In the early stages of the experiments, the update heuristic function that selects which controllers to transfer to the physical robot consisted of choosing controllers whose diversity values are greater than the specified diversity threshold of \textit{0.5}. Compared to the heuristic function that chooses controllers to transfer among whose fitness value is greater than \textit{3.0} we have obtained less accurate surrogate model and less transferable individuals. We hypothesize, that the poor results obtained with this heuristic function are caused by choosing the inappropriate behavioral features for the diversity measure. The behavioral distance measure is computed as the Euclidean distance based on the controllers' 12th behavioral features \ref{eq:behavioral_features} to the already transferred controller's behavioral features. The diversity corresponds to taking the minimal behavioral distance between the specific controller and the already transferred controllers. This feature-based behavioral distance appeared to be too diverse as the behavioral features consist mostly of sensory readings. We believe that determining the diversity of a controller on such sparse information is not precise enough to build an accurate surrogate model. An effective behavioral-distance measure certainly has to determine the different type of behaviors observed in simulation. For instance, in our application, instead of relying on the sensors features other behaviors like the traveled distance, the orientation of the robot, distance between the various obstacle could have been more efficient to determine the diversity of the controllers.
+In the early stages of the experiments, the update heuristic function that selects which controllers to transfer to the physical robot consisted of choosing controllers whose diversity values are greater than the specified diversity threshold of \textit{0.5}. Compared to the heuristic function that chooses controllers to transfer among whose fitness value is greater than \textit{3.0} we have obtained less accurate surrogate model and less transferable individuals. We hypothesize, that the poor results obtained with this heuristic function are caused by choosing the inappropriate behavioral features for the diversity measure. The behavioral distance measure is computed as the Euclidean distance based on the controllers' 12th behavioral features \ref{eq:behavioral_features} to the already transferred controller's behavioral features. The diversity corresponds to taking the minimal behavioral distance between the specific controller and the already transferred controllers. This feature-based behavioral distance appeared to be too diverse as the behavioral features consist mostly of sensory readings. We believe that determining the diversity of a controller on such sparse information is not precise enough to build an accurate surrogate model. An effective behavioral-distance measure certainly has to determine the different type of behaviors observed in simulation based on appropriate behavioral-features in order to build a robust surrogate model. For instance, in our application, instead of relying on the sensors features other behaviors like the traveled distance, the orientation of the robot, distance between the various obstacle could have been more efficient to determine the diversity of the controllers.
 
 
 

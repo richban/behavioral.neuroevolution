@@ -192,14 +192,7 @@ There are many different types of path tracking algorithm available today. For e
   \label{fig:follow_the_carrot}
 \end{figure}
 
-Figure \ref{fig:follow_the_carrot} describes the basic principles. The most important parameter is the orientation error, describing the current angle of the robot and the line drawn from the center of the robot to the carrot point. A simple proportional controller is used to minimize the orientation error between the vehicle and the carrot point. Which then controls the robots linear velocity and rotational velocity to reach the carrot point. The entire path following system is depicting in the following figure \ref{fig:path_following_diagram}. The camera vision system is used to obtain the position of all the four corners, including the position of the obstacles. Next, a 2-dimensional grid is created, representing the physical arena as a graph, while taking into account the walls and obstacles. The robots current position and orientation are obtained and the goal (initial) position likewise. To find the path between the robot and goal (initial) position we use a graph search algorithm, namely A* algorithm \footnote{\url{https://en.wikipedia.org/wiki/A*_search_algorithm}}. The algorithm takes the 2-dimensional grid as input and outputs the carrot points that the robot has to follow. Then the control loop is responsible to guide the robot based on the follow-the-carrot algorithm until the goal (initial) position is reached.
-
-\begin{figure}[H]
-	\centering
-  	\includegraphics[width=6cm]{include/images/dummy.PNG}
-  	\caption{Path following system diagram.}
-  	\label{fig:path_following_diagram}
-\end{figure}
+Figure \ref{fig:follow_the_carrot} describes the basic principles. The most important parameter is the orientation error, describing the current angle of the robot and the line drawn from the center of the robot to the carrot point. A simple proportional controller is used to minimize the orientation error between the vehicle and the carrot point. Which then controls the robots linear velocity and rotational velocity to reach the carrot point. The camera vision system is used to obtain the position of all the four corners, including the position of the obstacles. Next, a 2-dimensional grid is created, representing the physical arena as a graph, while taking into account the walls and obstacles. The robots current position and orientation are obtained and the goal (initial) position likewise. To find the path between the robot and goal (initial) position we use a graph search algorithm, namely A* algorithm \footnote{\url{https://en.wikipedia.org/wiki/A*_search_algorithm}}. The algorithm takes the 2-dimensional grid as input and outputs the carrot points that the robot has to follow. Then the control loop is responsible to guide the robot based on the follow-the-carrot algorithm until the goal (initial) position is reached.
 
 \section{Automation Control}
 
